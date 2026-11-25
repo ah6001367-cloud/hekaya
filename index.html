@@ -17,7 +17,7 @@ button.o{background:transparent;color:#e2b44c;border:1px solid #e2b44c}button:di
 #reader{position:fixed;inset:0;z-index:2000;background:#0b1a33;overflow:auto;display:none}
 #reader.on{display:block}
 #reader .hero{height:250px;position:relative;background:#0b2a52;overflow:hidden}
-#reader .hero svg{position:absolute;inset:0;width:100%;height:100%}
+#reader .hero svg,#reader .hero img{position:absolute;inset:0;width:100%;height:100%}
 #reader .back{position:absolute;top:14px;right:16px;z-index:3;background:#0b1a33aa;color:#f4e9c8;border-radius:12px;padding:6px 12px;font-size:13px;text-decoration:none}
 #reader .panel{position:relative;margin-top:-16px;background:#0b1a33;border-radius:24px 24px 0 0;padding:22px 22px 40px}
 #reader h1{margin:0 0 12px;font-size:24px;font-weight:800;color:#e2b44c}
@@ -60,7 +60,7 @@ function count(){document.getElementById('count').textContent=TEST?'وضع ال�
 function show(s){sel=s;const sh=document.getElementById('sheet');const u=isU(s.n);
  let st='';if(TEST&&!unlocked.includes(s.n))st='<span class="open">وضع التجربة · مفتوحة بدون لوكيشن</span>';else if(me){const d=dist(me.lat,me.lon,s.lat,s.lon);st=u?`<span class="open">اتفتحت · إنت على بعد ${ar(Math.round(d))} متر</span>`:`<span class="lock">مقفولة · لسه ${d>=1000?ar((d/1000).toFixed(1))+' كم':ar(Math.round(d))+' متر'} · لازم تبقى جوه ${ar(R)} متر</span>`}else st='<span class="lock">مقفولة · شغّل اللوكيشن أو فعّل وضع التجربة</span>';
  sh.innerHTML=`<h2>${ar(s.n)}. ${s.t}</h2><div class="pl">${s.p}</div>${s.ok?'':'<div class="pl">مكان الدبوس تقريبي</div>'}${u?'':`<div class="tz">${s.tz}</div>`}<div class="st">${st}</div><div class="row"><button ${u?'':'disabled'} onclick="read(${s.n})">${u?'اقرا الحكاية':'مقفولة'}</button><button class="o" onclick="document.getElementById('sheet').classList.remove('on');sel=null">إغلاق</button></div>`;sh.classList.add('on')}
-const HERO=n=>`<svg viewBox="0 0 390 250" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#143a6b"/><stop offset="1" stop-color="#0b1a33"/></linearGradient></defs><rect width="390" height="250" fill="url(#g)"/><circle cx="300" cy="60" r="34" fill="#f4e9c8" opacity=".9"/>`+(n==1?`<polygon points="170,250 185,70 205,70 220,250" fill="#d9c9a0"/><polygon points="183,70 195,35 207,70" fill="#e2b44c"/><rect x="186" y="60" width="18" height="10" fill="#fff7c0"/><polygon points="195,62 380,200 380,120" fill="#fff7c0" opacity=".18"/>`:`<g fill="#07142a"><rect x="20" y="170" width="40" height="80"/><rect x="70" y="150" width="50" height="100"/><rect x="130" y="180" width="36" height="70"/><rect x="176" y="160" width="46" height="90"/><rect x="232" y="185" width="40" height="65"/><rect x="282" y="165" width="50" height="85"/></g>`)+`<rect y="225" width="390" height="25" fill="#07142a"/></svg>`;
+const HERO0=n=>`<svg viewBox="0 0 390 250" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#143a6b"/><stop offset="1" stop-color="#0b1a33"/></linearGradient></defs><rect width="390" height="250" fill="url(#g)"/><circle cx="300" cy="60" r="34" fill="#f4e9c8" opacity=".9"/>`+(n==1?`<polygon points="170,250 185,70 205,70 220,250" fill="#d9c9a0"/><polygon points="183,70 195,35 207,70" fill="#e2b44c"/><rect x="186" y="60" width="18" height="10" fill="#fff7c0"/><polygon points="195,62 380,200 380,120" fill="#fff7c0" opacity=".18"/>`:`<g fill="#07142a"><rect x="20" y="170" width="40" height="80"/><rect x="70" y="150" width="50" height="100"/><rect x="130" y="180" width="36" height="70"/><rect x="176" y="160" width="46" height="90"/><rect x="232" y="185" width="40" height="65"/><rect x="282" y="165" width="50" height="85"/></g>`)+`<rect y="225" width="390" height="25" fill="#07142a"/></svg>`;
 
 let CUR=null;
 function AUD(n){if(!(n>=1&&n<=32))return '<div class="pl2 off"><div class="pb">▶</div><div style="flex:1"><div class="t">الاستماع للحكاية · قريبا</div><div class="bar2"></div></div></div>';
@@ -74,6 +74,7 @@ a.onerror=()=>{const t=document.getElementById('pt');if(t)t.textContent='تعذ�
 const a=CUR.a,b=document.getElementById('pb');if(a.paused){a.play();b.textContent='❚❚'}else{a.pause();b.textContent='▶'}}
 function seekA(e){if(!CUR||!CUR.a.duration)return;const r=e.currentTarget.getBoundingClientRect();const x=document.dir=='rtl'||getComputedStyle(e.currentTarget).direction=='rtl'?(r.right-e.clientX):(e.clientX-r.left);CUR.a.currentTime=CUR.a.duration*Math.max(0,Math.min(1,x/r.width))}
 function stopA(){if(CUR){CUR.a.pause();CUR=null}}
+const HERO=n=>`<img alt="" src="hero/${String(n).padStart(2,'0')}.svg" onerror="this.outerHTML=HERO0(${n})">`;
 function read(n){stopA();const s=S.find(x=>x.n==n),r=document.getElementById('reader');
  const body=s.secs.map(x=>{const fact=x.h.includes('[حقيقة]'),h=x.h.replace(/\[(حقيقة|خيال)\]/,'').trim();
   const ps=x.b.map(p=>`<p>${p}</p>`).join('');
