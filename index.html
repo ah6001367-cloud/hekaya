@@ -35,8 +35,9 @@ button.o{background:transparent;color:#e2b44c;border:1px solid #e2b44c}button:di
 .cta{margin-top:22px;background:#e2b44c;color:#0b1a33;font-weight:700;border-radius:14px;padding:14px;text-align:center;font-size:16px;opacity:.55}
 .leaflet-control-attribution{font-size:10px}
 .pl2 .bar2{cursor:pointer}.pl2 .bar2 i{display:block;height:5px;width:0;background:#e2b44c;border-radius:3px}.pl2.off{opacity:.75}.pl2 .pb{cursor:pointer;user-select:none}#reader .hero img{object-fit:cover}@media(min-width:700px){#reader .hero{background:#0b1a33}#reader .hero img{width:auto;height:100%;aspect-ratio:390/250;left:50%;right:auto;transform:translateX(-50%);inset:0 auto 0 50%}}
-#rq,#col,#cd{position:fixed;inset:0;z-index:99999;background:#0b1a33;overflow:auto;display:none;padding:60px 18px 40px}
-#rq.on,#col.on,#cd.on{display:block}
+#rq,#col,#cd,#mn{position:fixed;inset:0;z-index:99999;background:#0b1a33;overflow:auto;display:none;padding:60px 18px 40px}
+#rq.on,#col.on,#cd.on,#mn.on{display:block}
+#mn h2{color:#e2b44c;margin:10px 0 8px;font-size:20px}.box{background:#12305a;border-radius:14px;padding:12px 14px;margin:12px 0}.box h3{margin:0 0 6px;color:#e2b44c;font-size:16px}.box p{margin:6px 0;font-size:14px;line-height:1.7;color:#cfd9e8}.bar3{height:8px;background:#2b4a7a;border-radius:4px;overflow:hidden;margin:8px 0}.bar3 i{display:block;height:8px;width:0;background:#7fe0d4}
 .rt{display:inline-block;background:#12305a;border:1px solid #e2b44c;color:#e2b44c;border-radius:20px;padding:3px 12px;font-size:12px}
 #rq h2,#col h2{color:#e2b44c;margin:10px 0 8px;font-size:20px}
 .rtxt{white-space:pre-wrap;background:#12305a;border-right:4px solid #e2b44c;border-radius:12px;padding:14px;line-height:2;font-size:17px;margin:10px 0}
@@ -52,9 +53,9 @@ button.o{background:transparent;color:#e2b44c;border:1px solid #e2b44c}button:di
 .cc{border-radius:12px;background:#12305a;border:2px solid #2b4a7a;text-align:center;padding:8px 4px;font-size:12px;min-height:84px}
 .cc b{display:block;font-size:22px}.cc.lk{opacity:.4;filter:grayscale(1)}
 </style></head><body>
-<div id="top"><span id="ttl"></span><small id="count"></small><button id="cbtn" onclick="openCol()" style="width:auto;flex:none;margin:0 0 0 6px;white-space:nowrap;border:1px solid #e2b44c;border-radius:14px;padding:3px 10px;font:inherit;font-size:12px;background:transparent;color:#e2b44c;min-height:0">🃏 <span id="cn"></span></button><button id="tbtn" onclick="togTest()" style="width:auto;flex:none;margin:0;white-space:nowrap;border:1px solid #e2b44c;border-radius:14px;padding:3px 10px;font:inherit;font-size:12px;cursor:pointer;background:transparent;color:#e2b44c">وضع التجربة</button><button id="lbtn" onclick="setLang(EN?'ar':'en')" style="width:auto;flex:none;margin:0 0 0 6px;border:1px solid #e2b44c;border-radius:14px;padding:3px 10px;font:inherit;font-size:12px;background:transparent;color:#e2b44c;min-height:0"></button></div>
+<div id="top"><span id="ttl"></span><small id="count"></small><button id="cbtn" onclick="openCol()" style="width:auto;flex:none;margin:0 0 0 6px;white-space:nowrap;border:1px solid #e2b44c;border-radius:14px;padding:3px 10px;font:inherit;font-size:12px;background:transparent;color:#e2b44c;min-height:0">🃏 <span id="cn"></span></button><button id="tbtn" onclick="togTest()" style="width:auto;flex:none;margin:0;white-space:nowrap;border:1px solid #e2b44c;border-radius:14px;padding:3px 10px;font:inherit;font-size:12px;cursor:pointer;background:transparent;color:#e2b44c">وضع التجربة</button><button id="mbtn" onclick="openMenu()" style="width:auto;flex:none;margin:0 0 0 6px;border:1px solid #e2b44c;border-radius:14px;padding:3px 10px;font:inherit;font-size:12px;background:transparent;color:#e2b44c;min-height:0">☰</button><button id="lbtn" onclick="setLang(EN?'ar':'en')" style="width:auto;flex:none;margin:0 0 0 6px;border:1px solid #e2b44c;border-radius:14px;padding:3px 10px;font:inherit;font-size:12px;background:transparent;color:#e2b44c;min-height:0"></button></div>
 <div id="map"></div>
-<script src="photos.js"></script><script src="riddles.js"></script><div id="rq"></div><div id="col"></div><div id="cd"></div><div id="sheet"></div><div id="reader"></div>
+<script src="photos.js"></script><script src="riddles.js"></script><div id="rq"></div><div id="col"></div><div id="mn"></div><div id="cd"></div><div id="sheet"></div><div id="reader"></div>
 <script src="leaflet.js"></script>
 <script>
 {const l=new URLSearchParams(location.search).get('lang');if(l==='en'||l==='ar')localStorage.setItem('hk_lang',l)}const LG=localStorage.getItem('hk_lang')||'ar';const EN=LG==='en';
@@ -85,6 +86,11 @@ const TR={
 'wrong':['لأ، مش كده. فكّر تاني أو خد تلميح.','Not quite. Think again or take a hint.'],
 'cards':['كروت الحكاية · ','Hekaya cards · '],'locked2':['مقفول','Locked'],'no':['رقم ','No. '],
 'note':['الحكاية بالعربي حاليا، الترجمة الإنجليزية جاية قريبا.','English translation of the Egyptian Arabic original. Tap العربية (top) to read the original.'],
+'menu':['القائمة','Menu'],'offt':['⬇ التحميل للاستخدام بدون نت','⬇ Offline use'],
+'offd':['حمّل الحكايات والصور عشان تشتغل من غير إنترنت. الصوت (حوالي ٨١ ميجا) اختياري. خريطة الخلفية محتاجة نت، لكن الدبابيس والحكايات والألغاز والـGPS بيشتغلوا.','Download the stories and photos to use without internet. Audio (about 81 MB) is optional. The map background needs internet, but pins, stories, riddles and GPS still work.'],
+'offtxt':['تحميل الحكايات والصور','Download stories & photos'],'offaud':['تحميل الصوت (٨١ ميجا)','Download audio (81 MB)'],
+'offdone':['تم التحميل ✓','Downloaded ✓'],'offprog':['جاري التحميل ','Downloading '],'offerr':['حصلت أخطاء في ','Failed items: '],'offrm':['مسح التحميلات','Remove downloads'],'offsw':['المتصفح ده مش بيدعم التحميل للاستخدام بدون نت.','This browser does not support offline use.'],
+'offst':['محمّل: ','Saved: '],
 'notifT':['هنا في حكاية','Here in Hekaya'],'notifB':['حكاية جديدة اتفتحت: ','New story unlocked: '],
 'rar':{'عادي':'Common','شائع':'Common','نادر':'Rare','أسطوري':'Legendary'},
 'typ':{'شفرة':'Cipher','استنتاج':'Deduction','تفكير جانبي':'Lateral thinking'}
@@ -135,6 +141,17 @@ function cnt(){document.getElementById('cn').textContent=ar(SOL.length)+'/'+ar(3
 function openCol(){const e=document.getElementById('col');e.innerHTML=`<h2>🃏 ${T('cards')}${ar(SOL.length)} ${T('of')} ${ar(32)}</h2><div id="cg">${Object.keys(CARDS).map(k=>{k=+k;const c=CARDS[k],s=SOL.includes(k);return `<div class="cc ${s?'':'lk'}" ${s?`onclick="showCard(${k},false)"`:''}><b>${s?c.e:'❓'}</b>${s?c.name:T('locked2')}<br><small>${ar(String(k).padStart(3,'0'))}</small></div>`}).join('')}</div><div class="row"><button onclick="closeP('col')">${EN?'Back':'رجوع'}</button></div>`;e.classList.add('on')}
 cnt();
 let CUR=null;
+const OFFURLS=k=>{const a=[];for(let n=1;n<=32;n++){const p=String(n).padStart(2,'0');if(k==='t'){a.push('hero/'+p+'.svg');if(typeof PH!=='undefined'&&PH[n])a.push('photos/'+p+'.jpg')}else a.push('audio/story'+p+'.mp3')}return a};
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+async function offCount(){if(!window.caches)return{t:0,a:0};const c=await caches.open('hk-v1'),ks=(await c.keys()).map(r=>new URL(r.url).pathname);const has=u=>ks.some(p=>p.endsWith('/'+u));return{t:OFFURLS('t').filter(has).length,tt:OFFURLS('t').length,a:OFFURLS('a').filter(has).length,at:32}}
+async function offRun(k){if(!window.caches)return;const c=await caches.open('hk-v1'),L=OFFURLS(k),bar=document.getElementById(k==='t'?'obt':'oba'),st=document.getElementById(k==='t'?'ost':'osa');let done=0,bad=[];try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+ for(const u of L){try{const m=await c.match(u);if(!m){const r=await fetch(u,{cache:'reload'});if(r.ok&&r.status===200)await c.put(u,r);else if(r.status!==404)bad.push(u)}}catch(e){bad.push(u)}done++;if(bar)bar.style.width=(100*done/L.length)+'%';if(st)st.textContent=T('offprog')+ar(done)+'/'+ar(L.length)}
+ await offMenu(bad.length?T('offerr')+bad.join(', '):'')}
+async function offClear(){if(window.caches){const c=await caches.open('hk-v1');for(const k of await c.keys()){const p=new URL(k.url).pathname;if(/\/(audio|photos|hero)\//.test(p))await c.delete(k)}}offMenu('')}
+async function offMenu(msg){const e=document.getElementById('offb');if(!e)return;if(!window.caches||!('serviceWorker' in navigator)){e.innerHTML='<p>'+T('offsw')+'</p>';return}const o=await offCount();
+ e.innerHTML=`<p>${T('offd')}</p><div class="bar3"><i id="obt" style="width:${100*o.t/o.tt}%"></i></div><p id="ost">${T('offst')}${ar(o.t)}/${ar(o.tt)}</p><div class="row"><button onclick="offRun('t')">${o.t>=o.tt?T('offdone'):T('offtxt')}</button></div><div class="bar3"><i id="oba" style="width:${100*o.a/32}%"></i></div><p id="osa">${T('offst')}${ar(o.a)}/${ar(32)}</p><div class="row"><button onclick="offRun('a')">${o.a>=32?T('offdone'):T('offaud')}</button></div><div class="row"><button class="o" onclick="offClear()">${T('offrm')}</button></div><p class="bad">${msg||''}</p>`}
+function openMenu(){const e=document.getElementById('mn');e.innerHTML=`<h2>${T('menu')}</h2><div class="box"><h3>${T('offt')}</h3><div id="offb"></div></div><div class="row"><button onclick="closeP('mn')">${EN?'Back':'رجوع'}</button></div>`;e.classList.add('on');offMenu('')}
+
 function AUD(n){if(!(n>=1&&n<=32))return '<div class="pl2 off"><div class="pb">▶</div><div style="flex:1"><div class="t">'+T('listen')+' · '+(EN?'soon':'قريبا')+'</div><div class="bar2"></div></div></div>';
 return `<div class="pl2" id="pl"><div class="pb" id="pb" onclick="togA(${n})">▶</div><div style="flex:1"><div class="t" id="pt">${T('listen')}</div><div class="bar2" id="pbar" onclick="seekA(event)"><i id="pfill"></i></div></div></div>`}
 function fmt(t){t=Math.floor(t||0);return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')}
