@@ -113,7 +113,7 @@ const dist=(a,b,c,d)=>{const r=Math.PI/180,x=(d-b)*r*Math.cos((a+c)/2*r),y=(c-a)
 let markers={},meMk=null;
 function icon(s){return L.divIcon({className:'',html:`<div class="pin ${isU(s.n)?'u':''} ${s.ok?'':'a'}">${ar(s.n)}</div>`,iconSize:[30,30]})}
 function setMe(lat,lon,f){if(FAKE&&!f)return;me={lat,lon};setTimeout(myCheck,80);setTimeout(chkRoutes,50);if(!meMk)meMk=L.marker([lat,lon],{icon:L.divIcon({className:'',html:'<div class="me"></div>',iconSize:[16,16]}),interactive:false,zIndexOffset:900}).addTo(map);else meMk.setLatLng([lat,lon]);
- if(!f)S.forEach(s=>{if(dist(lat,lon,s.lat,s.lon)<=R&&!unlocked.includes(s.n)){unlocked.push(s.n);localStorage.setItem('hk_u',JSON.stringify(unlocked));markers[s.n].setIcon(icon(s))}});
+ if(!f)S.forEach(s=>{if(dist(lat,lon,s.lat,s.lon)<=R&&!unlocked.includes(s.n)){notifyHere(s);unlocked.push(s.n);localStorage.setItem('hk_u',JSON.stringify(unlocked));markers[s.n].setIcon(icon(s))}});
  count();if(sel)show(sel)}
 function count(){document.getElementById('count').textContent=TEST?T('testall'):`${ar(unlocked.length)} ${T('of')} ${ar(S.length)} ${T('unl')}`;const b=document.getElementById('tbtn');if(b){b.textContent=TEST?T('testmodeon'):T('testmode');document.getElementById('ttl').textContent=T('title');document.getElementById('lbtn').textContent=EN?'العربية':'EN';b.style.background=TEST?'#e2b44c':'transparent';b.style.color=TEST?'#0b1a33':'#e2b44c'}}
 function show(s){sel=s;const sh=document.getElementById('sheet');const u=isU(s.n);
@@ -143,7 +143,11 @@ cnt();
 let CUR=null;
 const SHELL=['index.html','leaflet.js','leaflet.css','riddles.js','photos.js','stories1.json','stories2.json','en_stories.json','en_riddles.json','en_cards.json'];
 const OFFURLS=k=>{const a=k==='t'?SHELL.slice():[];for(let n=1;n<=32;n++){const p=String(n).padStart(2,'0');if(k==='t'){a.push('hero/'+p+'.svg');if(typeof PH!=='undefined'&&PH[n])a.push('photos/'+p+'.jpg')}else a.push('audio/story'+p+'.mp3')}return a};
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
+if(!NATIVE&&'serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+async function notifyHere(s){if(!NATIVE)return;try{const LN=Capacitor.Plugins.LocalNotifications;await LN.schedule({notifications:[{id:1000+s.n,title:EN?'Here in Hekaya':'هنا في حكاية',body:s.t,smallIcon:'ic_stat_icon_config_sample'}]})}catch(e){}}
+async function startNative(){try{const LN=Capacitor.Plugins.LocalNotifications;try{await LN.requestPermissions()}catch(e){}
+ const BG=Capacitor.Plugins.BackgroundGeolocation;BG.addWatcher({backgroundMessage:EN?'Hekaya is watching for stories near you':'حكاية بتدور على حكايات جنبك',backgroundTitle:EN?'Hekaya':'حكاية',requestPermissions:true,stale:false,distanceFilter:15},(l,err)=>{if(err){if(err.code==='NOT_AUTHORIZED'&&confirm(EN?'Hekaya needs location "Allow all the time" to alert you near stories. Open settings?':'حكاية محتاجة الموقع "السماح طول الوقت" عشان تنبهك جنب الحكايات. تفتح الإعدادات؟'))BG.openSettings();return}if(l)setMe(l.latitude,l.longitude)})}catch(e){if(navigator.geolocation)navigator.geolocation.watchPosition(p=>setMe(p.coords.latitude,p.coords.longitude),()=>{},{enableHighAccuracy:true})}}
 async function offCount(){if(!window.caches)return{t:0,a:0};const c=await caches.open('hk-v2'),ks=(await c.keys()).map(r=>new URL(r.url).pathname);const has=u=>ks.some(p=>p.endsWith('/'+u));return{t:OFFURLS('t').filter(has).length,tt:OFFURLS('t').length,a:OFFURLS('a').filter(has).length,at:32}}
 async function offRun(k){if(!window.caches)return;const c=await caches.open('hk-v2'),L=OFFURLS(k),bar=document.getElementById(k==='t'?'obt':'oba'),st=document.getElementById(k==='t'?'ost':'osa');let done=0,bad=[];try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
  for(const u of L){try{const m=await c.match(u);if(!m){const r=await fetch(u,{cache:'reload'});if(r.ok&&r.status===200)await c.put(u,r);else if(r.status!==404)bad.push(u)}}catch(e){bad.push(u)}done++;if(bar)bar.style.width=(100*done/L.length)+'%';if(st)st.textContent=T('offprog')+ar(done)+'/'+ar(L.length)}
@@ -226,6 +230,7 @@ Promise.all(['stories1.json','stories2.json'].concat(EN?['en_stories.json','en_r
  for(const k in er){const r=RD[k];if(r){r.arq=r.q;r.arh=r.hints;r.q=er[k].q;r.hints=er[k].hints;r.ansh=er[k].ansh;r.type=er[k].type}}
  for(const k in ec){const c=CARDS[k];if(c){c.arname=c.name;c.art=c.t;c.name=ec[k].name;c.t=ec[k].t}}}return a[0].concat(a[1])}).then(d=>{S=d;S.forEach(s=>{markers[s.n]=L.marker([s.lat,s.lon],{icon:icon(s)}).addTo(map).on('click',()=>show(s))});count();
  if(q.get('demo')&&TEST){const [a,b]=q.get('demo').split(',').map(Number);setMe(a,b,true)}
+ else if(NATIVE)startNative();
  else if(navigator.geolocation)navigator.geolocation.watchPosition(p=>setMe(p.coords.latitude,p.coords.longitude),e=>{},{enableHighAccuracy:true});
  if(q.get('open'))show(S.find(x=>x.n==q.get('open')));
  if(q.get('read'))read(q.get('read'))});
