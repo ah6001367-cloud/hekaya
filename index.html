@@ -34,7 +34,7 @@ button.o{background:transparent;color:#e2b44c;border:1px solid #e2b44c}button:di
 .fact .src{font-size:11px;color:#6f86a8;word-break:break-all;margin-top:6px}
 .cta{margin-top:22px;background:#e2b44c;color:#0b1a33;font-weight:700;border-radius:14px;padding:14px;text-align:center;font-size:16px;opacity:.55}
 .leaflet-control-attribution{font-size:10px}
-</style></head><body>
+.pl2 .bar2{cursor:pointer}.pl2 .bar2 i{display:block;height:5px;width:0;background:#e2b44c;border-radius:3px}.pl2.off{opacity:.75}.pl2 .pb{cursor:pointer;user-select:none}</style></head><body>
 <div id="top"><span>حكاية · بورسعيد</span><small id="count"></small></div>
 <div id="map"></div>
 <div id="sheet"></div><div id="reader"></div>
@@ -57,11 +57,24 @@ function show(s){sel=s;const sh=document.getElementById('sheet');const u=unlocke
  let st='';if(me){const d=dist(me.lat,me.lon,s.lat,s.lon);st=u?`<span class="open">اتفتحت · إنت على بعد ${ar(Math.round(d))} متر</span>`:`<span class="lock">مقفولة · لسه ${d>=1000?ar((d/1000).toFixed(1))+' كم':ar(Math.round(d))+' متر'} · لازم تبقى جوه ${ar(R)} متر</span>`}else st='<span class="lock">مقفولة · شغّل اللوكيشن</span>';
  sh.innerHTML=`<h2>${ar(s.n)}. ${s.t}</h2><div class="pl">${s.p}</div>${s.ok?'':'<div class="pl">مكان الدبوس تقريبي</div>'}${u?'':`<div class="tz">${s.tz}</div>`}<div class="st">${st}</div><div class="row"><button ${u?'':'disabled'} onclick="read(${s.n})">${u?'اقرا الحكاية':'مقفولة'}</button><button class="o" onclick="document.getElementById('sheet').classList.remove('on');sel=null">إغلاق</button></div>`;sh.classList.add('on')}
 const HERO=n=>`<svg viewBox="0 0 390 250" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#143a6b"/><stop offset="1" stop-color="#0b1a33"/></linearGradient></defs><rect width="390" height="250" fill="url(#g)"/><circle cx="300" cy="60" r="34" fill="#f4e9c8" opacity=".9"/>`+(n==1?`<polygon points="170,250 185,70 205,70 220,250" fill="#d9c9a0"/><polygon points="183,70 195,35 207,70" fill="#e2b44c"/><rect x="186" y="60" width="18" height="10" fill="#fff7c0"/><polygon points="195,62 380,200 380,120" fill="#fff7c0" opacity=".18"/>`:`<g fill="#07142a"><rect x="20" y="170" width="40" height="80"/><rect x="70" y="150" width="50" height="100"/><rect x="130" y="180" width="36" height="70"/><rect x="176" y="160" width="46" height="90"/><rect x="232" y="185" width="40" height="65"/><rect x="282" y="165" width="50" height="85"/></g>`)+`<rect y="225" width="390" height="25" fill="#07142a"/></svg>`;
-function read(n){const s=S.find(x=>x.n==n),r=document.getElementById('reader');
+
+let CUR=null;
+function AUD(n){if(!(n>=1&&n<=30))return '<div class="pl2 off"><div class="pb">▶</div><div style="flex:1"><div class="t">الاستماع للحكاية · قريبا</div><div class="bar2"></div></div></div>';
+return `<div class="pl2" id="pl"><div class="pb" id="pb" onclick="togA(${n})">▶</div><div style="flex:1"><div class="t" id="pt">الاستماع للحكاية</div><div class="bar2" id="pbar" onclick="seekA(event)"><i id="pfill"></i></div></div></div>`}
+function fmt(t){t=Math.floor(t||0);return Math.floor(t/60)+':'+String(t%60).padStart(2,'0')}
+function togA(n){if(CUR&&CUR.n!=n){CUR.a.pause();CUR=null}
+if(!CUR){const a=new Audio('audio/story'+String(n).padStart(2,'0')+'.mp3');a.preload='metadata';CUR={a,n};
+a.ontimeupdate=()=>{const f=document.getElementById('pfill'),t=document.getElementById('pt');if(f&&a.duration){f.style.width=(100*a.currentTime/a.duration)+'%';t.textContent=fmt(a.currentTime)+' / '+fmt(a.duration)}};
+a.onended=()=>{document.getElementById('pb').textContent='▶'};
+a.onerror=()=>{const t=document.getElementById('pt');if(t)t.textContent='تعذر تحميل الصوت'}}
+const a=CUR.a,b=document.getElementById('pb');if(a.paused){a.play();b.textContent='❚❚'}else{a.pause();b.textContent='▶'}}
+function seekA(e){if(!CUR||!CUR.a.duration)return;const r=e.currentTarget.getBoundingClientRect();const x=document.dir=='rtl'||getComputedStyle(e.currentTarget).direction=='rtl'?(r.right-e.clientX):(e.clientX-r.left);CUR.a.currentTime=CUR.a.duration*Math.max(0,Math.min(1,x/r.width))}
+function stopA(){if(CUR){CUR.a.pause();CUR=null}}
+function read(n){stopA();const s=S.find(x=>x.n==n),r=document.getElementById('reader');
  const body=s.secs.map(x=>{const fact=x.h.includes('[حقيقة]'),h=x.h.replace(/\[(حقيقة|خيال)\]/,'').trim();
   const ps=x.b.map(p=>`<p>${p}</p>`).join('');
   return fact?`<div class="fact"><div class="fh">§ الحقيقة وراء الحكاية · ${h}</div>${ps}</div>`:`<h3>${h}</h3>${ps}`}).join('');
- r.innerHTML=`<div class="hero">${HERO(n)}<a class="back" href="#" onclick="document.getElementById('reader').classList.remove('on');return false">← رجوع</a></div><div class="panel"><h1>${s.t}</h1><div class="pl2"><div class="pb">▶</div><div style="flex:1"><div class="t">الاستماع للحكاية · قريبا</div><div class="bar2"></div></div></div><div><span class="chip">حكاية خيالية</span><span class="chip">${s.p.split('·')[0].trim()}</span></div><div class="tx">${body}</div><div class="fact"><div class="fh">المصادر</div>${s.src.map(x=>`<div class="src">${x}</div>`).join('')}</div><div class="cta">حل اللغز واستلم الكارت · قريبا</div></div>`;r.classList.add('on');r.scrollTop=0}
+ r.innerHTML=`<div class="hero">${HERO(n)}<a class="back" href="#" onclick="stopA();document.getElementById('reader').classList.remove('on');return false">← رجوع</a></div><div class="panel"><h1>${s.t}</h1>${AUD(n)}<div><span class="chip">حكاية خيالية</span><span class="chip">${s.p.split('·')[0].trim()}</span></div><div class="tx">${body}</div><div class="fact"><div class="fh">المصادر</div>${s.src.map(x=>`<div class="src">${x}</div>`).join('')}</div><div class="cta">حل اللغز واستلم الكارت · قريبا</div></div>`;r.classList.add('on');r.scrollTop=0}
 Promise.all(['stories1.json','stories2.json'].map(u=>fetch(u).then(r=>r.json()))).then(a=>a.flat()).then(d=>{S=d;S.forEach(s=>{markers[s.n]=L.marker([s.lat,s.lon],{icon:icon(s)}).addTo(map).on('click',()=>show(s))});count();
  if(q.get('demo')){const [a,b]=q.get('demo').split(',').map(Number);setMe(a,b)}
  else if(navigator.geolocation)navigator.geolocation.watchPosition(p=>setMe(p.coords.latitude,p.coords.longitude),e=>{},{enableHighAccuracy:true});
