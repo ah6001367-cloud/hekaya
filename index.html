@@ -345,4 +345,55 @@ function hmEnter(n){document.getElementById('hm').classList.remove('on');tbDraw(
  const go=()=>{try{hmShow()}catch(e){}setTimeout(()=>sp.classList.add('out'),1500);setTimeout(()=>sp.remove(),2300)};
  if(document.readyState=='complete')go();else addEventListener('load',go);setTimeout(()=>{if(sp.parentNode&&!sp.classList.contains('out')){try{hmShow()}catch(e){}sp.classList.add('out')}},4000)})();
 </script>
+<style id="pccss">
+.pc{--c:#9fb4d0;position:relative;border-radius:20px;aspect-ratio:3/4.3;border:3px solid var(--c);background:linear-gradient(165deg,#173f73,#0a1830);overflow:hidden;color:#fff;text-align:center;box-shadow:0 6px 20px #0008,0 0 18px color-mix(in srgb,var(--c) 40%,transparent);transform:perspective(700px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .18s ease-out,box-shadow .2s;-webkit-tap-highlight-color:transparent;user-select:none}
+.pc.r2{--c:#7fe0d4}.pc.r3{--c:#e2b44c}.pc.r4{--c:#ff9ad5}
+.pc .art{position:absolute;left:0;right:0;top:0;height:64%;overflow:hidden;background:#0b2a52}.pc .art img{width:100%;height:100%;object-fit:cover;display:block}
+.pc .art::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 55%,#0a1830)}
+.pc .nm{position:absolute;top:7px;inset-inline-start:9px;font-size:11px;font-weight:700;background:#000a;border-radius:10px;padding:2px 8px;letter-spacing:.5px;z-index:2}
+.pc .em{position:absolute;top:calc(64% - 24px);left:50%;transform:translateX(-50%);width:48px;height:48px;border-radius:50%;background:#0a1830;border:2.5px solid var(--c);display:flex;align-items:center;justify-content:center;font-size:26px;z-index:2}
+.pc .bd{position:absolute;top:calc(64% + 26px);left:0;right:0;padding:0 8px}.pc .bd h3{margin:0;font-size:15px;line-height:1.25;color:#fff;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.pc .bd small{display:block;margin-top:3px;font-size:10.5px;color:var(--c);letter-spacing:.4px}
+.pc.r3::after,.pc.r4::after,.pc.r2::after{content:'';position:absolute;inset:-40%;z-index:3;pointer-events:none;background:linear-gradient(115deg,transparent 40%,#ffffff55 50%,transparent 60%);animation:foil 3.6s infinite}
+.pc.r4::before{content:'';position:absolute;inset:0;z-index:3;pointer-events:none;mix-blend-mode:color-dodge;opacity:.25;background:linear-gradient(135deg,#f0f,#0ff,#ff0,#f0f);background-size:300% 300%;animation:rbw 5s linear infinite}
+.pc.r2::after{opacity:.5}
+@keyframes foil{0%{transform:translateX(-60%)}60%,100%{transform:translateX(60%)}}@keyframes rbw{to{background-position:300% 300%}}
+.pc.lk{--c:#4a6288}.pc.lk .art img{filter:blur(9px) saturate(.7) brightness(.65);transform:scale(1.15)}.pc.lk::after,.pc.lk::before{display:none}
+.pc .lkc{position:absolute;left:0;right:0;top:0;height:64%;display:flex;align-items:center;justify-content:center;z-index:2;font-size:38px;text-shadow:0 2px 10px #000}
+.pc.lk .bd h3{color:#9fb4d0}.pc.lk .em{filter:grayscale(1) brightness(.6)}
+.pc.shk{animation:shk .45s}@keyframes shk{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+#cg2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px}#cg2 .pc{cursor:pointer;animation:dsIn .45s calc(var(--i,0)*40ms) both}#cg2 .pc:active{transform:scale(.96)}
+.cfl{display:flex;gap:8px;margin:10px 0}.cfl button{flex:1;width:auto;margin:0;padding:9px 4px;border-radius:20px;background:#16325c;color:#9fb4d0;border:1px solid #274a80;font-size:14px;transition:all .2s}.cfl button.on{background:#e2b44c;color:#0b1a33;border-color:#e2b44c;font-weight:700}
+.chd{background:#16325c;border-radius:18px;padding:14px;margin-top:6px}.chd .pb{height:10px;border-radius:6px;background:#0b1a33;overflow:hidden;margin-top:8px}.chd .pb i{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,#3ad1b8,#e2b44c);transition:width 1s .2s}
+#cd .cdw{display:flex;flex-direction:column;align-items:center;padding-bottom:30px}#cd .cdw .fl{width:min(76vw,300px);perspective:1000px;margin:6px auto 12px;position:relative}
+.fl .in{position:relative;width:100%;aspect-ratio:3/4.3;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.3,1.3,.5,1)}.fl.bk .in{transform:rotateY(180deg)}
+.fl .fc,.fl .bc{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}.fl .fc .pc{width:100%;height:100%;aspect-ratio:auto}
+.fl .bc{transform:rotateY(180deg);border-radius:20px;border:3px solid var(--c,#e2b44c);background:linear-gradient(165deg,#173f73,#0a1830);padding:16px;overflow:auto;text-align:center;display:flex;flex-direction:column;justify-content:center}.fl .bc h3{margin:0 0 8px;color:#e2b44c}.fl .bc p{margin:0;font-size:14px;line-height:1.8;color:#e8dfc4}
+.fl.rv .in{transform:rotateY(180deg);animation:rvl 1s .5s forwards cubic-bezier(.3,1.3,.5,1)}@keyframes rvl{to{transform:rotateY(0)}}
+.fl.rv .art img{animation:clr 1.6s .7s both}@keyframes clr{from{filter:blur(12px) brightness(.6)}to{filter:none}}
+.cdm{display:flex;gap:8px;overflow:auto;padding:4px;width:100%}.cdm img{width:84px;height:84px;object-fit:cover;border-radius:12px;flex:none;border:2px solid #274a80}
+.cdh{color:#9fb4d0;font-size:12px;margin:6px 0 2px}
+</style>
+<script>
+function cardHTML(n,lk){const c=CARDS[n],k=RAR[c.rar]||1,s=S.find(x=>x.n==n)||{},pl=String(s.p||'').split(' · ')[0];
+ const hint=lk?(isU(n)?(EN?'Solve the riddle to unlock':'حُلّ اللغز علشان تفتحه'):(EN?'Visit '+pl+' to unlock':'روح '+pl+' علشان تفتح')):'';
+ return `<div class="pc r${k} ${lk?'lk':''}" data-n="${n}"><span class="nm">${ar(String(n).padStart(3,'0'))}</span><div class="art"><img alt="" loading="lazy" src="hero/${String(n).padStart(2,'0')}.svg"></div>${lk?'<div class="lkc">🔒</div>':''}<div class="em">${c.e}</div><div class="bd"><h3 dir="${DIR}">${lk?(EN?'Locked card':'كارت مقفول'):c.name}</h3><small>${lk?hint:TRR(c.rar)}</small></div></div>`}
+let CF='all';
+function tiltInit(root){root.addEventListener('pointermove',e=>{const p=e.target.closest&&e.target.closest('.pc');if(!p||e.pointerType==='mouse'&&!e.buttons&&0)return;const r=p.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;p.style.setProperty('--ry',(x*16).toFixed(1)+'deg');p.style.setProperty('--rx',(-y*16).toFixed(1)+'deg')});
+ ['pointerup','pointerleave','pointercancel'].forEach(ev=>root.addEventListener(ev,e=>{const p=e.target.closest&&e.target.closest('.pc');if(p){p.style.setProperty('--rx','0deg');p.style.setProperty('--ry','0deg')}},true))}
+function colDraw(){const g=document.getElementById('cg2');if(!g)return;const ks=Object.keys(CARDS).map(Number).filter(k=>CF=='all'||(CF=='un')==SOL.includes(k));
+ g.innerHTML=ks.length?ks.map((k,i)=>{const s=SOL.includes(k);return `<div style="--i:${i}" onclick="colTap(${k},this)">${cardHTML(k,!s)}</div>`}).join(''):`<p style="grid-column:1/3;text-align:center;opacity:.8">${EN?'Nothing here yet.':'مفيش حاجة هنا لسه.'}</p>`;
+ document.querySelectorAll('.cfl button').forEach(b=>b.classList.toggle('on',b.dataset.f==CF))}
+function colTap(n,el){if(SOL.includes(n))return showCard(n,false);const pc=el.querySelector('.pc');pc.classList.remove('shk');void pc.offsetWidth;pc.classList.add('shk');if(isU(n)){setTimeout(()=>{closeP('col');openR(n)},350)}}
+function colF(f){CF=f;colDraw()}
+function openCol(){const e=document.getElementById('col'),P=points(),R=RANKS[P.ri||0],tot=Object.keys(CARDS).length||32,n=SOL.length;
+ e.innerHTML=`<h2>🃏 ${EN?'Hekaya cards':'كروت الحكاية'}</h2><div class="chd"><b>${ar(n)} / ${ar(tot)}</b> ${EN?'collected':'اتجمعت'} · ${R[3]} ${EN?R[2]:R[1]} · ${ar(P.total)} ${EN?'pts':'نقطة'}<div class="pb"><i data-w="${Math.round(n/tot*100)}%"></i></div></div>
+ <div class="cfl"><button data-f="all" onclick="colF('all')">${EN?'All':'الكل'}</button><button data-f="un" onclick="colF('un')">${EN?'Unlocked':'المفتوحة'}</button><button data-f="lk" onclick="colF('lk')">${EN?'Locked':'المقفولة'}</button></div>
+ <div id="cg2"></div><div class="row"><button onclick="closeP('col')">${EN?'Back':'رجوع'}</button></div>`;e.classList.add('on');colDraw();tiltInit(document.getElementById('cg2'));setTimeout(()=>e.querySelectorAll('.chd .pb i').forEach(i=>i.style.width=i.dataset.w),80)}
+async function showCard(n,fresh){const e=document.getElementById('cd'),c=CARDS[n],k=RAR[c.rar]||1;
+ e.innerHTML=`<div class="cdw">${fresh?`<h2 style="color:#7fe0d4;text-align:center;margin:0 0 10px;animation:dsIn .5s both">${T('gotcard')}</h2>`:''}<div class="fl ${fresh?'rv':''}" id="flp" onclick="this.classList.toggle('bk')"><div class="in"><div class="fc">${cardHTML(n,false)}</div><div class="bc" style="--c:var(--rc)"><h3 dir="${DIR}">${c.name}</h3><small style="color:#7fe0d4">${TRR(c.rar)}</small><p dir="${DIR}">${c.t}</p></div></div></div>
+ <div class="cdh">${EN?'Tap the card to flip it':'اضغط على الكارت علشان يتقلب'}</div><div id="cdm"></div><div class="row" style="width:100%"><button onclick="closeP('cd')">${T('ok')}</button></div></div>`;e.classList.add('on');
+ const f=document.getElementById('flp');tiltInit(f);if(fresh)setTimeout(()=>{f.classList.remove('rv')},2300);
+ try{const L=(await mall()).filter(x=>x.n==n&&x.b);if(L.length&&document.getElementById('cdm'))document.getElementById('cdm').innerHTML=`<div class="cdh">📷 ${EN?'Your memories here':'ذكرياتك هنا'}</div><div class="cdm">${L.map(x=>`<img alt="" src="${URL.createObjectURL(x.b)}">`).join('')}</div>`}catch(x){}}
+</script>
 </body></html>
