@@ -5,6 +5,25 @@ const CFG={apiKey:"AIzaSyCCHIO-bY1zgpt39XSXOXSOkpEzTXiv2OI",authDomain:"hekaya-1
 const V='10.12.2',BASE='https://www.gstatic.com/firebasejs/'+V+'/';
 const EMU=location.hostname==='localhost'&&new URLSearchParams(location.search).get('emu')==='1';
 const t=(a,e)=>EN?e:a;
+
+(function(){const c=document.createElement('style');c.textContent=`
+.sc-hero{text-align:center;padding:14px 0 6px}.sc-logo{width:76px;height:76px;border-radius:24px;background:linear-gradient(135deg,#f1cf7a,#c28a2b);display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 10px;box-shadow:0 10px 28px #0007}
+.sc-h{font-size:24px;font-weight:800;color:#f4e9c8;margin:4px 0}.sc-sub{color:#9fb4d0;font-size:14px;margin:0 8px}
+.sc-card{background:#0e2142;border:1px solid #1c3a6b;border-radius:20px;padding:16px;margin:14px 0}
+.sc-seg{display:flex;background:#0b1a33;border-radius:14px;padding:4px;margin-bottom:10px}.sc-seg button{flex:1;margin:0;background:transparent;color:#9fb4d0;border-radius:11px;min-height:40px;padding:8px}.sc-seg button.on{background:#e2b44c;color:#0b2a52}
+.sc-f{position:relative;margin:12px 0 4px}.sc-f label{display:block;font-size:13px;color:#9fb4d0;margin:0 4px 5px}
+.sc-f input,.sc-f textarea{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:13px 44px;border-radius:14px;border:1.5px solid #2a4a80;background:#0b1a33;color:#f4e9c8;margin:0}
+.sc-f input:focus,.sc-f textarea:focus{border-color:#e2b44c;box-shadow:0 0 0 3px #e2b44c33;outline:none}.sc-f input.bad{border-color:#ff8a8a}
+.sc-i{position:absolute;inset-inline-start:14px;bottom:13px;font-size:18px;opacity:.8}.sc-eye{position:absolute;inset-inline-end:6px;bottom:3px;width:40px;min-height:38px;padding:0;background:transparent;color:#9fb4d0;font-size:18px;flex:none}
+.sc-e{color:#ff9b9b;font-size:13px;min-height:18px;margin:2px 6px 0}
+.sc-btn{width:100%;margin-top:10px;position:relative}.sc-btn.ld{opacity:.75;pointer-events:none}.sc-btn.ld::after{content:'';display:inline-block;width:14px;height:14px;border:2px solid #0b2a52;border-top-color:transparent;border-radius:50%;margin-inline-start:8px;vertical-align:-2px;animation:sp .7s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+.sc-link{background:transparent;color:#e2b44c;text-decoration:underline;min-height:36px;font-weight:600}
+.sc-cov{height:96px;border-radius:20px 20px 0 0;margin:-16px -16px 0}.sc-av{width:84px;height:84px;border-radius:50%;background:#0b1a33;border:4px solid #0e2142;display:flex;align-items:center;justify-content:center;font-size:42px;margin:-42px auto 6px;position:relative}
+.sc-st{display:flex;gap:6px;margin:12px 0}.sc-st div{flex:1;text-align:center;background:#0b1a33;border-radius:14px;padding:8px 2px}.sc-st b{display:block;font-size:19px;color:#e2b44c}.sc-st small{font-size:11px;color:#9fb4d0}
+.sc-chips{display:flex;flex-wrap:wrap;gap:6px}.sc-chips span{background:#0b1a33;border:1px solid #2a4a80;border-radius:20px;padding:5px 10px;font-size:12px}
+.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.sc-grid div{aspect-ratio:1;border-radius:10px;background:#0b1a33 center/cover;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;overflow:hidden}
+.sc-emo{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.sc-emo button{width:48px;flex:none;min-height:48px;font-size:24px;padding:0;background:#0b1a33}.sc-emo button.on{background:#e2b44c}
+`;document.head.appendChild(c)})();
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let FB=null,me=null,prof=null,unsubs=[],view=null;
 const cache={prof:{},stat:{}};
@@ -22,7 +41,7 @@ function panel(){return document.getElementById('mn')}
 function scr(html,v){unsubs.forEach(f=>{try{f()}catch(e){}});unsubs=[];view=v||null;const e=panel();e.innerHTML=html;e.classList.add('on');e.scrollTop=0;return e}
 function err(e){const m=(e&&e.code||e&&e.message||String(e));const map={'auth/invalid-email':t('الإيميل مش صحيح','Invalid email'),'auth/email-already-in-use':t('الإيميل ده مسجل قبل كده','This email is already registered'),'auth/weak-password':t('كلمة السر ضعيفة (٦ حروف على الأقل)','Password too weak (at least 6 characters)'),'auth/invalid-credential':t('الإيميل أو كلمة السر غلط','Wrong email or password'),'auth/invalid-login-credentials':t('الإيميل أو كلمة السر غلط','Wrong email or password'),'auth/network-request-failed':t('محتاج إنترنت','Internet needed'),'permission-denied':t('مش مسموح. القواعد على Firebase لسه ما اتنشرتش؟','Not allowed. Are the Firebase rules published yet?'),'auth/too-many-requests':t('محاولات كتير. جرب بعد شوية','Too many attempts. Try later'),'auth/requires-recent-login':t('سجّل دخول تاني الأول وبعدين جرب','Sign in again first, then retry')};return map[m]||m}
 const bad=m=>`<div class="msg bad" id="smsg">${esc(m||'')}</div>`;
-const say=(m,ok)=>{const e=document.getElementById('smsg');if(e){e.className='msg '+(ok?'ok':'bad');e.textContent=m}};
+
 const back=(fn)=>`<div class="row"><button class="o" onclick="${fn}">${t('رجوع','Back')}</button></div>`;
 async function getProf(uid,force){if(!force&&cache.prof[uid])return cache.prof[uid];const {fs,db}=FB;const d=await fs.getDoc(fs.doc(db,'profiles',uid));const p=d.exists()?d.data():null;if(p)cache.prof[uid]=p;return p}
 async function getStat(uid){const {fs,db}=FB;try{const d=await fs.getDoc(fs.doc(db,'stats',uid));return d.exists()?d.data():null}catch(e){return null}}
@@ -40,32 +59,46 @@ function home(){
  hub()}
 
 // ---------- auth ----------
-function authScreen(mode){mode=mode||'in';
- scr(`<h2>👥 ${t('الأصدقاء','Friends')}</h2><div class="box"><p>${t('سجّل دخول عشان تضيف أصدقاء وتتشات وتشوف الترتيب. الحكايات نفسها مش محتاجة حساب.','Sign in to add friends, chat and see the leaderboard. The stories themselves need no account.')}</p>
- <input id="se" type="email" autocomplete="email" placeholder="${t('الإيميل','Email')}" dir="ltr"><input id="sp" type="password" autocomplete="${mode=='in'?'current-password':'new-password'}" placeholder="${t('كلمة السر','Password')}" dir="ltr" style="margin-top:8px">
- ${bad('')}
- <div class="row"><button onclick="Soc.doAuth('${mode}')">${mode=='in'?t('دخول','Sign in'):t('إنشاء حساب','Create account')}</button><button class="o" onclick="Soc.authScreen('${mode=='in'?'up':'in'}')">${mode=='in'?t('حساب جديد','New account'):t('عندي حساب','I have an account')}</button></div>
- ${mode=='in'?`<div class="row"><button class="o" onclick="Soc.reset()">${t('نسيت كلمة السر','Forgot password')}</button></div>`:''}
- </div>${back('openMenu()')}`,()=>home())}
-async function doAuth(mode){const e=document.getElementById('se').value.trim(),p=document.getElementById('sp').value;if(!e||!p)return say(t('اكتب الإيميل وكلمة السر','Enter email and password'));
- try{const {au,auth}=FB;if(mode=='up')await au.createUserWithEmailAndPassword(auth,e,p);else await au.signInWithEmailAndPassword(auth,e,p)}catch(x){say(err(x))}}
+function authScreen(mode){mode=mode||'in';const up=mode=='up';
+ scr(`<div class="sc-hero"><div class="sc-logo">📜</div><div class="sc-h">${t('حكاية بورسعيد','Hekaya Port Said')}</div><p class="sc-sub">${t('اعمل حسابك عشان تضيف أصدقاء، تتشات، وتشارك ذكرياتك. الحكايات نفسها من غير حساب.','Create an account to add friends, chat and share your memories. The stories themselves need no account.')}</p></div>
+ <div class="sc-card"><div class="sc-seg"><button class="${up?'':'on'}" onclick="Soc.authScreen('in')">${t('دخول','Sign in')}</button><button class="${up?'on':''}" onclick="Soc.authScreen('up')">${t('حساب جديد','New account')}</button></div>
+ <div class="sc-f"><label for="se">${t('الإيميل','Email')}</label><span class="sc-i">✉️</span><input id="se" type="email" inputmode="email" autocomplete="email" placeholder="name@example.com" dir="ltr" oninput="Soc.vf()"></div><div class="sc-e" id="see"></div>
+ <div class="sc-f"><label for="sp">${t('كلمة السر','Password')}</label><span class="sc-i">🔒</span><input id="sp" type="password" autocomplete="${up?'new-password':'current-password'}" placeholder="${up?t('٦ حروف على الأقل','At least 6 characters'):'••••••••'}" dir="ltr" oninput="Soc.vf()" onkeydown="if(event.key=='Enter')Soc.doAuth('${mode}')"><button type="button" class="sc-eye" aria-label="show" onclick="var i=document.getElementById('sp');i.type=i.type=='password'?'text':'password';this.textContent=i.type=='password'?'👁':'🙈'">👁</button></div><div class="sc-e" id="spe"></div>
+ <div class="msg bad" id="smsg" style="display:none"></div>
+ <button class="sc-btn" id="sab" onclick="Soc.doAuth('${mode}')">${up?t('إنشاء الحساب','Create account'):t('دخول','Sign in')}</button>
+ ${up?'':`<div style="text-align:center"><button class="sc-link" onclick="Soc.reset()">${t('نسيت كلمة السر؟','Forgot password?')}</button></div>`}</div>
+ ${back('openMenu()')}`,()=>home())}
+function vf(){const e=document.getElementById('se'),p=document.getElementById('sp');if(!e)return true;let ok=true;const em=e.value.trim();
+ const se=document.getElementById('see'),sp=document.getElementById('spe'),up=document.getElementById('sab')&&/إنشاء|Create/.test(document.getElementById('sab').textContent);
+ if(em&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){se.textContent=t('الإيميل مش مكتوب صح','That email does not look right');e.classList.add('bad');ok=false}else{se.textContent='';e.classList.remove('bad')}
+ if(up&&p.value&&p.value.length<6){sp.textContent=t('كلمة السر لازم ٦ حروف على الأقل','Password needs at least 6 characters');p.classList.add('bad');ok=false}else{sp.textContent='';p.classList.remove('bad')}return ok}
+function busy(id,on,txt){const b=document.getElementById(id);if(!b)return;if(on){b._t=b.textContent;b.classList.add('ld');b.textContent=txt||'...'}else{b.classList.remove('ld');if(b._t)b.textContent=b._t}}
+function say(m,ok){const e=document.getElementById('smsg');if(e){e.style.display=m?'block':'none';e.className='msg '+(ok?'ok':'bad');e.textContent=m}}
+async function doAuth(mode){const e=document.getElementById('se').value.trim(),p=document.getElementById('sp').value;
+ if(!e)return (document.getElementById('see').textContent=t('اكتب الإيميل','Enter your email')),0;if(!p)return (document.getElementById('spe').textContent=t('اكتب كلمة السر','Enter your password')),0;if(!vf())return;
+ busy('sab',true,mode=='up'?t('بنعمل الحساب','Creating'):t('بندخل','Signing in'));say('');
+ try{const {au,auth}=FB;if(mode=='up')await au.createUserWithEmailAndPassword(auth,e,p);else await au.signInWithEmailAndPassword(auth,e,p)}catch(x){busy('sab',false);say(err(x))}}
 async function reset(){const e=document.getElementById('se').value.trim();if(!e)return say(t('اكتب الإيميل الأول','Enter your email first'));try{await FB.au.sendPasswordResetEmail(FB.auth,e);say(t('بعتنا لينك تغيير كلمة السر على الإيميل','Password reset link sent to your email'),1)}catch(x){say(err(x))}}
 async function signOut(){await stopLoc(true);await nearStop();nearClear();await FB.au.signOut(FB.auth);cache.prof={};cache.stat={}}
 
 // ---------- profile ----------
+
 const EMOJIS=['🙂','😎','🧭','⚓','🐚','🌊','🦩','🚢','🎩','🌙'];
+function pickEmo(x,btn){document.getElementById('sem').value=x;btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('on'));btn.classList.add('on')}
+function emoRow(cur){return `<div class="sc-emo">${EMOJIS.map(x=>`<button type="button" class="${x==cur?'on':''}" onclick="Soc.pickEmo('${x}',this)">${x}</button>`).join('')}</div><input id="sem" type="hidden" value="${cur}">`}
+function hv(){const h=document.getElementById('sh'),e=document.getElementById('she');if(!h)return;const v=h.value.trim().replace(/^@/,'');if(v&&!/^[a-zA-Z0-9_]{3,20}$/.test(v)){e.textContent=t('٣ لـ ٢٠ حرف إنجليزي أو رقم أو _','3-20 letters a-z, digits or _');h.classList.add('bad')}else{e.textContent='';h.classList.remove('bad')}}
 function setupScreen(){
- scr(`<h2>${t('اعمل بروفايلك','Create your profile')}</h2><div class="box">
- <p><small>${t('الاسم والـ@يوزر بيظهروا لأي حد يدوّر عليك. مفيش رقم موبايل ولا إيميل بيظهر.','Your name and @handle are visible to people who search for you. Your email and phone are never shown.')}</small></p>
- <input id="sh" placeholder="@${t('اليوزر (إنجليزي، أرقام، _)','handle (a-z, 0-9, _)')}" dir="ltr" maxlength="20"><input id="sn" placeholder="${t('الاسم اللي يظهر','Display name')}" maxlength="30" style="margin-top:8px">
- <p>${EMOJIS.map(x=>`<button class="o" style="width:auto;display:inline-block;margin:3px;padding:6px 10px" onclick="document.getElementById('sem').value='${x}';this.parentNode.querySelectorAll('button').forEach(b=>b.style.background='');this.style.background='#e2b44c'">${x}</button>`).join('')}<input id="sem" type="hidden" value="🙂"></p>
- ${bad('')}<div class="row"><button onclick="Soc.saveProf()">${t('حفظ','Save')}</button></div></div>
- <div class="row"><button class="o" onclick="Soc.signOut()">${t('تسجيل خروج','Sign out')}</button></div>`,()=>home())}
+ scr(`<div class="sc-hero"><div class="sc-logo">${t('👋','👋')}</div><div class="sc-h">${t('اعمل بروفايلك','Set up your profile')}</div><p class="sc-sub">${t('الاسم والـ@يوزر بيظهروا لأي حد يدوّر عليك. الإيميل والموبايل عمرهم ما بيظهروا.','Your name and @handle are visible to people who search for you. Your email and phone are never shown.')}</p></div>
+ <div class="sc-card"><div class="sc-f"><label for="sh">${t('اليوزر','Handle')}</label><span class="sc-i">@</span><input id="sh" placeholder="${t('مثال: ahmed_ps','e.g. ahmed_ps')}" dir="ltr" maxlength="20" autocapitalize="none" oninput="Soc.hv()"></div><div class="sc-e" id="she"></div>
+ <div class="sc-f"><label for="sn">${t('الاسم اللي يظهر','Display name')}</label><span class="sc-i">🙂</span><input id="sn" maxlength="30" placeholder="${t('اسمك','Your name')}"></div><div class="sc-e"></div>
+ <div class="sc-f"><label>${t('الصورة الرمزية','Avatar')}</label></div>${emoRow('🙂')}
+ <div class="msg bad" id="smsg" style="display:none"></div><button class="sc-btn" id="ssb" onclick="Soc.saveProf()">${t('حفظ وابدأ','Save and start')}</button></div>
+ <div style="text-align:center"><button class="sc-link" onclick="Soc.signOut()">${t('تسجيل خروج','Sign out')}</button></div>`,()=>home())}
 async function saveProf(){const h=document.getElementById('sh').value.trim().toLowerCase().replace(/^@/,''),n=document.getElementById('sn').value.trim(),em=document.getElementById('sem').value;
  if(!/^[a-z0-9_]{3,20}$/.test(h))return say(t('اليوزر ٣ لـ ٢٠ حرف إنجليزي أو رقم أو _','Handle: 3-20 letters a-z, digits or _'));if(!n)return say(t('اكتب اسم','Enter a name'));
- try{const {fs,db}=FB,uid=me.uid;
+ busy('ssb',true,t('بنحفظ','Saving'));try{const {fs,db}=FB,uid=me.uid;
   await fs.runTransaction(db,async tx=>{const hd=await tx.get(fs.doc(db,'handles',h));if(hd.exists()&&hd.data().uid!==uid)throw new Error(t('اليوزر ده واخده حد','That handle is taken'));tx.set(fs.doc(db,'handles',h),{uid});tx.set(fs.doc(db,'profiles',uid),{handle:h,name:n,emoji:em,ts:Date.now()})});
-  prof=await getProf(uid,true);afterLogin();hub()}catch(x){say(err(x))}}
+  prof=await getProf(uid,true);afterLogin();hub()}catch(x){busy('ssb',false);say(err(x))}}
 async function editName(){const n=prompt(t('الاسم الجديد','New display name'),prof.name);if(!n||!n.trim())return;try{const {fs,db}=FB;await fs.setDoc(fs.doc(db,'profiles',me.uid),{handle:prof.handle,name:n.trim().slice(0,30),emoji:prof.emoji,ts:Date.now()});prof=await getProf(me.uid,true);hub()}catch(x){alert(err(x))}}
 
 // ---------- hub ----------
@@ -235,5 +268,5 @@ async function togNear(){if(flag('hk_soc_near')){setFlag('hk_soc_near',false);aw
 async function delAcct(){if(!confirm(t('هتمسح حسابك وكل بياناتك (البروفايل، الأصدقاء، الترتيب، المكان). مفيش رجوع. تكمل؟','This deletes your account and all your data (profile, friends, leaderboard, location). It cannot be undone. Continue?')))return;
  try{const {fs,db,au,auth}=FB,uid=me.uid;await stopLoc();await nearStop();try{const ps=await fs.getDocs(fs.collection(db,'userPosts',uid,'items'));for(const d of ps.docs){for(const sub of ['likes','comments']){const r=await fs.getDocs(fs.collection(db,'userPosts',uid,'items',d.id,sub));await Promise.all(r.docs.map(x=>fs.deleteDoc(x.ref)))}await fs.deleteDoc(d.ref)}const bl=await fs.getDocs(fs.collection(db,'blocks',uid,'list'));await Promise.all(bl.docs.map(x=>fs.deleteDoc(x.ref)))}catch(e){}const b=fs.writeBatch(db);FR.forEach(f=>{b.delete(fs.doc(db,'friends',f,'list',uid));b.delete(fs.doc(db,'friends',uid,'list',f))});b.delete(fs.doc(db,'stats',uid));if(prof)b.delete(fs.doc(db,'handles',prof.handle));await b.commit();await fs.deleteDoc(fs.doc(db,'profiles',uid));await au.deleteUser(auth.currentUser);cache.prof={};alert(t('اتمسح حسابك','Account deleted'));openMenu()}catch(x){alert(err(x))}}
 
-return{open,home,nearScreen,togNear,blockUser,unblock,reportUser,blockedScreen,feedScreen,postMemory,postBadge,like,comments,addComment,delComment,delPost,report,authScreen,doAuth,reset,signOut,saveProf,editName,searchScreen,doSearch,addFriend,accept,decline,unfriend,chat,send,togLoc,hideNow,togMap,togStats,sugScreen,sugHere,sugSend,delAcct,sync,onPos,get user(){return me},get profile(){return prof},_fb:()=>FB}
+return{pickEmo,hv,vf,open,home,nearScreen,togNear,blockUser,unblock,reportUser,blockedScreen,feedScreen,postMemory,postBadge,like,comments,addComment,delComment,delPost,report,authScreen,doAuth,reset,signOut,saveProf,editName,searchScreen,doSearch,addFriend,accept,decline,unfriend,chat,send,togLoc,hideNow,togMap,togStats,sugScreen,sugHere,sugSend,delAcct,sync,onPos,get user(){return me},get profile(){return prof},_fb:()=>FB}
 })();
