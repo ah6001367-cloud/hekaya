@@ -218,5 +218,26 @@ service cloud.firestore {
         && request.resource.data.ts == request.time;
       allow read: if signedIn() && resource.data.uid == request.auth.uid;
     }
+
+    // Neighbourhood feed (حكاية الحي): short text posts tied to a ~2 km grid cell, with replies.
+    match /hood/{pid} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['uid','cell','k','txt','ts','pl'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.k in ['new','event','hist','ask']
+        && request.resource.data.txt is string && request.resource.data.txt.size() >= 1 && request.resource.data.txt.size() <= 300
+        && request.resource.data.cell is string && request.resource.data.cell.size() <= 20
+        && request.resource.data.ts == request.time
+        && (!('pl' in request.resource.data) || (request.resource.data.pl is string && request.resource.data.pl.size() <= 60));
+      allow delete: if isMe(resource.data.uid);
+      match /r/{rid} {
+        allow read: if signedIn();
+        allow create: if signedIn() && request.resource.data.keys().hasOnly(['uid','txt','ts'])
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.txt is string && request.resource.data.txt.size() >= 1 && request.resource.data.txt.size() <= 200
+          && request.resource.data.ts == request.time;
+        allow delete: if isMe(resource.data.uid) || isMe(get(/databases/$(database)/documents/hood/$(pid)).data.uid);
+      }
+    }
   }
 }
