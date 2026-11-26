@@ -158,7 +158,8 @@ service cloud.firestore {
       allow get: if isMe(uid) || (signedIn() && exists(/databases/$(database)/documents/storyFeed/$(request.auth.uid)/items/$(uid + '_' + id)));
       allow list: if isMe(uid);
       allow create: if isMe(uid)
-        && request.resource.data.keys().hasOnly(['uid','img','cap','ts','dur','aud'])
+        && request.resource.data.keys().hasOnly(['uid','img','cap','ts','dur','aud','mu'])
+        && (!('mu' in request.resource.data) || (request.resource.data.mu is string && request.resource.data.mu.size() <= 10))
         && request.resource.data.uid == uid
         && request.resource.data.img is string && request.resource.data.img.size() <= 260000
         && request.resource.data.cap is string && request.resource.data.cap.size() <= 120
