@@ -491,8 +491,11 @@ function edHit(p){for(let i=E.items.length-1;i>=0;i--){const it=E.items[i],w=Mat
 async function addStory(){if(!FB||!me||!prof)return;
  const e=document.createElement('div');e.className='sc-ed';e.id='sced';e.innerHTML=`<div class="sc-edh"><button onclick="Soc.edClose()">✕</button><b>${t('قصة جديدة','New story')}</b><span></span></div>
  <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:10px"><div class="sc-edp"><div style="font-size:48px">📸</div><p>${t('اختار صورة أو اعمل قصة نص بس','Pick a photo or make a text-only story')}</p>
- <label class="sc-up">📷 ${t('صورة','Photo')}<input type="file" accept="image/*" style="display:none" onchange="Soc.edPick(this)"></label><button class="o" style="margin-top:10px" onclick="Soc.edStart(null)">Aa ${t('قصة نص','Text story')}</button></div></div>`;document.body.appendChild(e)}
-function edPick(inp){const f=inp.files&&inp.files[0];if(!f)return;const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{edStart(im)};im.onerror=()=>alert(t('الصورة مش شغالة','Could not read the photo'));im.src=u}
+ <label class="sc-up">📷 ${t('صورة','Photo')}<input type="file" accept="image/*" style="display:none" multiple onchange="Soc.edPick(this)"></label><button class="o" style="margin-top:10px" onclick="Soc.edStart(null)">Aa ${t('قصة نص','Text story')}</button></div></div>`;document.body.appendChild(e)}
+let PQ=[],PS=null,PN=0,PT=0;
+function edPick(inp){const fs=[...(inp.files||[])].slice(0,10);if(!fs.length)return;const ld=f=>new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.onerror=()=>r(null);im.src=URL.createObjectURL(f)});
+ Promise.all(fs.map(ld)).then(L=>{L=L.filter(Boolean);if(!L.length)return alert(t('الصورة مش شغالة','Could not read the photo'));PQ=L.slice(1);PS=null;PN=1;PT=L.length;edStart(L[0]);edQ()})}
+function edQ(){const b=document.getElementById('edsh');if(b&&PT>1)b.textContent=t('نشر','Share')+' '+PN+'/'+PT;if(PS&&E){E.aud=PS.aud;E.except=PS.except;E.close=PS.close;E.dur=PS.dur;const d=document.getElementById('edd');if(d)d.textContent=E.dur+'s'}}
 function edStart(im){const e=document.getElementById('sced');if(!e)return;E={pl:null,sl:null,mu:null,img:im,f:0,bg:0,z:1,ox:0,oy:0,rot:0,items:[],sel:-1,tool:'move',dur:30,aud:'all',except:[],pc:'#ffffff',pw:8,c:null,pen:document.createElement('canvas')};E.pen.width=EW;E.pen.height=EH;
  e.innerHTML=`<div class="sc-edh"><button onclick="Soc.edClose()">✕</button><b>${t('قصة جديدة','New story')}</b><button class="sc-go" id="edsh" onclick="Soc.edShare()">${t('نشر','Share')}</button></div>
  <div style="flex:1;min-height:0;display:flex;align-items:center;justify-content:center"><canvas id="edc" width="${EW}" height="${EH}"></canvas></div>
@@ -545,7 +548,7 @@ function edFont(i){const it=E.items[E.sel];if(it){it.font=i;edDraw(1);edPanel()}
 function edCol(c){const it=E.items[E.sel];if(it){it.col=c;edDraw(1);edPanel()}}
 function edDel(){E.items.splice(E.sel,1);E.sel=-1;edDraw();edPanel()}
 function edPen(c){E.pc=c;edPanel()}function edPw(v){E.pw=+v}function edClr(){E.pen.getContext('2d').clearRect(0,0,EW,EH);edDraw()}
-function edClose(){pvStop();const e=document.getElementById('sced');if(e)e.remove();E=null}
+function edClose(){PQ=[];PS=null;PT=0;pvStop();const e=document.getElementById('sced');if(e)e.remove();E=null}
 async function edShare(){if(!E)return;if(!E.img&&!E.items.length&&!confirm(t('القصة فاضية. تنشر؟','The story is empty. Post anyway?')))return;
  const cap=''; E.sel=-1;edDraw();let q=.82,img='';for(let i=0;i<6;i++){img=E.c.toDataURL('image/jpeg',q);if(img.length<=250000)break;q-=.12}
  if(img.length>255000)return alert(t('الصورة تقيلة. جرب صورة تانية.','Image too large. Try another photo.'));
@@ -555,7 +558,7 @@ async function edShare(){if(!E)return;if(!E.img&&!E.items.length&&!confirm(t('ا
  try{if(E.aud=='close'&&E.close)await fs.setDoc(fs.doc(db,'closeFriends',me.uid),{list:E.close});
   const ref=fs.doc(fs.collection(db,'stories',me.uid,'items')),mk=async(dur,mu,ex)=>{const bt=fs.writeBatch(db),o={uid:me.uid,img,cap,ts:fs.serverTimestamp(),dur,aud:E.aud};if(mu)o.mu=mu;if(ex){if(E.pl)o.pl=E.pl;if(E.sl)o.sl=E.sl}bt.set(ref,o);
   rec.forEach(u=>bt.set(fs.doc(db,'storyFeed',u,'items',me.uid+'_'+ref.id),{o:me.uid,id:ref.id,ts:Date.now()}));await bt.commit()};try{await mk(E.dur,E.mu,1)}catch(e){if(/permission/i.test(String(e&&(e.code||e.message))))await mk(Math.min(E.dur,15));else throw e}
-  const n=rec.length;edClose();alert(t('اتنشرت قصتك لـ ','Your story is live for ')+n+t(' صديق لمدة ٢٤ ساعة',' friend(s) for 24 hours'));if(view)view()}catch(e){busy('edsh',false);alert(err(e))}}
+  const n=rec.length;if(PQ.length){PS={aud:E.aud,except:E.except,close:E.close,dur:E.dur};PN++;edStart(PQ.shift());edQ();if(view)view();return}edClose();alert(t('اتنشرت قصتك لـ ','Your story is live for ')+n+t(' صديق لمدة ٢٤ ساعة',' friend(s) for 24 hours'));if(view)view()}catch(e){busy('edsh',false);alert(err(e))}}
 let stoMu=null;
 function muToggle(){const off=S0('hk_smute')!=='1';localStorage.setItem('hk_smute',off?'1':'0');if(stoMu)stoMu.muted=off;const b=document.getElementById('smb');if(b)b.textContent=off?'🔇':'🎵'}
 function closeStory(){stopMu();if(stoView){clearTimeout(stoView.t);stoView.el.remove();stoView=null}}
