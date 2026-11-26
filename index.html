@@ -153,7 +153,7 @@ function openCol(){const e=document.getElementById('col');e.innerHTML=`<h2>🃏 
 cnt();
 let CUR=null;
 const SHELL=['index.html','social.js','leaflet.js','leaflet.css','riddles.js','photos.js','stories1.json','stories2.json','en_stories.json','en_riddles.json','en_cards.json'];
-const OFFURLS=k=>{const a=k==='t'?SHELL.slice():[];for(let n=1;n<=32;n++){const p=String(n).padStart(2,'0');if(k==='t'){a.push('hero/'+p+'.svg');a.push('cardart/'+p+'.svg');if([1,2,4,5,7,14,16,21].includes(n))a.push('cardimg/'+p+'.webp');if(typeof PH!=='undefined'&&PH[n])a.push('photos/'+p+'.jpg')}else a.push('audio/story'+p+'.mp3')}return a};
+const OFFURLS=k=>{const a=k==='t'?SHELL.slice():[];for(let n=1;n<=32;n++){const p=String(n).padStart(2,'0');if(k==='t'){a.push('hero/'+p+'.svg');a.push('cardart/'+p+'.svg');if([1,2,4,5,7,14,16,21].includes(n))a.push('cardimg/'+p+'.webp');if([1,4,5].includes(n)){a.push('cardimg/bg'+p+'.webp');a.push('cardimg/ch'+p+'.webp')}if(typeof PH!=='undefined'&&PH[n])a.push('photos/'+p+'.jpg')}else a.push('audio/story'+p+'.mp3')}return a};
 const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
 if(!NATIVE&&'serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 async function notifyHere(s){if(!NATIVE)return;try{const LN=Capacitor.Plugins.LocalNotifications;await LN.schedule({notifications:[{id:1000+s.n,title:EN?'Here in Hekaya':'هنا في حكاية',body:s.t,smallIcon:'ic_stat_icon_config_sample'}]})}catch(e){}}
@@ -431,6 +431,40 @@ function cardHTML(n,lk){const c=CARDS[n],k=RAR[c.rar]||1,s=S.find(x=>x.n==n)||{}
  const hint=lk?(isU(n)?(EN?'Solve the riddle to unlock':'حُلّ اللغز علشان تفتحه'):(EN?'Visit '+pl+' to unlock':'روح '+pl+' علشان تفتح')):'';
  const sp=k>=3?[[18,22,0],[72,14,.7],[84,60,1.4],[30,74,.4],[58,40,1.1]].map(a=>`<i class="sp" style="left:${a[0]}%;top:${a[1]}%;animation-delay:${a[2]}s"></i>`).join(''):'';
  return `<div class="pc r${k} ${lk?'lk':''}" data-n="${n}"><div class="pi"><div class="hd"><span>${ar(String(n).padStart(3,'0'))}</span><i class="gem"></i></div><div class="art"><img alt="" loading="lazy" src="${CIMG.has(n)?'cardimg/'+String(n).padStart(2,'0')+'.webp':'cardart/'+String(n).padStart(2,'0')+'.svg'}">${lk?'<div class="lkc">🔒</div>':sp}</div><div class="bn"><h3 dir="${DIR}">${lk?(EN?'Locked card':'كارت مقفول'):c.name}</h3></div>
+ ${lk?`<div class="fv" dir="${DIR}">${hint}</div>`:`<div class="ty"><span>${TRR(c.rar)}</span><span>${c.e}</span></div><div class="st"><span>📍 +100</span><span>🧩 +50</span></div><div class="fv" dir="${DIR}">${c.t}</div>`}<div class="fo"></div></div></div>`}
+</script>
+<style id="pc3css">
+.pc.ch .art{overflow:visible;background:none;border:0;box-shadow:none;margin-top:1cqw}
+.pc.ch .bgi{position:absolute;inset:0;border-radius:3.6cqw;overflow:hidden;border:.9cqw solid var(--c);box-shadow:inset 0 0 4cqw #000a,0 .8cqw 2cqw #0009;background:#0b2a52}
+.pc.ch .bgi img{width:100%;height:100%;object-fit:cover;transform:translateX(var(--px2,0cqw)) scale(1.12);transition:transform .2s}
+.pc.ch .bgi::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,#0009,transparent 60%),radial-gradient(circle at 30% 15%,#fff3,transparent 45%)}
+.pc.ch .cut{position:absolute;z-index:6;left:50%;bottom:-3%;height:114%;width:auto;max-width:100%;transform:translateX(-50%) translate(var(--px,0cqw),var(--py,0cqw));filter:drop-shadow(0 1.6cqw 1.6cqw #000c) drop-shadow(0 0 .5cqw #000);transition:transform .18s ease-out;object-fit:contain}
+.pc.ch .art .sp{z-index:8}
+.pc.ch .hd{position:relative;z-index:7;justify-content:flex-start;gap:2cqw}
+.pc.ch .hd .cr{width:9cqw;height:9cqw;border-radius:50%;border:.7cqw solid var(--c);background:radial-gradient(circle at 35% 30%,#3a4a78,#10182f);display:flex;align-items:center;justify-content:center;font-size:4cqw;color:#fff;box-shadow:0 .6cqw 1.4cqw #000a,inset 0 0 1.4cqw #0008;position:relative;z-index:7}
+.pc.ch .hd .gem{margin-inline-start:auto;margin-inline-end:1.5cqw}
+.pc.ch .hd .ed{font-size:3.4cqw;color:#c9d3e6;font-weight:600;letter-spacing:.4cqw;position:relative;z-index:1}
+.pc.ch .pi::before{content:'';position:absolute;inset:1.2cqw;border-radius:3.6cqw;border:.35cqw solid color-mix(in srgb,var(--c) 55%,transparent);pointer-events:none;z-index:7}
+.pc.ch .pi{background:radial-gradient(circle at 50% 30%,#1d2b52,#080d1c 75%)}
+.pc.ch .bn{margin:-7cqw -.5cqw 0;padding:2cqw 3cqw;background:linear-gradient(180deg,#2c3a66,#0d1530);border:.6cqw solid var(--c);border-radius:2.4cqw;clip-path:polygon(3% 0,97% 0,100% 50%,97% 100%,3% 100%,0 50%);box-shadow:none;z-index:8}
+.pc.ch .bn h3{font-size:7.4cqw;font-weight:800;background:linear-gradient(180deg,#fff,var(--c));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 .5cqw .6cqw #000)}
+.pc.ch.r1{--c:#dfe6f2}.pc.ch.r2{--c:#7ff0dc}.pc.ch.r3{--c:#ffd36e}.pc.ch.r4{--c:#ffb7e6}
+.pc.ch.r2{background:linear-gradient(135deg,#d7fff7,#2a9d8f 25%,#ffe9a0 48%,#1f7a8c 70%,#e8c768 90%,#9ff0e6)}
+.pc.ch.r1{background:linear-gradient(135deg,#ffffff,#8f9db3 25%,#f2f5fa 50%,#6f7d93 72%,#e3e9f3)}
+.pc.ch.r4{background:conic-gradient(from var(--ha,0deg),#ffd36e,#ff9ad5,#9ad8ff,#b8ff9a,#ffe89a,#ffd36e)}
+.pc.ch.lk .cut{filter:brightness(0) blur(1.2cqw) opacity(.55);}
+.pc.ch.lk .bgi img{filter:blur(9px) saturate(.7) brightness(.6)}
+</style>
+<script>
+const CH=new Set([1,4,5]);
+function tiltInit(root){const set=(p,x,y)=>{p.style.setProperty('--ry',(x*16).toFixed(1)+'deg');p.style.setProperty('--rx',(-y*16).toFixed(1)+'deg');p.style.setProperty('--px',(-x*7).toFixed(1)+'cqw');p.style.setProperty('--py',(-y*4).toFixed(1)+'cqw');p.style.setProperty('--px2',(x*3).toFixed(1)+'cqw')};
+ root.addEventListener('pointermove',e=>{const p=e.target.closest&&e.target.closest('.pc');if(!p)return;const r=p.getBoundingClientRect();set(p,(e.clientX-r.left)/r.width-.5,(e.clientY-r.top)/r.height-.5)});
+ ['pointerup','pointerleave','pointercancel'].forEach(ev=>root.addEventListener(ev,e=>{const p=e.target.closest&&e.target.closest('.pc');if(p)set(p,0,0)},true))}
+const _cardHTML0=cardHTML;
+function cardHTML(n,lk){if(!CH.has(n))return _cardHTML0(n,lk);const c=CARDS[n],k=RAR[c.rar]||1,s=S.find(x=>x.n==n)||{},pl=String(s.p||'').split(' · ')[0],p2=String(n).padStart(2,'0');
+ const hint=lk?(isU(n)?(EN?'Solve the riddle to unlock':'حُلّ اللغز علشان تفتحه'):(EN?'Visit '+pl+' to unlock':'روح '+pl+' علشان تفتح')):'';
+ const sp=k>=2?[[14,20,0],[76,12,.7],[88,52,1.4],[24,62,.4],[60,34,1.1],[40,8,1.7]].map(a=>`<i class="sp" style="left:${a[0]}%;top:${a[1]}%;animation-delay:${a[2]}s"></i>`).join(''):'';
+ return `<div class="pc ch r${k} ${lk?'lk':''}" data-n="${n}"><div class="pi"><div class="hd"><span class="cr">${ar(String(n).padStart(2,'0'))}</span><span class="ed">${ar(String(n).padStart(3,'0'))} / ${ar(32)}</span><i class="gem"></i></div><div class="art"><div class="bgi"><img alt="" src="cardimg/bg${p2}.webp"></div><img class="cut" alt="" src="cardimg/ch${p2}.webp">${lk?'<div class="lkc">🔒</div>':sp}</div><div class="bn"><h3 dir="${DIR}">${lk?(EN?'Locked card':'كارت مقفول'):c.name}</h3></div>
  ${lk?`<div class="fv" dir="${DIR}">${hint}</div>`:`<div class="ty"><span>${TRR(c.rar)}</span><span>${c.e}</span></div><div class="st"><span>📍 +100</span><span>🧩 +50</span></div><div class="fv" dir="${DIR}">${c.t}</div>`}<div class="fo"></div></div></div>`}
 </script>
 </body></html>
