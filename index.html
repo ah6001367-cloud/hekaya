@@ -153,7 +153,7 @@ function openCol(){const e=document.getElementById('col');e.innerHTML=`<h2>🃏 
 cnt();
 let CUR=null;
 const SHELL=['index.html','social.js','leaflet.js','leaflet.css','riddles.js','photos.js','stories1.json','stories2.json','en_stories.json','en_riddles.json','en_cards.json'];
-const OFFURLS=k=>{const a=k==='t'?SHELL.slice():[];for(let n=1;n<=32;n++){const p=String(n).padStart(2,'0');if(k==='t'){a.push('hero/'+p+'.svg');if(typeof PH!=='undefined'&&PH[n])a.push('photos/'+p+'.jpg')}else a.push('audio/story'+p+'.mp3')}return a};
+const OFFURLS=k=>{const a=k==='t'?SHELL.slice():[];for(let n=1;n<=32;n++){const p=String(n).padStart(2,'0');if(k==='t'){a.push('hero/'+p+'.svg');a.push('cardart/'+p+'.svg');if(typeof PH!=='undefined'&&PH[n])a.push('photos/'+p+'.jpg')}else a.push('audio/story'+p+'.mp3')}return a};
 const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
 if(!NATIVE&&'serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 async function notifyHere(s){if(!NATIVE)return;try{const LN=Capacitor.Plugins.LocalNotifications;await LN.schedule({notifications:[{id:1000+s.n,title:EN?'Here in Hekaya':'هنا في حكاية',body:s.t,smallIcon:'ic_stat_icon_config_sample'}]})}catch(e){}}
@@ -395,5 +395,41 @@ async function showCard(n,fresh){const e=document.getElementById('cd'),c=CARDS[n
  <div class="cdh">${EN?'Tap the card to flip it':'اضغط على الكارت علشان يتقلب'}</div><div id="cdm"></div><div class="row" style="width:100%"><button onclick="closeP('cd')">${T('ok')}</button></div></div>`;e.classList.add('on');
  const f=document.getElementById('flp');tiltInit(f);if(fresh)setTimeout(()=>{f.classList.remove('rv')},2300);
  try{const L=(await mall()).filter(x=>x.n==n&&x.b);if(L.length&&document.getElementById('cdm'))document.getElementById('cdm').innerHTML=`<div class="cdh">📷 ${EN?'Your memories here':'ذكرياتك هنا'}</div><div class="cdm">${L.map(x=>`<img alt="" src="${URL.createObjectURL(x.b)}">`).join('')}</div>`}catch(x){}}
+</script>
+<style id="pc2css">
+.pc{container-type:inline-size;aspect-ratio:3/4.45;padding:3.2cqw;border:0;border-radius:7cqw;background:linear-gradient(135deg,#f4f7fb,#8f9db3 30%,#e9eef6 50%,#7c8aa0 75%,#d9e0ec);box-shadow:0 8px 22px #000a,0 0 20px color-mix(in srgb,var(--c) 45%,transparent)}
+.pc.r2{background:linear-gradient(135deg,#b9fff4,#2a9d8f 30%,#caffff 50%,#1f7a8c 75%,#9ff0e6)}
+.pc.r3{background:linear-gradient(135deg,#fff3b0,#c9922a 28%,#fff0a8 50%,#a8741c 75%,#ffe27a)}
+.pc.r4{background:conic-gradient(from var(--ha,0deg),#ff9ad5,#9ad8ff,#b8ff9a,#ffe89a,#ff9ad5);animation:ha 6s linear infinite}
+@property --ha{syntax:'<angle>';initial-value:0deg;inherits:false}@keyframes ha{to{--ha:360deg}}
+.pc.lk{background:linear-gradient(135deg,#6b7a93,#3a4660 50%,#6b7a93)}
+.pc .pi{position:relative;height:100%;border-radius:4.6cqw;background:linear-gradient(180deg,#14213d,#0a1020);display:flex;flex-direction:column;padding:2.6cqw;gap:1.8cqw;overflow:hidden;box-shadow:inset 0 0 0 .5cqw #0006,inset 0 1px 0 #fff3}
+.pc .hd{display:flex;align-items:center;justify-content:space-between;font-size:4.6cqw;font-weight:700;color:var(--c);letter-spacing:.3cqw;padding:0 1cqw}
+.pc .gem{width:6cqw;height:6cqw;transform:rotate(45deg);border-radius:1cqw;background:var(--gm);box-shadow:0 0 2cqw var(--gm),inset 0 0 1.2cqw #fff9}
+.pc.r1{--gm:#cfd8e6}.pc.r2{--gm:#5be3d0}.pc.r3{--gm:#ffc94d}.pc.r4{--gm:linear-gradient(135deg,#ff6ec7,#6ec7ff,#9dff6e)}
+.pc .art{position:relative;top:auto;left:auto;right:auto;height:auto;aspect-ratio:1/1;border-radius:3.6cqw;border:.7cqw solid var(--c);box-shadow:inset 0 0 3cqw #0008,0 0 0 .5cqw #0008;background:#0b2a52}
+.pc .art::after{display:none}.pc .art img{width:100%;height:100%;object-fit:cover;display:block}
+.pc .art::before{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(circle at 30% 20%,#ffffff40,transparent 45%)}
+.pc .sp{position:absolute;z-index:4;width:3.2cqw;height:3.2cqw;background:#fff;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:tw 2.4s infinite;opacity:0}
+@keyframes tw{0%,100%{opacity:0;transform:scale(.3) rotate(0)}50%{opacity:1;transform:scale(1.1) rotate(60deg)}}
+.pc .bn{position:relative;margin:-5cqw -1cqw 0;padding:1.6cqw 3cqw;text-align:center;background:linear-gradient(180deg,#2a3558,#10182f);border:.5cqw solid var(--c);border-radius:2cqw;z-index:3;box-shadow:0 1.5cqw 3cqw #0009}
+.pc .bn h3{margin:0;font-size:6.2cqw;color:#fff;line-height:1.2;text-shadow:0 .4cqw 1cqw #000;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.pc .ty{display:flex;justify-content:center;gap:2cqw;font-size:3.7cqw;color:var(--c);font-weight:700;letter-spacing:.2cqw}
+.pc .st{display:flex;gap:2cqw;justify-content:center}.pc .st span{background:#ffffff14;border:.4cqw solid #ffffff30;border-radius:3cqw;padding:.6cqw 3cqw;font-size:4cqw;font-weight:700;color:#fff}
+.pc .fv{font-size:3.7cqw;line-height:1.5;color:#c9d3e6;text-align:center;font-style:italic;padding:0 1.5cqw;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pc .fo{position:absolute;inset:0;z-index:5;pointer-events:none;mix-blend-mode:color-dodge;opacity:0}
+.pc.r3 .fo,.pc.r4 .fo,.pc.r2 .fo{opacity:.55;background:linear-gradient(115deg,transparent 35%,#ffffff80 50%,transparent 65%);background-size:250% 100%;animation:fos 3.4s infinite}
+.pc.r4 .fo{background:linear-gradient(115deg,#ff6ec7,#6ec7ff 30%,#9dff6e 60%,#ffe66e);background-size:300% 100%;opacity:.28;animation:fos 4s linear infinite}
+@keyframes fos{0%{background-position:150% 0}100%{background-position:-100% 0}}
+.pc::after,.pc::before{display:none!important}
+.pc.lk .art img{filter:blur(9px) saturate(.7) brightness(.6);transform:scale(1.2)}.pc.lk .bn h3{color:#b9c4d8}.pc.lk .lkc{height:auto;inset:0;font-size:12cqw;position:absolute;display:flex;align-items:center;justify-content:center;z-index:4}
+.pc.lk .fo,.pc.lk .sp{display:none}
+</style>
+<script>
+function cardHTML(n,lk){const c=CARDS[n],k=RAR[c.rar]||1,s=S.find(x=>x.n==n)||{},pl=String(s.p||'').split(' · ')[0];
+ const hint=lk?(isU(n)?(EN?'Solve the riddle to unlock':'حُلّ اللغز علشان تفتحه'):(EN?'Visit '+pl+' to unlock':'روح '+pl+' علشان تفتح')):'';
+ const sp=k>=3?[[18,22,0],[72,14,.7],[84,60,1.4],[30,74,.4],[58,40,1.1]].map(a=>`<i class="sp" style="left:${a[0]}%;top:${a[1]}%;animation-delay:${a[2]}s"></i>`).join(''):'';
+ return `<div class="pc r${k} ${lk?'lk':''}" data-n="${n}"><div class="pi"><div class="hd"><span>${ar(String(n).padStart(3,'0'))}</span><i class="gem"></i></div><div class="art"><img alt="" loading="lazy" src="cardart/${String(n).padStart(2,'0')}.svg">${lk?'<div class="lkc">🔒</div>':sp}</div><div class="bn"><h3 dir="${DIR}">${lk?(EN?'Locked card':'كارت مقفول'):c.name}</h3></div>
+ ${lk?`<div class="fv" dir="${DIR}">${hint}</div>`:`<div class="ty"><span>${TRR(c.rar)}</span><span>${c.e}</span></div><div class="st"><span>📍 +100</span><span>🧩 +50</span></div><div class="fv" dir="${DIR}">${c.t}</div>`}<div class="fo"></div></div></div>`}
 </script>
 </body></html>
