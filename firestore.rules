@@ -165,7 +165,9 @@ service cloud.firestore {
       allow get: if isMe(uid) || (signedIn() && exists(/databases/$(database)/documents/storyFeed/$(request.auth.uid)/items/$(uid + '_' + id)));
       allow list: if isMe(uid);
       allow create: if isMe(uid)
-        && request.resource.data.keys().hasOnly(['uid','img','cap','ts','dur','aud','mu'])
+        && request.resource.data.keys().hasOnly(['uid','img','cap','ts','dur','aud','mu','pl','sl'])
+        && (!('pl' in request.resource.data) || (request.resource.data.pl.keys().hasOnly(['q','a','b']) && request.resource.data.pl.q is string && request.resource.data.pl.q.size() <= 60 && request.resource.data.pl.a is string && request.resource.data.pl.a.size() <= 25 && request.resource.data.pl.b is string && request.resource.data.pl.b.size() <= 25))
+        && (!('sl' in request.resource.data) || (request.resource.data.sl.keys().hasOnly(['q','e']) && request.resource.data.sl.q is string && request.resource.data.sl.q.size() <= 60 && request.resource.data.sl.e is string && request.resource.data.sl.e.size() <= 8))
         && (!('mu' in request.resource.data) || (request.resource.data.mu is string && request.resource.data.mu.size() <= 10))
         && request.resource.data.uid == uid
         && request.resource.data.img is string && request.resource.data.img.size() <= 260000
@@ -176,7 +178,9 @@ service cloud.firestore {
       allow delete: if isMe(uid);
       match /views/{viewer} {
         allow create, update: if isMe(viewer) && exists(/databases/$(database)/documents/storyFeed/$(viewer)/items/$(uid + '_' + id))
-          && request.resource.data.keys().hasOnly(['ts','rx','rp'])
+          && request.resource.data.keys().hasOnly(['ts','rx','rp','pv','sv'])
+          && (!('pv' in request.resource.data) || (request.resource.data.pv is int && request.resource.data.pv >= 0 && request.resource.data.pv <= 1))
+          && (!('sv' in request.resource.data) || (request.resource.data.sv is int && request.resource.data.sv >= 0 && request.resource.data.sv <= 100))
           && (!('rx' in request.resource.data) || (request.resource.data.rx is string && request.resource.data.rx.size() <= 8))
           && (!('rp' in request.resource.data) || (request.resource.data.rp is string && request.resource.data.rp.size() <= 200));
         allow read: if isMe(uid) || isMe(viewer);
