@@ -7,8 +7,9 @@
 <h2>إضافة محل جديد</h2>
 <label>اسم المحل</label><input id="n"><label>عنوان الكارت</label><input id="c" placeholder="كارت ...">
 <label>النوع</label><select id="t"><option value="cafe">كافيه</option><option value="food">مطعم / حلويات</option><option value="shop">محل</option><option value="museum">متحف / معرض</option><option value="other">أخرى</option></select>
-<label>خط العرض و الطول (من خرائط جوجل: اضغط مطولا على المكان وانسخ الرقمين)</label><input id="ll" placeholder="31.2655, 32.3036" dir="ltr">
-<label>نطاق الجمع بالمتر</label><input id="r" value="60" type="number"><label>حكاية قصيرة عن المكان</label><textarea id="s" rows="2"></textarea>
+<label>مكان المحل من خرائط جوجل: الصق هنا لينك المكان أو الأرقام</label><input id="ll" placeholder="الصق اللينك أو 31.2655, 32.3036" dir="ltr"><div id="llh" style="font-size:12px;margin-top:4px;color:#9fb4d0">في خرائط جوجل: اضغط مطولا على مكان المحل، وانسخ الرقمين اللي بيظهروا فوق. أو افتح المكان وانسخ اللينك الطويل من شريط العنوان.</div>
+<details style="margin-top:10px"><summary style="color:#9fb4d0;font-size:13px">إعدادات متقدمة</summary><label>نطاق الجمع بالمتر (الافتراضي ٦٠)</label><input id="r" value="60" type="number"></details>
+<label>حكاية قصيرة عن المكان</label><textarea id="s" rows="2"></textarea>
 <label>عرض أول زيارة (اختياري، مرة واحدة للشخص)</label><input id="o"><label>كود الكوبون</label><input id="k" dir="ltr"><label>ساري لحد (اختياري)</label><input id="u" type="date"><label>شروط (اختياري)</label><input id="m">
 <label>كارت الولاء: عدد الطوابع (سيبه فاضي لو مفيش كارت ولاء)</label><input id="ln" type="number" placeholder="10"><label>مكافأة الولاء</label><input id="lr" placeholder="مشروب هدية"><label>فاصل أدنى بين طابعين بالساعات (اختياري، سيبه ٠ لو مش عايز فاصل)</label><input id="lg" type="number" value="0">
 <button id="go">جهّز المحل</button><div id="res"></div>
@@ -38,7 +39,22 @@ async function load(){
   h+=`<div class="box"><b>${esc(b.name)}</b> <small>${esc(b.id)}</small><div class="row" style="margin-top:8px"><div><div class="n">${st.col||0}</div><small>اتجمع</small></div><div><div class="n">${st.red||0}</div><small>اتستخدم</small></div><div><div class="n">${st.stp||0}</div><small>طوابع</small></div><div><div class="n">${st.rwd||0}</div><small>مكافآت</small></div><div style="flex:1"></div><div>${sec.pin?'<div class="pin">'+esc(sec.pin)+'</div><small>الرقم السري · '+(sec.n||10)+' طابع · فاصل '+(sec.gap||0)+' ساعة</small>':'<small class="bad">مفيش رقم سري: الكارت مش شغال</small>'}</div></div><div class="row"><button class="s" data-id="${esc(b.id)}" data-n="${b.loy?+b.loy.n||10:10}" data-g="${b.loy?+b.loy.gap||0:0}">رقم سري جديد</button></div></div>`}
  $('shops').innerHTML=h;
  $('shops').querySelectorAll('button').forEach(x=>x.onclick=async()=>{const p=rpin();await fs.setDoc(fs.doc(db,'bizSecrets',x.dataset.id),{pin:p,n:+x.dataset.n,gap:+x.dataset.g});load()})}
-$('go').onclick=async()=>{const p=($('ll').value||'').split(/[ ,،]+/).map(Number);if(!$('n').value.trim()||!(p[0]&&p[1])){alert('اكتب اسم المحل والإحداثيات');return}
+
+function parseLL(t){t=(t||'').trim();if(!t)return null;let m;
+ const ok=(la,lo)=>{la=+la;lo=+lo;return isFinite(la)&&isFinite(lo)&&Math.abs(la)<=90&&Math.abs(lo)<=180&&(la||lo)?[la,lo]:null};
+ try{t=decodeURIComponent(t)}catch(e){}
+ if(m=t.match(/!3d(-?\d+(?:\.\d+)?)!4d(-?\d+(?:\.\d+)?)/))return ok(m[1],m[2]);
+ if(m=t.match(/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/))return ok(m[1],m[2]);
+ if(m=t.match(/[?&](?:q|ll|query|destination|center|daddr)=\+?(-?\d+(?:\.\d+)?)[,\s+]+(-?\d+(?:\.\d+)?)/))return ok(m[1],m[2]);
+ if(m=t.match(/^\s*\(?\s*(-?\d+(?:\.\d+)?)\s*[,،\s]\s*(-?\d+(?:\.\d+)?)\s*\)?\s*$/))return ok(m[1],m[2]);
+ return null}
+const kmTo=(la,lo)=>{const R=6371,r=Math.PI/180,x=(31.2653-la)*r,y=(32.3019-lo)*r,q=Math.sin(x/2)**2+Math.cos(la*r)*Math.cos(31.2653*r)*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(q))};
+function llCheck(){const t=$('ll').value.trim(),h=$('llh');if(!t){return null}const p=parseLL(t);
+ if(p){const k=kmTo(p[0],p[1]);h.innerHTML='<span class="ok">✔ تمام، الموقع: '+p[0].toFixed(5)+', '+p[1].toFixed(5)+'</span> · <a style="color:#7fe0d4" target="_blank" rel="noopener" href="https://www.google.com/maps?q='+p[0]+','+p[1]+'">اتأكد على الخريطة</a>'+(k>60?'<br><span class="bad">المكان ده بعيد عن بورسعيد '+Math.round(k)+' كم. اتأكد إنه صح.</span>':'');return p}
+ if(/goo\.gl|maps\.app|g\.co\/kgs/i.test(t)){h.innerHTML='<span class="bad">ده لينك مختصر وأنا مش قادر أفتحه من هنا. افتح اللينك في كروم، وبعدين انسخ اللينك الطويل من شريط العنوان والصقه هنا. أو اضغط مطولا على المكان في الخرائط وانسخ الرقمين.</span>';return null}
+ h.innerHTML='<span class="bad">مش لاقي إحداثيات في اللي لصقته. الصق لينك طويل من خرائط جوجل أو الرقمين زي: 31.2655, 32.3036</span>';return null}
+$('ll').addEventListener('input',llCheck);
+$('go').onclick=async()=>{const p=llCheck();if(!$('n').value.trim()||!p){alert('اكتب اسم المحل والصق مكانه من خرائط جوجل');return}
  const o={id:($('n').value||'biz').trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-'+Date.now().toString(36).slice(-4),name:$('n').value.trim(),cat:$('t').value,lat:p[0],lon:p[1],radius:+$('r').value||60,card:$('c').value.trim()||$('n').value.trim(),story:$('s').value.trim(),code:$('k').value.trim()};if($('o').value.trim())o.offer=$('o').value.trim();
  if($('u').value)o.until=$('u').value;if($('m').value)o.terms=$('m').value.trim();const ln=+$('ln').value||0,lg=+$('lg').value||0;if(ln>0)o.loy={n:ln,reward:$('lr').value.trim(),gap:lg};
  const pin=rpin();try{await fs.setDoc(fs.doc(db,'bizSecrets',o.id),{pin,n:ln||10,gap:lg})}catch(e){alert('مقدرناش نحفظ الرقم السري: '+(e.code||e.message));return}
