@@ -65,6 +65,19 @@ service cloud.firestore {
         && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 1000
         && request.resource.data.ts == request.time;
     }
+    // chat read receipts and typing indicator (members who are friends)
+    match /chats/{chatId}/reads/{u} {
+      function cm() { return signedIn() && chatId.split('_').size() == 2 && request.auth.uid in chatId.split('_'); }
+      function co() { return chatId.split('_')[0] == request.auth.uid ? chatId.split('_')[1] : chatId.split('_')[0]; }
+      allow read: if cm() && areFriends(request.auth.uid, co());
+      allow create, update: if isMe(u) && cm() && areFriends(request.auth.uid, co()) && request.resource.data.keys().hasOnly(['ts']);
+    }
+    match /chats/{chatId}/typing/{u} {
+      function cm() { return signedIn() && chatId.split('_').size() == 2 && request.auth.uid in chatId.split('_'); }
+      function co() { return chatId.split('_')[0] == request.auth.uid ? chatId.split('_')[1] : chatId.split('_')[0]; }
+      allow read: if cm() && areFriends(request.auth.uid, co());
+      allow create, update: if isMe(u) && cm() && areFriends(request.auth.uid, co()) && request.resource.data.keys().hasOnly(['ts']);
+    }
     // posts: userPosts/{uid}/items/{id}. Friends-only. Photos are compressed JPEG data URLs (no Storage needed).
     match /userPosts/{uid}/items/{id} {
       allow read: if isMe(uid) || (signedIn() && areFriends(request.auth.uid, uid));
@@ -116,7 +129,7 @@ service cloud.firestore {
         && request.resource.data.uid == uid
         && request.resource.data.img is string && request.resource.data.img.size() <= 260000
         && request.resource.data.cap is string && request.resource.data.cap.size() <= 120
-        && request.resource.data.dur is int && request.resource.data.dur >= 3 && request.resource.data.dur <= 15
+        && request.resource.data.dur is int && request.resource.data.dur >= 30 && request.resource.data.dur <= 60
         && request.resource.data.aud in ['all','close','except']
         && request.resource.data.ts == request.time;
       allow delete: if isMe(uid);
