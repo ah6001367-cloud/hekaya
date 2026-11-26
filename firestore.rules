@@ -247,5 +247,70 @@ service cloud.firestore {
         && rid == request.resource.data.pid + '_' + request.auth.uid
         && request.resource.data.ts == request.time;
     }
+
+    // ---- Business cards: first-visit coupon (once per person, never renews) + loyalty stamps (cashier PIN each visit) ----
+    // First signed-in account to claim the admin doc owns the shop tools (admin.html). Only create is allowed, so it cannot be taken over later.
+    function isAdmin() { return signedIn() && exists(/databases/$(database)/documents/admins/root) && get(/databases/$(database)/documents/admins/root).data.uid == request.auth.uid; }
+    match /admins/{x} {
+      allow read: if isMe(resource.data.uid);
+      allow create: if x == 'root' && signedIn() && request.resource.data.keys().hasOnly(['uid']) && request.resource.data.uid == request.auth.uid;
+    }
+    // Shop secrets: { pin: '123456', n: 10, gap: 20 } (n = stamps for the reward, gap = minimum hours between stamps). Only the admin reads or writes; the rules below read it to check the cashier PIN.
+    match /bizSecrets/{shop} {
+      allow read, write: if isAdmin();
+    }
+    // First-visit coupon: one per person per shop, ever. c = collected, r = redeemed (burned for good).
+    match /coupons/{cid} {
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['uid','biz','st','ts'])
+        && request.resource.data.uid == request.auth.uid && request.resource.data.biz is string && request.resource.data.biz.size() <= 60
+        && cid == request.auth.uid + '_' + request.resource.data.biz
+        && exists(/databases/$(database)/documents/bizSecrets/$(request.resource.data.biz))
+        && request.resource.data.st == 'c' && request.resource.data.ts == request.time;
+      allow update: if signedIn() && resource.data.uid == request.auth.uid && request.resource.data.uid == resource.data.uid && request.resource.data.biz == resource.data.biz
+        && resource.data.st == 'c' && request.resource.data.keys().hasOnly(['uid','biz','st','ts','rts','pin'])
+        && request.resource.data.st == 'r' && request.resource.data.ts == resource.data.ts && request.resource.data.rts == request.time
+        && request.resource.data.pin is string
+        && request.resource.data.pin == get(/databases/$(database)/documents/bizSecrets/$(resource.data.biz)).data.pin;
+    }
+    // Loyalty card: n stamps, each one needs the cashier PIN and a minimum gap since the last stamp. At n = N the reward is claimed with the PIN and the card restarts (rw counts rewards).
+    match /stamps/{cid} {
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['uid','biz','n','last','rw','pin'])
+        && request.resource.data.uid == request.auth.uid && request.resource.data.biz is string && request.resource.data.biz.size() <= 60
+        && cid == request.auth.uid + '_' + request.resource.data.biz
+        && exists(/databases/$(database)/documents/bizSecrets/$(request.resource.data.biz))
+        && request.resource.data.n == 1 && request.resource.data.rw == 0 && request.resource.data.last == request.time
+        && request.resource.data.pin == get(/databases/$(database)/documents/bizSecrets/$(request.resource.data.biz)).data.pin;
+      allow update: if signedIn() && resource.data.uid == request.auth.uid && request.resource.data.uid == resource.data.uid && request.resource.data.biz == resource.data.biz
+        && request.resource.data.keys().hasOnly(['uid','biz','n','last','rw','pin'])
+        && request.resource.data.last == request.time
+        && request.resource.data.pin == get(/databases/$(database)/documents/bizSecrets/$(resource.data.biz)).data.pin
+        && request.time >= resource.data.last + duration.value(get(/databases/$(database)/documents/bizSecrets/$(resource.data.biz)).data.get('gap', 20), 'h')
+        && (
+          (resource.data.n < get(/databases/$(database)/documents/bizSecrets/$(resource.data.biz)).data.get('n', 10) && request.resource.data.n == resource.data.n + 1 && request.resource.data.rw == resource.data.rw)
+          ||
+          (resource.data.n >= get(/databases/$(database)/documents/bizSecrets/$(resource.data.biz)).data.get('n', 10) && request.resource.data.n == 0 && request.resource.data.rw == resource.data.rw + 1)
+        );
+    }
+    // Public per-shop counters (col = first-visit collected, red = redeemed, stp = stamps given, rwd = rewards claimed). Each write bumps exactly one by 1 and only together with the matching coupon or stamp write in the same batch.
+    match /bizStats/{shop} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+      function o(f) { return resource == null ? 0 : resource.data.get(f, 0); }
+      function g(f) { return request.resource.data.get(f, 0); }
+      function cp() { return getAfter(/databases/$(database)/documents/coupons/$(request.auth.uid + '_' + shop)).data; }
+      function sp() { return getAfter(/databases/$(database)/documents/stamps/$(request.auth.uid + '_' + shop)).data; }
+      allow create, update: if signedIn() && request.resource.data.keys().hasOnly(['col','red','stp','rwd'])
+        && (
+          (g('col') == o('col') + 1 && g('red') == o('red') && g('stp') == o('stp') && g('rwd') == o('rwd') && cp().st == 'c' && cp().ts == request.time)
+          ||
+          (g('red') == o('red') + 1 && g('col') == o('col') && g('stp') == o('stp') && g('rwd') == o('rwd') && cp().st == 'r' && cp().rts == request.time)
+          ||
+          (g('stp') == o('stp') + 1 && g('col') == o('col') && g('red') == o('red') && g('rwd') == o('rwd') && sp().last == request.time && sp().n >= 1)
+          ||
+          (g('rwd') == o('rwd') + 1 && g('col') == o('col') && g('red') == o('red') && g('stp') == o('stp') && sp().last == request.time && sp().n == 0)
+        );
+    }
   }
 }
