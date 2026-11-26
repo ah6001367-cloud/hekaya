@@ -58,3 +58,16 @@ new MutationObserver(function(ms){if(busy)return;busy=true;ms.forEach(function(m
 scan(document.body);
 window.HkIc=scan;
 })();
+/* UI sounds: synthesized with WebAudio, no audio files. Off by default. */
+(function(){
+var C=null,scan=window.HkIc||function(){};function ctx(){if(!C){var A=window.AudioContext||window.webkitAudioContext;if(!A)return null;C=new A()}if(C.state=='suspended')C.resume();return C}
+function on(){return localStorage.getItem('hk_snd')==='1'}
+function tone(f,t0,d,v,ty){var c=ctx();if(!c)return;var o=c.createOscillator(),g=c.createGain();o.type=ty||'sine';o.frequency.value=f;var T=c.currentTime+t0;g.gain.setValueAtTime(0,T);g.gain.linearRampToValueAtTime(v,T+.01);g.gain.exponentialRampToValueAtTime(.0001,T+d);o.connect(g);g.connect(c.destination);o.start(T);o.stop(T+d+.02)}
+var S={tick:function(){tone(880,0,.05,.05)},tab:function(){tone(520,0,.07,.06);tone(780,.05,.08,.05)},chime:function(){[523,659,784,1047].forEach(function(f,i){tone(f,i*.09,.35,.09,'triangle')})},ok:function(){tone(660,0,.1,.07);tone(990,.08,.18,.07)}};
+function play(k){if(on()&&S[k])try{S[k]()}catch(e){}}
+function lab(){var b=document.getElementById('sndb');if(!b)return;var t=(window.EN?(on()?'Sounds: on':'Sounds: off'):(on()?'الأصوات: شغالة':'الأصوات: مقفولة')),k=(on()?'on':'off')+t;if(b.dataset.s===k)return;b.dataset.s=k;b.innerHTML=(on()?'🎵 ':'🔇 ')+t;scan(b)}
+window.Snd={play:play,tog:function(){localStorage.setItem('hk_snd',on()?'0':'1');lab();play('ok')},lab:lab};
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('button,.city,.sd');if(b)play(b.closest('#tb')?'tab':'tick')},true);
+var w=window.showCard;if(typeof w=='function')window.showCard=function(n,f){if(f)play('chime');return w.apply(this,arguments)};
+new MutationObserver(lab).observe(document.body,{childList:true,subtree:true});
+})();
