@@ -167,7 +167,10 @@ service cloud.firestore {
         && request.resource.data.ts == request.time;
       allow delete: if isMe(uid);
       match /views/{viewer} {
-        allow create: if isMe(viewer) && exists(/databases/$(database)/documents/storyFeed/$(viewer)/items/$(uid + '_' + id)) && request.resource.data.keys().hasOnly(['ts']);
+        allow create, update: if isMe(viewer) && exists(/databases/$(database)/documents/storyFeed/$(viewer)/items/$(uid + '_' + id))
+          && request.resource.data.keys().hasOnly(['ts','rx','rp'])
+          && (!('rx' in request.resource.data) || (request.resource.data.rx is string && request.resource.data.rx.size() <= 8))
+          && (!('rp' in request.resource.data) || (request.resource.data.rp is string && request.resource.data.rp.size() <= 200));
         allow read: if isMe(uid) || isMe(viewer);
         allow delete: if isMe(uid);
       }
