@@ -106,21 +106,38 @@ service cloud.firestore {
         && request.resource.data.lat is number && request.resource.data.lon is number;
       allow delete: if isMe(uid);
     }
-    // 24h stories: photos in Firestore, friends-only. Clients hide stories older than 24 hours and owners delete expired ones.
+    // 24h stories with audience control. The story document is readable only by its owner and by people who have a
+    // storyFeed entry (written by the owner for each chosen viewer). Clients hide stories older than 24 hours.
     match /stories/{uid}/items/{id} {
-      allow read: if isMe(uid) || (signedIn() && areFriends(request.auth.uid, uid));
+      allow get: if isMe(uid) || (signedIn() && exists(/databases/$(database)/documents/storyFeed/$(request.auth.uid)/items/$(uid + '_' + id)));
+      allow list: if isMe(uid);
       allow create: if isMe(uid)
-        && request.resource.data.keys().hasOnly(['uid','img','cap','ts'])
+        && request.resource.data.keys().hasOnly(['uid','img','cap','ts','dur','aud'])
         && request.resource.data.uid == uid
         && request.resource.data.img is string && request.resource.data.img.size() <= 260000
         && request.resource.data.cap is string && request.resource.data.cap.size() <= 120
+        && request.resource.data.dur is int && request.resource.data.dur >= 3 && request.resource.data.dur <= 15
+        && request.resource.data.aud in ['all','close','except']
         && request.resource.data.ts == request.time;
       allow delete: if isMe(uid);
       match /views/{viewer} {
-        allow create: if isMe(viewer) && areFriends(viewer, uid) && request.resource.data.keys().hasOnly(['ts']);
+        allow create: if isMe(viewer) && exists(/databases/$(database)/documents/storyFeed/$(viewer)/items/$(uid + '_' + id)) && request.resource.data.keys().hasOnly(['ts']);
         allow read: if isMe(uid) || isMe(viewer);
         allow delete: if isMe(uid);
       }
+    }
+    // storyFeed/{viewer}/items/{ownerUid_storyId}: one entry per allowed viewer, written by the story owner.
+    match /storyFeed/{viewer}/items/{key} {
+      allow read: if isMe(viewer);
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['o','id','ts'])
+        && request.resource.data.o == request.auth.uid
+        && key == request.auth.uid + '_' + request.resource.data.id
+        && areFriends(viewer, request.auth.uid) && !blockedEither(viewer, request.auth.uid);
+      allow delete: if isMe(viewer) || isMe(resource.data.o);
+    }
+    // private close-friends list, only the owner can read or write it
+    match /closeFriends/{uid} {
+      allow read, write: if isMe(uid);
     }
     // reports: write only, read in the Firebase console
     match /reports/{rid} {
