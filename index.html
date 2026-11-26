@@ -102,7 +102,7 @@ const TR={
 };
 const T=k=>{const v=TR[k];return Array.isArray(v)?v[EN?1:0]:v};
 const TRR=x=>EN?(TR.rar[x]||x):x, TYP=x=>EN?(TR.typ[x]||x):x;
-function setLang(l){localStorage.setItem('hk_lang',l);location.reload()}
+function setLang(l){localStorage.setItem('hk_lang',l);sessionStorage.setItem('hk_ns','1');location.reload()}
 document.documentElement.lang=EN?'en':'ar';document.documentElement.dir=EN?'ltr':'rtl';
 const R=150;const DIR=EN?'ltr':'rtl';
 const qq=new URLSearchParams(location.search);localStorage.removeItem('hk_test');if(qq.get('test')==='1')sessionStorage.setItem('hk_test','1');if(qq.get('test')==='0')sessionStorage.removeItem('hk_test');
@@ -133,8 +133,8 @@ function nmz(s){s=s.replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[٠-٩]/
 function hsh(s){let h=0x811c9dc5;for(const ch of s){h^=ch.codePointAt(0);h=Math.imul(h,0x01000193)>>>0}return h>>>0}
 function solvedBtn(n){const r=RD[n];if(!r)return '<div class="cta">'+T('soon')+'</div>';const d=SOL.includes(n);return `<button style="width:100%;margin-top:22px;padding:14px;font-size:16px" onclick="openR(${n})">${d?T('seecard'):T('solve')}</button>`}
 
-function tbDraw(k){window.__tbk=k;const e=document.getElementById('tb');if(!e)return;const L=[['map','🗺',EN?'Map':'الخريطة'],['feed','📰',EN?'Feed':'الفيد'],['chat','💬',EN?'Chat':'الشات'],['me','👤',EN?'Profile':'بروفايلي']];e.innerHTML=L.map(x=>`<button class="${x[0]==k?'on':''}" onclick="tbGo('${x[0]}')"><span>${x[1]}</span>${x[2]}${x[0]=='chat'&&window.__cb?`<b class="bdg">${window.__cb>9?'9+':window.__cb}</b>`:''}</button>`).join('')}
-function tbGo(k){if(k=='map'){['rq','col','cd','mn'].forEach(closeP);if(typeof Soc!=='undefined')Soc.closeStory();tbDraw('map');return}
+function tbDraw(k){window.__tbk=k;const e=document.getElementById('tb');if(!e)return;const L=[['home','🏠',EN?'Home':'الرئيسية'],['map','🗺',EN?'Map':'الخريطة'],['feed','📰',EN?'Feed':'الفيد'],['chat','💬',EN?'Chat':'الشات'],['me','👤',EN?'Profile':'بروفايلي']];e.innerHTML=L.map(x=>`<button class="${x[0]==k?'on':''}" onclick="tbGo('${x[0]}')"><span>${x[1]}</span>${x[2]}${x[0]=='chat'&&window.__cb?`<b class="bdg">${window.__cb>9?'9+':window.__cb}</b>`:''}</button>`).join('')}
+function tbGo(k){if(k=='home'){['rq','col','cd','mn'].forEach(closeP);if(typeof Soc!=='undefined')Soc.closeStory();hmShow();return}document.getElementById('hm')&&document.getElementById('hm').classList.remove('on');if(k=='map'){['rq','col','cd','mn'].forEach(closeP);if(typeof Soc!=='undefined')Soc.closeStory();tbDraw('map');return}
  if(typeof Soc==='undefined'){alert(EN?'Needs internet':'محتاج إنترنت');return}['rq','col','cd'].forEach(closeP);tbDraw(k);Soc.tab(k)}
 tbDraw('map');
 new MutationObserver(()=>{const r=document.getElementById('reader'),e=document.getElementById('tb');if(r&&e)e.classList.toggle('hide',getComputedStyle(r).display!=='none')}).observe(document.getElementById('reader')||document.body,{attributes:true});
@@ -299,4 +299,50 @@ Promise.all(['stories1.json','stories2.json'].concat(EN?['en_stories.json','en_r
  if(q.get('open'))show(S.find(x=>x.n==q.get('open')));
  if(q.get('read'))read(q.get('read'))});
 </script><script src="social.js"></script><script>(function(){if(navigator.onLine){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Cairo:wght@400;600;800&display=swap';document.head.appendChild(l)}})()</script>
+<style id="hmcss">
+#sp{position:fixed;inset:0;z-index:100050;background:radial-gradient(circle at 50% 40%,#17407a,#0b1a33 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s,visibility .6s}
+#sp.out{opacity:0;visibility:hidden}
+#sp .lg{width:120px;height:120px;border-radius:32px;background:linear-gradient(135deg,#f1cf7a,#e2b44c);display:flex;align-items:center;justify-content:center;font-size:62px;box-shadow:0 0 0 0 #e2b44c88;animation:spIn .9s cubic-bezier(.2,1.4,.4,1) both,spPulse 1.6s .9s infinite}
+#sp h1{margin:22px 0 4px;font-size:46px;color:#e2b44c;letter-spacing:1px;animation:spUp .7s .35s both}
+#sp p{margin:0;color:#9fb4d0;font-size:16px;animation:spUp .7s .6s both}
+#sp .bar{margin-top:34px;width:140px;height:4px;border-radius:4px;background:#ffffff22;overflow:hidden}#sp .bar i{display:block;height:100%;width:0;background:#e2b44c;animation:spBar 1.5s .2s ease-out forwards}
+@keyframes spIn{from{transform:scale(.3) rotate(-25deg);opacity:0}}@keyframes spUp{from{opacity:0;transform:translateY(16px)}}@keyframes spBar{to{width:100%}}@keyframes spPulse{70%{box-shadow:0 0 0 26px #e2b44c00}100%{box-shadow:0 0 0 0 #e2b44c00}}
+#hm{position:fixed;inset:0;z-index:99000;background:linear-gradient(180deg,#0e2a55,#0b1a33 45%);overflow:auto;display:none;padding:22px 16px 110px;color:#fff}
+#hm.on{display:block;animation:hmIn .45s cubic-bezier(.2,.8,.2,1)}@keyframes hmIn{from{opacity:0;transform:scale(1.03)}}
+#hm .hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}#hm .hd b{font-size:26px;color:#e2b44c}#hm .hd button{width:auto!important;flex:none;margin:0;padding:6px 14px;border-radius:16px;background:transparent;border:1px solid #e2b44c;color:#e2b44c;font-size:13px}
+#hm .pl{display:flex;gap:14px;align-items:center;background:#16325c;border-radius:20px;padding:14px;margin-bottom:16px;animation:dsIn .5s both}
+#hm .pl .ic{width:58px;height:58px;border-radius:50%;border:2px solid #e2b44c;display:flex;align-items:center;justify-content:center;font-size:30px;flex:none;background:#0b1a33}
+#hm .pl .tx{flex:1;min-width:0}#hm .pl small{color:#9fb4d0}#hm .pb{height:8px;border-radius:6px;background:#0b1a33;margin:7px 0 3px;overflow:hidden}#hm .pb i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#3ad1b8,#e2b44c);transition:width 1s .3s}
+#hm h3{margin:18px 4px 8px;color:#e2b44c;font-size:16px}
+#hm .city{position:relative;overflow:hidden;border-radius:22px;padding:20px 18px;margin-bottom:12px;min-height:118px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;transition:transform .15s;animation:dsIn .5s .1s both;background:linear-gradient(135deg,#1c5fa8,#2fb6a0)}
+#hm .city:active{transform:scale(.97)}#hm .city::before{content:'';position:absolute;inset:0;background:url(hero/01.svg) center/cover;opacity:.35}
+#hm .city *{position:relative}#hm .city b{font-size:26px}#hm .city small{opacity:.95}#hm .city .go{position:absolute;top:14px;inset-inline-end:14px;background:#e2b44c;color:#0b1a33;border-radius:16px;padding:5px 14px;font-weight:700;font-size:13px}
+#hm .city.soon{background:#16325c;cursor:default;min-height:74px;opacity:.75;animation-delay:.2s}#hm .city.soon::before{display:none}#hm .city.soon .go{background:#274a80;color:#9fb4d0}
+#hm .sd{background:#e2b44c;color:#0b1a33;border-radius:18px;padding:14px;cursor:pointer;animation:dsIn .5s .25s both;transition:transform .15s}#hm .sd:active{transform:scale(.97)}
+#hm .qa{display:grid;grid-template-columns:1fr 1fr;gap:10px}#hm .qa button{margin:0;padding:16px 8px;border-radius:18px;background:#16325c;color:#fff;font-size:15px;border:1px solid #274a80;animation:dsIn .5s both;transition:transform .15s}#hm .qa button:active{transform:scale(.94)}#hm .qa button span{display:block;font-size:26px;margin-bottom:4px}
+</style>
+<div id="sp"><div class="lg">📜</div><h1>حكاية</h1><p id="spt"></p><div class="bar"><i></i></div></div>
+<div id="hm"></div>
+<script>
+const CITIES=[{id:'ps',ar:'بورسعيد',en:'Port Said',on:1},{id:'alex',ar:'الإسكندرية',en:'Alexandria'},{id:'cai',ar:'القاهرة',en:'Cairo'}];
+let hmTry=0;function hmDraw(){const e=document.getElementById('hm');if(!e)return;if(!S.length&&hmTry++<20)setTimeout(()=>{if(e.classList.contains('on'))hmDraw()},400);const P=points(),R=RANKS,ri=P.ri||0,nx=R[ri+1],tot=P.total||0,pct=nx?Math.max(4,Math.round((tot-R[ri][0])/(nx[0]-R[ri][0])*100)):100,n=sotdN(),sd=S.find(x=>x.n==n),un=unlocked.length,all=S.filter(x=>AV(x.n)).length;
+ e.innerHTML=`<div class="hd"><b>📜 ${EN?'Hekaya':'حكاية'}</b><button onclick="setLang(EN?'ar':'en')">${EN?'العربية':'EN'}</button></div>
+ <div class="pl"><div class="ic">${R[ri][3]}</div><div class="tx"><b>${EN?R[ri][2]:R[ri][1]}</b> · ${ar(tot)} ${EN?'pts':'نقطة'}${P.cur>=2?` · 🔥 ${ar(P.cur)}`:''}<div class="pb"><i style="width:0" data-w="${pct}%"></i></div><small>${nx?`${ar(nx[0]-tot)} ${EN?'points to '+nx[2]:'نقطة لـ'+nx[1]}`:(EN?'Top rank!':'أعلى رتبة!')}</small></div></div>
+ <h3>${EN?'Choose your city':'اختار مدينتك'}</h3>
+ ${CITIES.map(c=>c.on?`<div class="city" onclick="hmEnter()"><span class="go">${EN?'Enter':'ادخل'} ›</span><b>${EN?c.en:c.ar}</b><small>${ar(un)} / ${ar(all)} ${EN?'stories unlocked':'حكاية اتفتحت'}</small></div>`:`<div class="city soon"><span class="go">${EN?'Soon':'قريباً'}</span><b>${EN?c.en:c.ar}</b><small>🔒 ${EN?'Coming soon':'قريباً'}</small></div>`).join('')}
+ ${sd?`<h3>⭐ ${EN?'Story of the day':'حكاية النهارده'}</h3><div class="sd" onclick="hmEnter(${sd.n})"><b>${String(sd.t).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}</b><br><small>${EN?'Go to the place to unlock it':'روح المكان علشان تفتحها'}</small></div>`:''}
+ <h3>${EN?'Quick actions':'اختصارات'}</h3><div class="qa">
+ <button style="animation-delay:.3s" onclick="hmEnter();setTimeout(openCol,250)"><span>🃏</span>${EN?'My cards':'كروتي'}</button>
+ <button style="animation-delay:.35s" onclick="hmEnter();setTimeout(openRoutes,250)"><span>🧭</span>${EN?'Routes':'مسارات'}</button>
+ <button style="animation-delay:.4s" onclick="tbGo('feed')"><span>📰</span>${EN?'Feed':'الفيد'}</button>
+ <button style="animation-delay:.45s" onclick="tbGo('chat')"><span>💬</span>${EN?'Chats':'الشات'}</button></div>`;
+ setTimeout(()=>e.querySelectorAll('.pb i').forEach(i=>i.style.width=i.dataset.w),60)}
+function hmShow(){hmDraw();document.getElementById('hm').classList.add('on');tbDraw('home')}
+function hmEnter(n){document.getElementById('hm').classList.remove('on');tbDraw('map');if(n){const s=S.find(x=>x.n==n);if(s){map.flyTo([s.lat,s.lon],16);show(s)}}}
+(function(){const q=new URLSearchParams(location.search),sp=document.getElementById('sp');document.getElementById('spt').textContent=EN?'Real stories of Port Said':'حكايات بورسعيد الحقيقية';
+ if(sessionStorage.getItem('hk_ns')){sessionStorage.removeItem('hk_ns');sp.remove();try{hmShow()}catch(e){}return}
+ if(q.get('open')||q.get('read')||q.get('emu')||q.get('nosplash')){sp.remove();return}
+ const go=()=>{try{hmShow()}catch(e){}setTimeout(()=>sp.classList.add('out'),1500);setTimeout(()=>sp.remove(),2300)};
+ if(document.readyState=='complete')go();else addEventListener('load',go);setTimeout(()=>{if(sp.parentNode&&!sp.classList.contains('out')){try{hmShow()}catch(e){}sp.classList.add('out')}},4000)})();
+</script>
 </body></html>
