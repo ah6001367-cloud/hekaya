@@ -249,11 +249,12 @@ service cloud.firestore {
     }
 
     // ---- Business cards: first-visit coupon (once per person, never renews) + loyalty stamps (cashier PIN each visit) ----
-    // First signed-in account to claim the admin doc owns the shop tools (admin.html). Only create is allowed, so it cannot be taken over later.
+    // The admin is the account that owns the handle @am1 (Ahmed). Handles are unique and cannot be overwritten, so nobody else can claim. Only create is allowed, so the claim cannot be changed later.
     function isAdmin() { return signedIn() && exists(/databases/$(database)/documents/admins/root) && get(/databases/$(database)/documents/admins/root).data.uid == request.auth.uid; }
     match /admins/{x} {
       allow read: if isMe(resource.data.uid);
-      allow create: if x == 'root' && signedIn() && request.resource.data.keys().hasOnly(['uid']) && request.resource.data.uid == request.auth.uid;
+      allow create: if x == 'root' && signedIn() && request.resource.data.keys().hasOnly(['uid']) && request.resource.data.uid == request.auth.uid
+        && exists(/databases/$(database)/documents/handles/am1) && get(/databases/$(database)/documents/handles/am1).data.uid == request.auth.uid;
     }
     // Shop secrets: { pin: '123456', n: 10 } (optional gap: 12) (n = stamps for the reward, gap = optional minimum hours between stamps, default 0 = none). Only the admin reads or writes; the rules below read it to check the cashier PIN.
     match /bizSecrets/{shop} {
