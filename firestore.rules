@@ -191,7 +191,8 @@ service cloud.firestore {
     // storyFeed/{viewer}/items/{ownerUid_storyId}: one entry per allowed viewer, written by the story owner.
     match /storyFeed/{viewer}/items/{key} {
       allow read: if isMe(viewer);
-      allow create: if signedIn() && request.resource.data.keys().hasOnly(['o','id','ts'])
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['o','id','ts','mn'])
+        && (!('mn' in request.resource.data) || request.resource.data.mn == true)
         && request.resource.data.o == request.auth.uid
         && key == request.auth.uid + '_' + request.resource.data.id
         && areFriends(viewer, request.auth.uid) && !blockedEither(viewer, request.auth.uid);
