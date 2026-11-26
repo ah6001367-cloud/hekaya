@@ -22,7 +22,7 @@ const t=(a,e)=>EN?e:a;
 .sc-st{display:flex;gap:6px;margin:12px 0}.sc-st div{flex:1;text-align:center;background:#0b1a33;border-radius:14px;padding:8px 2px}.sc-st b{display:block;font-size:19px;color:#e2b44c}.sc-st small{font-size:11px;color:#9fb4d0}
 .sc-chips{display:flex;flex-wrap:wrap;gap:6px}.sc-chips span{background:#0b1a33;border:1px solid #2a4a80;border-radius:20px;padding:5px 10px;font-size:12px}
 .sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.sc-grid div{aspect-ratio:1;border-radius:10px;background:#0b1a33 center/cover;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;overflow:hidden}
-.sc-emo{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.sc-emo button{width:48px;flex:none;min-height:48px;font-size:24px;padding:0;background:#0b1a33}.sc-emo button.on{background:#e2b44c}
+.sc-ring{width:92px;height:92px;border-radius:50%;padding:3px;background:conic-gradient(#f9ce34,#ee2a7b,#6228d7,#f9ce34);margin:-46px auto 6px;position:relative}.sc-av2{width:100%;height:100%;border-radius:50%;background:#0b1a33;border:3px solid #0e2142;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:44px}.sc-emo{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.sc-emo button{width:48px;flex:none;min-height:48px;font-size:24px;padding:0;background:#0b1a33}.sc-emo button.on{background:#e2b44c}
 `;document.head.appendChild(c)})();
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let FB=null,me=null,prof=null,unsubs=[],view=null;
@@ -109,7 +109,7 @@ function afterLogin(){sync();if(flag('hk_soc_loc'))startLoc();if(flag('hk_soc_ma
 async function hub(){
  const st=flag('hk_soc_loc'),sm=flag('hk_soc_map'),so=!flag('hk_soc_stats_off');
  scr(`<h2>👥 ${t('الأصدقاء','Friends')}</h2>
- <div class="box"><h3>${esc(prof.emoji)} ${esc(prof.name)}</h3><p dir="ltr">@${esc(prof.handle)}</p><div class="row"><button class="o" onclick="Soc.editName()">${t('غيّر الاسم','Edit name')}</button><button class="o" onclick="Soc.signOut()">${t('خروج','Sign out')}</button></div></div>
+ <div id="myhead">${head(prof,[[unlocked.length,t('حكايات','Stories')],[(typeof achs==='function'?achs().filter(x=>x.ok).length:0),t('بادجات','Badges')],[FR.length,t('أصدقاء','Friends')],['…',t('بوستات','Posts')]],`<div class="row"><button onclick="Soc.editScreen()">✏️ ${t('تعديل البروفايل','Edit profile')}</button><button class="o" onclick="Soc.signOut()">${t('خروج','Sign out')}</button></div><h3 style="margin:10px 0 6px">🏅 ${t('البادجات','Badges')}</h3>${badgeChips()}<h3 style="margin:14px 0 6px">📷 ${t('بوستاتي','My posts')}</h3><div id="mypg"><p>…</p></div>`)}</div>
  <div class="row"><button onclick="Soc.searchScreen()">🔎 ${t('دوّر على صديق','Find a friend')}</button><button onclick="Soc.sugScreen()">📍 ${t('اقترح مكان','Suggest a place')}</button></div>
  <div class="row"><button onclick="Soc.nearScreen()">👀 ${t('ناس قريبة','People nearby')}</button><button class="o" onclick="Soc.blockedScreen()">🚫 ${t('المحجوبين','Blocked')}</button></div>
  <div class="row"><button onclick="Soc.feedScreen()">📰 ${t('الفيد','Feed')}</button><button class="o" onclick="Soc.feedScreen(Soc.user.uid)">${t('بوستاتي','My posts')}</button></div>
@@ -126,7 +126,7 @@ async function hub(){
  <div class="row"><button class="o" onclick="closeP('mn')">🗺 ${t('افتح الخريطة','Open map')}</button></div></div>
  <div class="box"><button class="o" onclick="Soc.delAcct()">🗑 ${t('احذف حسابي وبياناتي','Delete my account and data')}</button></div>
  ${back('openMenu()')}`,hub);
- const {fs,db}=FB,uid=me.uid;
+ const {fs,db}=FB,uid=me.uid;postCount(uid).then(n=>{const el=document.querySelector('#myhead .sc-st div:last-child b');if(el)el.textContent=n});postGrid(uid,'mypg');
  unsubs.push(fs.onSnapshot(fs.collection(db,'requests',uid,'from'),async snap=>{const ids=snap.docs.map(d=>d.id);const el=document.getElementById('sreq');if(!el)return;
   if(!ids.length){el.innerHTML='';return}
   const ps=await Promise.all(ids.map(i=>getProf(i).catch(()=>null)));
@@ -136,7 +136,7 @@ let FR=[];
 async function renderFriends(){const el=document.getElementById('sfr'),lb=document.getElementById('slb');if(!el)return;
  if(!FR.length){el.innerHTML=`<p>${t('لسه مفيش أصدقاء. دوّر على حد بالـ@يوزر.','No friends yet. Search by @handle.')}</p>`;lb.innerHTML=`<p>${t('ضيف أصدقاء الأول.','Add friends first.')}</p>`;return}
  const ps=await Promise.all(FR.map(i=>getProf(i).catch(()=>null))),ss=await Promise.all(FR.map(getStat));
- el.innerHTML=FR.map((i,k)=>`<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><div style="flex:1">${esc((ps[k]||{}).emoji||'🙂')} <b>${esc((ps[k]||{}).name||'?')}</b><br><small dir="ltr">@${esc((ps[k]||{}).handle||'')}</small></div><button class="o" style="width:auto;margin:0" onclick="Soc.feedScreen('${i}')">📰</button><button class="o" style="width:auto;margin:0" onclick="Soc.blockUser('${i}')">🚫</button><button style="width:auto;margin:0" onclick="Soc.chat('${i}')">💬</button><button class="o" style="width:auto;margin:0" onclick="Soc.unfriend('${i}')">✖</button></div>`).join('');
+ el.innerHTML=FR.map((i,k)=>`<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><div style="flex:1;cursor:pointer" onclick="Soc.profileScreen('${i}')">${esc((ps[k]||{}).emoji||'🙂')} <b>${esc((ps[k]||{}).name||'?')}</b><br><small dir="ltr">@${esc((ps[k]||{}).handle||'')}</small></div><button class="o" style="width:auto;margin:0" onclick="Soc.feedScreen('${i}')">📰</button><button class="o" style="width:auto;margin:0" onclick="Soc.blockUser('${i}')">🚫</button><button style="width:auto;margin:0" onclick="Soc.chat('${i}')">💬</button><button class="o" style="width:auto;margin:0" onclick="Soc.unfriend('${i}')">✖</button></div>`).join('');
  const rows=[{n:prof.name,e:prof.emoji,me:1,s:flag('hk_soc_stats_off')?null:stats()}].concat(FR.map((i,k)=>({n:(ps[k]||{}).name||'?',e:(ps[k]||{}).emoji||'🙂',s:ss[k]})));
  rows.sort((a,b)=>((b.s&&b.s.stories)||-1)-((a.s&&a.s.stories)||-1)||((b.s&&b.s.riddles)||0)-((a.s&&a.s.riddles)||0));
  lb.innerHTML=rows.map((r,k)=>`<p style="margin:6px 0;${r.me?'color:#e2b44c;font-weight:700':''}">${k+1}. ${esc(r.e)} ${esc(r.n)}${r.me?' ('+t('أنا','me')+')':''} · ${r.s?`${t('حكايات','stories')} ${r.s.stories} · ${t('ألغاز','riddles')} ${r.s.riddles} · 🏅${r.s.badges}`:`<small>${t('مخفي','hidden')}</small>`}</p>`).join('')}
@@ -222,6 +222,36 @@ async function delPost(id){if(!confirm(t('تمسح البوست؟','Delete this 
 async function report(u,id){const why=prompt(t('سبب الإبلاغ؟ (اختياري)','Why are you reporting this? (optional)'),'');if(why===null)return;const {fs,db}=FB;try{await fs.addDoc(fs.collection(db,'reports'),{by:me.uid,postUid:u,postId:id,reason:String(why).slice(0,300),ts:fs.serverTimestamp()});alert(t('وصلنا البلاغ. شكرا.','Report sent. Thank you.'))}catch(e){alert(err(e))}}
 
 
+
+// ---------- profile ----------
+const COVERS=['linear-gradient(135deg,#1c5fa8,#0b2a52)','linear-gradient(135deg,#e2b44c,#b9522a)','linear-gradient(135deg,#2fb6a0,#16507a)','linear-gradient(135deg,#8e4ec6,#2a2d7a)','linear-gradient(135deg,#e0527a,#f0a04b)','linear-gradient(135deg,#3a9d5d,#0b3d2e)'];
+function head(p,sts,extra){const cv=COVERS[(p.cv|0)%COVERS.length];
+ return `<div class="sc-card" style="padding-top:16px"><div class="sc-cov" style="background:${cv}"></div><div class="sc-ring"><div class="sc-av2">${esc(p.emoji||'🙂')}</div></div>
+ <div style="text-align:center"><div class="sc-h" style="font-size:21px">${esc(p.name||'?')}</div><div dir="ltr" style="color:#9fb4d0">@${esc(p.handle||'')}</div>${p.bio?`<p dir="auto" style="margin:8px 6px;color:#f4e9c8;font-size:14px">${esc(p.bio)}</p>`:''}</div>
+ <div class="sc-st">${sts.map(x=>`<div><b>${x[0]}</b><small>${x[1]}</small></div>`).join('')}</div>${extra||''}</div>`}
+async function postCount(uid){const {fs,db}=FB;try{const r=await fs.getCountFromServer(fs.collection(db,'userPosts',uid,'items'));return r.data().count}catch(e){try{return (await fs.getDocs(fs.collection(db,'userPosts',uid,'items'))).size}catch(x){return 0}}}
+async function postGrid(uid,elId){const {fs,db}=FB,el=document.getElementById(elId);if(!el)return;
+ try{const r=await fs.getDocs(fs.query(fs.collection(db,'userPosts',uid,'items'),fs.orderBy('ts','desc'),fs.limit(9)));if(!document.getElementById(elId))return;
+  el.innerHTML=r.docs.length?`<div class="sc-grid">${r.docs.map(d=>{const x=d.data();return /^data:image\/jpeg;base64,/.test(x.img||'')?`<div style="background-image:url(${x.img})" onclick="Soc.feedScreen('${uid}')"></div>`:`<div onclick="Soc.feedScreen('${uid}')" style="background:#13305e;font-size:30px">🏅</div>`}).join('')}</div>`:`<p style="text-align:center;opacity:.8">📷 ${t('لسه مفيش بوستات.','No posts yet.')}</p>`}catch(e){el.innerHTML=''}}
+function badgeChips(){const A=(typeof achs==='function'?achs():[]).filter(x=>x.ok);return A.length?`<div class="sc-chips">${A.map(a=>`<span>🏅 ${esc(a.n)}</span>`).join('')}</div>`:`<p style="text-align:center;opacity:.8;margin:0">🔒 ${t('لسه مفيش بادجات. افتح حكايات!','No badges yet. Unlock some stories!')}</p>`}
+async function profileScreen(uid){
+ if(!uid||uid===me.uid)return hub();
+ scr(`<div id="pf"><div class="sc-card"><p>…</p></div></div>${back('Soc.home()')}`,()=>profileScreen(uid));
+ try{const p=await getProf(uid,true),st=await getStat(uid),pc=await postCount(uid).catch(()=>0),isF=FR.includes(uid),el=document.getElementById('pf');if(!el||!p)return;
+  const nf=null;
+  el.innerHTML=head(p,[[st?st.stories:'–',t('حكايات','Stories')],[st?st.badges:'–',t('بادجات','Badges')],[st?st.riddles:'–',t('ألغاز','Riddles')],[isF?pc:'–',t('بوستات','Posts')]],
+   `<div class="row">${isF?`<button onclick="Soc.chat('${uid}')">💬 ${t('شات','Chat')}</button><button class="o" onclick="Soc.unfriend('${uid}')">${t('إزالة','Remove')}</button>`:`<button onclick="Soc.addFriend('${uid}',this)">${t('ابعت طلب تعارف','Send connection request')}</button>`}</div><div class="row"><button class="o" onclick="Soc.blockUser('${uid}')">🚫 ${t('حجب','Block')}</button><button class="o" onclick="Soc.reportUser('${uid}')">⚑ ${t('إبلاغ','Report')}</button></div>`)+(isF?`<div class="sc-card"><h3 style="margin-top:0">${t('البوستات','Posts')}</h3><div id="pg"></div></div>`:`<div class="sc-card"><p style="text-align:center;margin:0">🔒 ${t('البوستات بتظهر للأصدقاء بس.','Posts are visible to friends only.')}</p></div>`);
+  if(isF)postGrid(uid,'pg')}catch(e){const el=document.getElementById('pf');if(el)el.innerHTML=`<div class="sc-card"><p>${esc(err(e))}</p></div>`}}
+function editScreen(){const cv=prof.cv|0;
+ scr(`<div class="sc-hero"><div class="sc-h">${t('تعديل البروفايل','Edit profile')}</div></div><div class="sc-card">
+ <div class="sc-f"><label for="sn">${t('الاسم','Name')}</label><span class="sc-i">🙂</span><input id="sn" maxlength="30" value="${esc(prof.name)}"></div><div class="sc-e"></div>
+ <div class="sc-f"><label for="sb">${t('نبذة عنك','Bio')}</label><textarea id="sb" rows="3" maxlength="160" style="padding:13px 14px" placeholder="${t('جملة عنك (اختياري)','A line about you (optional)')}">${esc(prof.bio||'')}</textarea></div>
+ <div class="sc-f"><label>${t('الصورة الرمزية','Avatar')}</label></div>${emoRow(prof.emoji||'🙂')}
+ <div class="sc-f"><label>${t('لون الغلاف','Cover colour')}</label></div><div class="sc-emo">${COVERS.map((c,i)=>`<button type="button" class="${i==cv?'on':''}" style="background:${c};border:3px solid ${i==cv?'#e2b44c':'transparent'}" onclick="document.getElementById('scv').value=${i};this.parentNode.querySelectorAll('button').forEach(b=>b.style.borderColor='transparent');this.style.borderColor='#e2b44c'"></button>`).join('')}</div><input id="scv" type="hidden" value="${cv}">
+ <div class="msg bad" id="smsg" style="display:none"></div><button class="sc-btn" id="seb" onclick="Soc.saveEdit()">${t('حفظ','Save')}</button></div>${back('Soc.home()')}`,()=>{})}
+async function saveEdit(){const n=document.getElementById('sn').value.trim(),b=document.getElementById('sb').value.trim().slice(0,160),em=document.getElementById('sem').value,cv=+document.getElementById('scv').value|0;if(!n)return say(t('اكتب اسم','Enter a name'));
+ busy('seb',true,t('بنحفظ','Saving'));try{const {fs,db}=FB;await fs.setDoc(fs.doc(db,'profiles',me.uid),{handle:prof.handle,name:n.slice(0,30),emoji:em,bio:b,cv,ts:Date.now()});prof=await getProf(me.uid,true);hub()}catch(x){busy('seb',false);say(err(x))}}
+
 // ---------- block / report people ----------
 async function getBlocks(){const {fs,db}=FB;const r=await fs.getDocs(fs.collection(db,'blocks',me.uid,'list'));return r.docs.map(d=>d.id)}
 async function blockUser(uid){if(!confirm(t('تحجب الشخص ده؟ هيتشال من أصدقائك ومش هيقدر يبعتلك طلب أو رسالة ولا يشوفك قريب منه.','Block this person? They are removed from your friends and can no longer send you requests or messages, or see you nearby.')))return;
@@ -268,5 +298,5 @@ async function togNear(){if(flag('hk_soc_near')){setFlag('hk_soc_near',false);aw
 async function delAcct(){if(!confirm(t('هتمسح حسابك وكل بياناتك (البروفايل، الأصدقاء، الترتيب، المكان). مفيش رجوع. تكمل؟','This deletes your account and all your data (profile, friends, leaderboard, location). It cannot be undone. Continue?')))return;
  try{const {fs,db,au,auth}=FB,uid=me.uid;await stopLoc();await nearStop();try{const ps=await fs.getDocs(fs.collection(db,'userPosts',uid,'items'));for(const d of ps.docs){for(const sub of ['likes','comments']){const r=await fs.getDocs(fs.collection(db,'userPosts',uid,'items',d.id,sub));await Promise.all(r.docs.map(x=>fs.deleteDoc(x.ref)))}await fs.deleteDoc(d.ref)}const bl=await fs.getDocs(fs.collection(db,'blocks',uid,'list'));await Promise.all(bl.docs.map(x=>fs.deleteDoc(x.ref)))}catch(e){}const b=fs.writeBatch(db);FR.forEach(f=>{b.delete(fs.doc(db,'friends',f,'list',uid));b.delete(fs.doc(db,'friends',uid,'list',f))});b.delete(fs.doc(db,'stats',uid));if(prof)b.delete(fs.doc(db,'handles',prof.handle));await b.commit();await fs.deleteDoc(fs.doc(db,'profiles',uid));await au.deleteUser(auth.currentUser);cache.prof={};alert(t('اتمسح حسابك','Account deleted'));openMenu()}catch(x){alert(err(x))}}
 
-return{pickEmo,hv,vf,open,home,nearScreen,togNear,blockUser,unblock,reportUser,blockedScreen,feedScreen,postMemory,postBadge,like,comments,addComment,delComment,delPost,report,authScreen,doAuth,reset,signOut,saveProf,editName,searchScreen,doSearch,addFriend,accept,decline,unfriend,chat,send,togLoc,hideNow,togMap,togStats,sugScreen,sugHere,sugSend,delAcct,sync,onPos,get user(){return me},get profile(){return prof},_fb:()=>FB}
+return{profileScreen,editScreen,saveEdit,pickEmo,hv,vf,open,home,nearScreen,togNear,blockUser,unblock,reportUser,blockedScreen,feedScreen,postMemory,postBadge,like,comments,addComment,delComment,delPost,report,authScreen,doAuth,reset,signOut,saveProf,editName,searchScreen,doSearch,addFriend,accept,decline,unfriend,chat,send,togLoc,hideNow,togMap,togStats,sugScreen,sugHere,sugSend,delAcct,sync,onPos,get user(){return me},get profile(){return prof},_fb:()=>FB}
 })();

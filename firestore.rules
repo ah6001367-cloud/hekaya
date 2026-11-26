@@ -11,7 +11,9 @@ service cloud.firestore {
     match /profiles/{uid} {
       allow read: if signedIn();
       allow create, update: if isMe(uid)
-        && request.resource.data.keys().hasOnly(['handle','name','emoji','ts'])
+        && request.resource.data.keys().hasOnly(['handle','name','emoji','ts','bio','cv'])
+        && (!('bio' in request.resource.data) || (request.resource.data.bio is string && request.resource.data.bio.size() <= 160))
+        && (!('cv' in request.resource.data) || (request.resource.data.cv is int && request.resource.data.cv >= 0 && request.resource.data.cv < 6))
         && request.resource.data.handle is string && request.resource.data.handle.matches('^[a-z0-9_]{3,20}$')
         && request.resource.data.name is string && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 30;
       allow delete: if isMe(uid);
