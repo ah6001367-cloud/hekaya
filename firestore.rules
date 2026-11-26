@@ -239,5 +239,13 @@ service cloud.firestore {
         allow delete: if isMe(resource.data.uid) || isMe(get(/databases/$(database)/documents/hood/$(pid)).data.uid);
       }
     }
+
+    // Reports on neighbourhood posts: write-only for users (we read them in the Firebase console). One report per user per post.
+    match /hoodReports/{rid} {
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['pid','uid','ts'])
+        && request.resource.data.uid == request.auth.uid
+        && rid == request.resource.data.pid + '_' + request.auth.uid
+        && request.resource.data.ts == request.time;
+    }
   }
 }

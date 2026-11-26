@@ -1,0 +1,7 @@
+{
+ "_help": "Add one object per business. Fields: id (unique, no spaces), name, cat (cafe|food|shop|museum|other), lat, lon, radius (meters to collect, default 60), card (short card title), story (1-2 lines about the place, Arabic), offer (what the user gets), code (coupon code shown to staff), until (YYYY-MM-DD, optional), terms (optional), demo (true = shows a 'demo' tag). Edit this file and push, or use admin.html to generate an entry.",
+ "list": [
+  {"id":"demo-cafe-fanar","name":"كافيه الفنار (تجريبي)","cat":"cafe","lat":31.2655,"lon":32.3036,"radius":80,"card":"كارت الفنار","story":"قهوة على أصل الحكاية: المكان ده كان بيستقبل البحارة بعد ما يرسوا.","offer":"قهوة تركي هدية مع أي طلب","code":"HEKAYA-FANAR","until":"2027-12-31","terms":"اعرض الشاشة للكاشير. كوبون واحد للشخص.","demo":true},
+  {"id":"demo-sweets-port","name":"حلويات بورسعيد (تجريبي)","cat":"food","lat":31.2641,"lon":32.3009,"radius":80,"card":"كارت الحلو","story":"من أيام المدينة القديمة والبيت اللي بيتعمل فيه الحلو بإيد الأسطى.","offer":"خصم ١٠٪ على الطلب","code":"HEKAYA-10","until":"2027-12-31","terms":"اعرض الشاشة للكاشير. مش مع عروض تانية.","demo":true}
+ ]
+}

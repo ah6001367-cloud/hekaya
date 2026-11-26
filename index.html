@@ -152,7 +152,7 @@ function cnt(){document.getElementById('cn').textContent=ar(SOL.length)+'/'+ar(3
 function openCol(){const e=document.getElementById('col');e.innerHTML=`<h2>🃏 ${T('cards')}${ar(SOL.length)} ${T('of')} ${ar(32)}</h2><div id="cg">${Object.keys(CARDS).map(k=>{k=+k;const c=CARDS[k],s=SOL.includes(k);return `<div class="cc ${s?'':'lk'}" ${s?`onclick="showCard(${k},false)"`:''}><b>${s?c.e:'❓'}</b>${s?c.name:T('locked2')}<br><small>${ar(String(k).padStart(3,'0'))}</small></div>`}).join('')}</div><div class="row"><button onclick="closeP('col')">${EN?'Back':'رجوع'}</button></div>`;e.classList.add('on')}
 cnt();
 let CUR=null;
-const SHELL=['index.html','social.js','ui.js','daily.js','leaflet.js','leaflet.css','riddles.js','photos.js','stories1.json','stories2.json','en_stories.json','en_riddles.json','en_cards.json'];
+const SHELL=['index.html','social.js','ui.js','daily.js','biz.js','biz.json','leaflet.js','leaflet.css','riddles.js','photos.js','stories1.json','stories2.json','en_stories.json','en_riddles.json','en_cards.json'];
 const OFFURLS=k=>{const a=k==='t'?SHELL.slice():[];for(let n=1;n<=32;n++){const p=String(n).padStart(2,'0');if(k==='t'){a.push('hero/'+p+'.svg');a.push('cardart/'+p+'.svg');if([1,2,4,5,7,14,16,21].includes(n))a.push('cardimg/'+p+'.webp');if(Array.from({length:32},(_,i)=>i+1).includes(n)){a.push('cardimg/bg'+p+'.webp');a.push('cardimg/ch'+p+'.webp')}if(typeof PH!=='undefined'&&PH[n])a.push('photos/'+p+'.jpg')}else a.push('audio/story'+p+'.mp3')}return a};
 const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
 if(!NATIVE&&'serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
@@ -298,7 +298,7 @@ Promise.all(['stories1.json','stories2.json'].concat(EN?['en_stories.json','en_r
  else if(navigator.geolocation)navigator.geolocation.watchPosition(p=>setMe(p.coords.latitude,p.coords.longitude),e=>{},{enableHighAccuracy:true});
  if(q.get('open'))show(S.find(x=>x.n==q.get('open')));
  if(q.get('read'))read(q.get('read'))});
-</script><script src="social.js"></script><script src="ui.js"></script><script src="daily.js"></script><script>(function(){if(navigator.onLine){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Cairo:wght@400;600;800&display=swap';document.head.appendChild(l)}})()</script>
+</script><script src="social.js"></script><script src="ui.js"></script><script src="daily.js"></script><script src="biz.js"></script><script>(function(){if(navigator.onLine){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Cairo:wght@400;600;800&display=swap';document.head.appendChild(l)}})()</script>
 <style id="hmcss">
 #sp{position:fixed;inset:0;z-index:100050;pointer-events:none;transition:opacity .45s,visibility .45s}
 #sp.out{opacity:0;visibility:hidden}
