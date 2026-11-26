@@ -4,6 +4,8 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function isMe(uid) { return signedIn() && request.auth.uid == uid; }
     function blockedEither(a, b) { return exists(/databases/$(database)/documents/blocks/$(a)/list/$(b)) || exists(/databases/$(database)/documents/blocks/$(b)/list/$(a)); }
+    function today() { return string(request.time.year() * 10000 + request.time.month() * 100 + request.time.day()); }
+    function rxOk(d) { return d.keys().hasOnly(['ts','r']) && (!('r' in d) || d.r in ['like','love','haha','wow','sad','angry']); }
     function db() { return /databases/$(database)/documents; }
     function areFriends(a, b) { return exists(/databases/$(database)/documents/friends/$(a)/list/$(b)); }
 
@@ -132,7 +134,7 @@ service cloud.firestore {
       allow delete: if isMe(uid);
       match /likes/{liker} {
         allow read: if isMe(uid) || (signedIn() && areFriends(request.auth.uid, uid));
-        allow create: if isMe(liker) && (liker == uid || areFriends(liker, uid));
+        allow create, update: if isMe(liker) && (liker == uid || areFriends(liker, uid)) && rxOk(request.resource.data);
         allow delete: if isMe(liker) || isMe(uid);
       }
       match /comments/{cid} {
@@ -219,17 +221,37 @@ service cloud.firestore {
       allow read: if signedIn() && resource.data.uid == request.auth.uid;
     }
 
-    // Neighbourhood feed (حكاية الحي): short text posts tied to a ~2 km grid cell, with replies.
+    // Neighbourhood feed (حكاية الحي): public posts tied to a ~2 km grid cell, optional compressed photo, replies, reactions.
+    // Limit: 10 posts per user per UTC day, enforced through hoodLim/{uid} which must be incremented in the same batch.
     match /hood/{pid} {
       allow read: if signedIn();
-      allow create: if signedIn() && request.resource.data.keys().hasOnly(['uid','cell','k','txt','ts','pl'])
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['uid','cell','k','txt','ts','pl','img'])
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.k in ['new','event','hist','ask']
         && request.resource.data.txt is string && request.resource.data.txt.size() >= 1 && request.resource.data.txt.size() <= 300
         && request.resource.data.cell is string && request.resource.data.cell.size() <= 20
         && request.resource.data.ts == request.time
-        && (!('pl' in request.resource.data) || (request.resource.data.pl is string && request.resource.data.pl.size() <= 60));
+        && (!('pl' in request.resource.data) || (request.resource.data.pl is string && request.resource.data.pl.size() <= 60))
+        && (!('img' in request.resource.data) || (request.resource.data.img is string && request.resource.data.img.size() <= 120000))
+        && existsAfter(/databases/$(database)/documents/hoodLim/$(request.auth.uid))
+        && getAfter(/databases/$(database)/documents/hoodLim/$(request.auth.uid)).data.d == today()
+        && getAfter(/databases/$(database)/documents/hoodLim/$(request.auth.uid)).data.n <= 10
+        && getAfter(/databases/$(database)/documents/hoodLim/$(request.auth.uid)).data.n
+           == ((exists(/databases/$(database)/documents/hoodLim/$(request.auth.uid)) && get(/databases/$(database)/documents/hoodLim/$(request.auth.uid)).data.d == today())
+               ? get(/databases/$(database)/documents/hoodLim/$(request.auth.uid)).data.n + 1 : 1);
+      // report counter: +1 only, together with that user's one report record
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rp'])
+        && request.resource.data.rp is int
+        && request.resource.data.rp == resource.data.get('rp', 0) + 1
+        && existsAfter(/databases/$(database)/documents/hoodReports/$(pid + '_' + request.auth.uid))
+        && !exists(/databases/$(database)/documents/hoodReports/$(pid + '_' + request.auth.uid));
       allow delete: if isMe(resource.data.uid);
+      match /likes/{liker} {
+        allow read: if signedIn();
+        allow create, update: if isMe(liker) && rxOk(request.resource.data);
+        allow delete: if isMe(liker) || isMe(get(/databases/$(database)/documents/hood/$(pid)).data.uid);
+      }
       match /r/{rid} {
         allow read: if signedIn();
         allow create: if signedIn() && request.resource.data.keys().hasOnly(['uid','txt','ts'])
@@ -238,6 +260,14 @@ service cloud.firestore {
           && request.resource.data.ts == request.time;
         allow delete: if isMe(resource.data.uid) || isMe(get(/databases/$(database)/documents/hood/$(pid)).data.uid);
       }
+    }
+    // daily post counter for the neighbourhood feed: can only go up by one per post, or restart at 1 on a new day
+    match /hoodLim/{u} {
+      allow read: if isMe(u);
+      allow create, update: if isMe(u) && request.resource.data.keys().hasOnly(['d','n'])
+        && request.resource.data.d == today() && request.resource.data.n is int
+        && request.resource.data.n == ((resource != null && resource.data.d == today()) ? resource.data.n + 1 : 1)
+        && request.resource.data.n <= 10;
     }
 
     // Reports on neighbourhood posts: write-only for users (we read them in the Firebase console). One report per user per post.
