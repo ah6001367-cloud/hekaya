@@ -8,13 +8,13 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){retur
 function active(b){return !b.until||b.until>=new Date().toISOString().slice(0,10)}
 function svg(c){return '<svg class="ic" viewBox="0 0 24 24"><path d="'+(IC[c]||IC.other)+'"/></svg>'}
 function dAt(b){return (typeof me!=='undefined'&&me)?Math.round(dist(me.lat,me.lon,b.lat,b.lon)):null}
-function near(b){var d=dAt(b);return d!=null&&d<=(b.radius||60)}
+function near(b){if(b.demo)return true;var d=dAt(b);return d!=null&&d<=(b.radius||60)}
 function fmt(d){var A=typeof ar==='function'?ar:String;return d==null?(EN?'Location off':'اللوكيشن مقفول'):d<1000?A(Math.round(d/10)*10)+(EN?' m':' متر'):A((d/1000).toFixed(1))+(EN?' km':' كم')}
 function cardHTML(b,got){return '<div class="bzc'+(got?' got':'')+'"><div class="bzt"><span>'+(EN?'Sponsored':'برعاية')+(b.demo?' · '+(EN?'demo':'تجريبي'):'')+'</span>'+svg(b.cat)+'</div><div class="bzn">'+esc(b.card||b.name)+'</div><div class="bzs">'+esc(b.name)+'</div></div>'}
 function render(){var e=document.getElementById('hm');if(!e||document.getElementById('bz'))return;var anchor=document.getElementById('dh')||document.getElementById('dc')||e.querySelector('.pl');if(!anchor||!B.length)return;
  var o=ld(),L=B.filter(active).map(function(b){return{b:b,d:dAt(b)}}).sort(function(x,y){return (x.d==null?1e9:x.d)-(y.d==null?1e9:y.d)});if(!L.length)return;
  var h='<div id="bz" class="bz"><div class="bzh"><b>'+(EN?'Place cards':'كروت الأماكن')+'</b><small>'+(EN?'Collect at the place, get an offer':'اجمعها في المكان واخد عرض')+'</small></div><div class="bzl">'+L.map(function(x){var b=x.b,got=!!o[b.id],ok=!got&&near(b);
-  return '<div class="bzi" onclick="Biz.open(\''+esc(b.id)+'\')">'+cardHTML(b,got)+'<div class="bzf"><small>'+fmt(x.d)+'</small>'+(got?'<button class="bzg">'+(EN?'View coupon':'شوف الكوبون')+'</button>':ok?'<button class="bzg on">'+(EN?'Collect':'اجمع الكارت')+'</button>':'<button class="bzg off">'+(EN?'Go to the place':'روح المكان')+'</button>')+'</div></div>'}).join('')+'</div></div>';
+  return '<div class="bzi" onclick="Biz.open(\''+esc(b.id)+'\')">'+cardHTML(b,got)+'<div class="bzf"><small>'+fmt(x.d)+'</small>'+(got?'<button class="bzg">'+(EN?'View coupon':'شوف الكوبون')+'</button>':ok?'<button class="bzg on">'+(b.demo?(EN?'Try it (demo)':'جرّب (تجريبي)'):(EN?'Collect':'اجمع الكارت'))+'</button>':'<button class="bzg off">'+(EN?'Go to the place':'روح المكان')+'</button>')+'</div></div>'}).join('')+'</div></div>';
  anchor.insertAdjacentHTML('afterend',h);if(window.HkIc)HkIc(document.getElementById('bz'))}
 function open(id){var b=B.find(function(x){return x.id==id});if(!b)return;var o=ld(),got=!!o[id];
  if(!got){if(!near(b)){var d=dAt(b);toast(EN?'Get within '+(b.radius||60)+' m of the place to collect. '+(d!=null?'You are '+fmt(d)+' away.':'Turn on location.'):'لازم تبقى جوه '+(b.radius||60)+' متر من المكان. '+(d!=null?'إنت على بعد '+fmt(d)+'.':'شغّل اللوكيشن.'));if(d!=null&&typeof tbGo==='function'){tbGo('map');setTimeout(function(){map.flyTo([b.lat,b.lon],17)},200)}return}
