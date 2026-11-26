@@ -1,0 +1,60 @@
+/* Hekaya inline SVG icon layer: swaps UI emoji/glyphs for crisp icons (original line icons, free). */
+(function(){
+var P={
+home:'M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z',
+map:'M9 4L3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14',
+feed:'M4 4h13a1 1 0 0 1 1 1v14a2 2 0 0 0 2 2H6a2 2 0 0 1-2-2zM8 8h6M8 12h6M8 16h4M18 9h2v10',
+chat:'M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.6A8 8 0 1 1 21 12z',
+user:'M12 4a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM4 21a8 8 0 0 1 16 0',
+users:'M9 4.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zM2 20a7 7 0 0 1 14 0M17 6.5a2.5 2.5 0 1 1 0 5M18 14a5 5 0 0 1 4 5',
+cam:'M4 8h3l2-3h6l2 3h3v11H4zM12 10a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z',
+pin:'M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11zM12 7.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z',
+lock:'M5 11h14v10H5zM8 11V8a4 4 0 0 1 8 0v3',
+check:'M5 12.5l4.5 4.5L19 7.5',
+flame:'M12 3c1 4 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z',
+star:'M12 3l2.8 5.8 6.2.9-4.5 4.4 1 6.2-5.5-3-5.5 3 1-6.2L3 9.7l6.2-.9z',
+cup:'M8 4h8v6a4 4 0 0 1-8 0zM8 6H4v2a3 3 0 0 0 4 3M16 6h4v2a3 3 0 0 1-4 3M12 14v4M8 21h8M10 18h4',
+compass:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM15.5 8.5l-2 5-5 2 2-5z',
+trash:'M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14',
+search:'M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-4-4',
+x:'M6 6l12 12M18 6L6 18',
+send:'M3 11l18-8-8 18-2-8z',
+pen:'M4 20l4-1 11-11-3-3L5 16z',
+book:'M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 5v16',
+menu:'M4 7h16M4 12h16M4 17h16',
+ban:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM5.6 5.6l12.8 12.8',
+eye:'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
+heart:'M12 21s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 10c0 6-8 11-8 11z',
+music:'M9 18V5l11-2v13M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM17 19a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+anchor:'M12 3a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM12 7v14M5 12H3a9 9 0 0 0 18 0h-2M8 11h8',
+flag:'M5 21V4M5 4h11l-2 4 2 4H5',
+puzzle:'M10 4a2 2 0 1 1 4 0v2h4v4h-2a2 2 0 1 0 0 4h2v4H4V6h6z',
+spark:'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z',
+bell:'M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4',
+warn:'M12 3l10 18H2zM12 10v5M12 18v.5',
+down:'M12 4v12M6 11l6 6 6-6M5 20h14',
+pause:'M8 5v14M16 5v14',cards:'M7 3h10a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zM12 9l1.2 2.4 2.6.4-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.4z',mic:'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3',play:'M7 4l13 8-13 8z',bag:'M5 8h14l1 13H4zM9 8V6a3 3 0 0 1 6 0v2',gear:'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2',moon:'M20 14A8 8 0 0 1 10 4a8 8 0 1 0 10 10z'
+};
+var M={'🏠':'home','🗺':'map','📰':'feed','💬':'chat','👤':'user','👥':'users','📷':'cam','📍':'pin','🔒':'lock','✓':'check','✅':'check','🔥':'flame','⭐':'star','🏅':'cup','🏆':'cup','🧭':'compass','🗑':'trash','🔎':'search','✕':'x','❌':'x','✖':'x','➤':'send','✏️':'pen','✏':'pen','📜':'book','☰':'menu','🚫':'ban','👁':'eye','♥':'heart','♡':'heart','🎵':'music','⚓':'anchor','⚑':'flag','🧩':'puzzle','✨':'spark','📣':'bell','⚠':'warn','⬇':'down','❚':'pause','🃏':'cards','🎤':'mic','▶':'play','🧳':'bag','⚙':'gear','🧪':'gear','🌙':'moon'};
+var F={'♥':1,'⭐':1,'▶':1};
+var keys=Object.keys(M).sort(function(a,b){return b.length-a.length}).map(function(k){return k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')});
+var RE=new RegExp('('+keys.join('|')+')\uFE0F?','g');
+function svg(k){var n=M[k];return '<svg class="ic'+(F[k]?' f':'')+'" viewBox="0 0 24 24" aria-hidden="true"><path d="'+P[n]+'"/></svg>'}
+var SKIP={TEXTAREA:1,INPUT:1,OPTION:1,SCRIPT:1,STYLE:1,TITLE:1,SELECT:1};
+function fix(t){
+ var p=t.parentNode;if(!p||SKIP[p.nodeName]||(p.isContentEditable))return;
+ var s=t.nodeValue;if(!s||s.length>400)return;RE.lastIndex=0;if(!RE.test(s))return;
+ var h=s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(RE,function(m,g){return svg(g)});
+ var sp=document.createElement('span');sp.className='icw';sp.innerHTML=h;p.replaceChild(sp,t)}
+function scan(r){
+ if(r.nodeType==3){fix(r);return}
+ if(r.nodeType!=1||SKIP[r.nodeName])return;
+ var w=document.createTreeWalker(r,4,null),a=[],n;while(n=w.nextNode())a.push(n);a.forEach(fix)}
+var st=document.createElement('style');
+st.textContent='svg.ic{width:1.15em;height:1.15em;vertical-align:-.2em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}svg.ic.f{fill:currentColor}.icw{display:inline}#tb button span svg.ic{width:24px;height:24px;stroke-width:1.7}#tb button.on span svg.ic{stroke-width:2.1;fill:#e2b44c22}button,.btn,[onclick]{-webkit-tap-highlight-color:transparent}button:active:not(:disabled){transform:scale(.97)}button{transition:transform .12s,background .18s,opacity .18s}';
+document.head.appendChild(st);
+var busy=false;
+new MutationObserver(function(ms){if(busy)return;busy=true;ms.forEach(function(m){m.addedNodes.forEach(scan);if(m.type=='characterData')fix(m.target)});busy=false}).observe(document.documentElement,{childList:true,subtree:true,characterData:true});
+scan(document.body);
+window.HkIc=scan;
+})();
