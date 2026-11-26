@@ -153,7 +153,7 @@ function openCol(){const e=document.getElementById('col');e.innerHTML=`<h2>🃏 
 cnt();
 let CUR=null;
 const SHELL=['index.html','social.js','leaflet.js','leaflet.css','riddles.js','photos.js','stories1.json','stories2.json','en_stories.json','en_riddles.json','en_cards.json'];
-const OFFURLS=k=>{const a=k==='t'?SHELL.slice():[];for(let n=1;n<=32;n++){const p=String(n).padStart(2,'0');if(k==='t'){a.push('hero/'+p+'.svg');a.push('cardart/'+p+'.svg');if(typeof PH!=='undefined'&&PH[n])a.push('photos/'+p+'.jpg')}else a.push('audio/story'+p+'.mp3')}return a};
+const OFFURLS=k=>{const a=k==='t'?SHELL.slice():[];for(let n=1;n<=32;n++){const p=String(n).padStart(2,'0');if(k==='t'){a.push('hero/'+p+'.svg');a.push('cardart/'+p+'.svg');if([1,2,4,5,7,14,16,21].includes(n))a.push('cardimg/'+p+'.webp');if(typeof PH!=='undefined'&&PH[n])a.push('photos/'+p+'.jpg')}else a.push('audio/story'+p+'.mp3')}return a};
 const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
 if(!NATIVE&&'serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 async function notifyHere(s){if(!NATIVE)return;try{const LN=Capacitor.Plugins.LocalNotifications;await LN.schedule({notifications:[{id:1000+s.n,title:EN?'Here in Hekaya':'هنا في حكاية',body:s.t,smallIcon:'ic_stat_icon_config_sample'}]})}catch(e){}}
@@ -426,10 +426,11 @@ async function showCard(n,fresh){const e=document.getElementById('cd'),c=CARDS[n
 .pc.lk .fo,.pc.lk .sp{display:none}
 </style>
 <script>
+const CIMG=new Set([1,2,4,5,7,14,16,21]);
 function cardHTML(n,lk){const c=CARDS[n],k=RAR[c.rar]||1,s=S.find(x=>x.n==n)||{},pl=String(s.p||'').split(' · ')[0];
  const hint=lk?(isU(n)?(EN?'Solve the riddle to unlock':'حُلّ اللغز علشان تفتحه'):(EN?'Visit '+pl+' to unlock':'روح '+pl+' علشان تفتح')):'';
  const sp=k>=3?[[18,22,0],[72,14,.7],[84,60,1.4],[30,74,.4],[58,40,1.1]].map(a=>`<i class="sp" style="left:${a[0]}%;top:${a[1]}%;animation-delay:${a[2]}s"></i>`).join(''):'';
- return `<div class="pc r${k} ${lk?'lk':''}" data-n="${n}"><div class="pi"><div class="hd"><span>${ar(String(n).padStart(3,'0'))}</span><i class="gem"></i></div><div class="art"><img alt="" loading="lazy" src="cardart/${String(n).padStart(2,'0')}.svg">${lk?'<div class="lkc">🔒</div>':sp}</div><div class="bn"><h3 dir="${DIR}">${lk?(EN?'Locked card':'كارت مقفول'):c.name}</h3></div>
+ return `<div class="pc r${k} ${lk?'lk':''}" data-n="${n}"><div class="pi"><div class="hd"><span>${ar(String(n).padStart(3,'0'))}</span><i class="gem"></i></div><div class="art"><img alt="" loading="lazy" src="${CIMG.has(n)?'cardimg/'+String(n).padStart(2,'0')+'.webp':'cardart/'+String(n).padStart(2,'0')+'.svg'}">${lk?'<div class="lkc">🔒</div>':sp}</div><div class="bn"><h3 dir="${DIR}">${lk?(EN?'Locked card':'كارت مقفول'):c.name}</h3></div>
  ${lk?`<div class="fv" dir="${DIR}">${hint}</div>`:`<div class="ty"><span>${TRR(c.rar)}</span><span>${c.e}</span></div><div class="st"><span>📍 +100</span><span>🧩 +50</span></div><div class="fv" dir="${DIR}">${c.t}</div>`}<div class="fo"></div></div></div>`}
 </script>
 </body></html>
