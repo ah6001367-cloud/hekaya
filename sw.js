@@ -1,4 +1,4 @@
-const C='hk-v66';
+const C='hk-v67';
 const SHELL=['./','social.js','ui.js','daily.js','biz.js','biz.json','index.html','leaflet.js','leaflet.css','riddles.js','photos.js','stories1.json','stories2.json','en_stories.json','en_riddles.json','en_cards.json'];
 self.addEventListener('install',e=>{e.waitUntil((async()=>{const c=await caches.open(C);await Promise.all(SHELL.map(u=>c.add(new Request(u,{cache:'reload'})).catch(()=>{})));self.skipWaiting()})())});
 self.addEventListener('activate',e=>{e.waitUntil((async()=>{for(const k of await caches.keys())if(k!==C)await caches.delete(k);await self.clients.claim();try{const cs=await self.clients.matchAll({type:'window'});cs.forEach(c=>{try{c.navigate(c.url)}catch(x){}})}catch(x){}})())});
