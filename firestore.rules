@@ -11,7 +11,8 @@ service cloud.firestore {
     match /profiles/{uid} {
       allow read: if signedIn();
       allow create, update: if isMe(uid)
-        && request.resource.data.keys().hasOnly(['handle','name','emoji','ts','bio','cv','ph'])
+        && request.resource.data.keys().hasOnly(['handle','name','emoji','ts','bio','cv','ph','rk'])
+        && (!('rk' in request.resource.data) || (request.resource.data.rk is int && request.resource.data.rk >= 0 && request.resource.data.rk <= 4))
         && (!('ph' in request.resource.data) || (request.resource.data.ph is string && request.resource.data.ph.size() <= 36000))
         && (!('bio' in request.resource.data) || (request.resource.data.bio is string && request.resource.data.bio.size() <= 160))
         && (!('cv' in request.resource.data) || (request.resource.data.cv is int && request.resource.data.cv >= 0 && request.resource.data.cv < 6))
@@ -58,7 +59,7 @@ service cloud.firestore {
     }
     // friends/{uid}/list/{fid}: the accepter writes both sides after a pending request exists
     match /friends/{uid}/list/{fid} {
-      allow read: if isMe(uid);
+      allow read: if isMe(uid) || (signedIn() && areFriends(request.auth.uid, uid));
       allow create: if (isMe(uid) && exists(/databases/$(database)/documents/requests/$(uid)/from/$(fid)))
                     || (isMe(fid) && exists(/databases/$(database)/documents/requests/$(fid)/from/$(uid)));
       allow delete: if isMe(uid) || isMe(fid);
