@@ -3,6 +3,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
     function isMe(uid) { return signedIn() && request.auth.uid == uid; }
+    function blockedEither(a, b) { return exists(/databases/$(database)/documents/blocks/$(a)/list/$(b)) || exists(/databases/$(database)/documents/blocks/$(b)/list/$(a)); }
     function db() { return /databases/$(database)/documents; }
     function areFriends(a, b) { return exists(/databases/$(database)/documents/friends/$(a)/list/$(b)); }
 
@@ -39,7 +40,7 @@ service cloud.firestore {
     }
     // friend requests: requests/{to}/from/{from}
     match /requests/{to}/from/{from} {
-      allow create: if isMe(from) && from != to && request.resource.data.keys().hasOnly(['ts']);
+      allow create: if isMe(from) && from != to && request.resource.data.keys().hasOnly(['ts']) && !blockedEither(from, to);
       allow read, delete: if isMe(to) || isMe(from);
     }
     // friends/{uid}/list/{fid}: the accepter writes both sides after a pending request exists
@@ -55,7 +56,7 @@ service cloud.firestore {
       function member() { return signedIn() && ids().size() == 2 && request.auth.uid in ids(); }
       function other() { return ids()[0] == request.auth.uid ? ids()[1] : ids()[0]; }
       allow read: if member() && areFriends(request.auth.uid, other());
-      allow create: if member() && areFriends(request.auth.uid, other())
+      allow create: if member() && areFriends(request.auth.uid, other()) && !blockedEither(request.auth.uid, other())
         && request.resource.data.keys().hasOnly(['from','text','ts'])
         && request.resource.data.from == request.auth.uid
         && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 1000
@@ -86,6 +87,21 @@ service cloud.firestore {
           && request.resource.data.ts == request.time;
         allow delete: if isMe(resource.data.uid) || isMe(uid);
       }
+    }
+    // blocks/{blocker}/list/{blocked}: the blocker manages the list. The blocked person can only check their own entry (used to hide the blocker from nearby results).
+    match /blocks/{uid}/list/{bid} {
+      allow get: if isMe(uid) || isMe(bid);
+      allow list: if isMe(uid);
+      allow create: if isMe(uid) && uid != bid && request.resource.data.keys().hasOnly(['ts']);
+      allow delete: if isMe(uid);
+    }
+    // nearby: approximate (about 1 km) position of users who opted in, only while their app is open. Clients drop entries older than 10 minutes.
+    match /nearby/{uid} {
+      allow read: if signedIn();
+      allow create, update: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['lat','lon','ts'])
+        && request.resource.data.lat is number && request.resource.data.lon is number;
+      allow delete: if isMe(uid);
     }
     // reports: write only, read in the Firebase console
     match /reports/{rid} {

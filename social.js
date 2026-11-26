@@ -50,7 +50,7 @@ function authScreen(mode){mode=mode||'in';
 async function doAuth(mode){const e=document.getElementById('se').value.trim(),p=document.getElementById('sp').value;if(!e||!p)return say(t('اكتب الإيميل وكلمة السر','Enter email and password'));
  try{const {au,auth}=FB;if(mode=='up')await au.createUserWithEmailAndPassword(auth,e,p);else await au.signInWithEmailAndPassword(auth,e,p)}catch(x){say(err(x))}}
 async function reset(){const e=document.getElementById('se').value.trim();if(!e)return say(t('اكتب الإيميل الأول','Enter your email first'));try{await FB.au.sendPasswordResetEmail(FB.auth,e);say(t('بعتنا لينك تغيير كلمة السر على الإيميل','Password reset link sent to your email'),1)}catch(x){say(err(x))}}
-async function signOut(){await stopLoc(true);await FB.au.signOut(FB.auth);cache.prof={};cache.stat={}}
+async function signOut(){await stopLoc(true);await nearStop();nearClear();await FB.au.signOut(FB.auth);cache.prof={};cache.stat={}}
 
 // ---------- profile ----------
 const EMOJIS=['🙂','😎','🧭','⚓','🐚','🌊','🦩','🚢','🎩','🌙'];
@@ -78,6 +78,7 @@ async function hub(){
  scr(`<h2>👥 ${t('الأصدقاء','Friends')}</h2>
  <div class="box"><h3>${esc(prof.emoji)} ${esc(prof.name)}</h3><p dir="ltr">@${esc(prof.handle)}</p><div class="row"><button class="o" onclick="Soc.editName()">${t('غيّر الاسم','Edit name')}</button><button class="o" onclick="Soc.signOut()">${t('خروج','Sign out')}</button></div></div>
  <div class="row"><button onclick="Soc.searchScreen()">🔎 ${t('دوّر على صديق','Find a friend')}</button><button onclick="Soc.sugScreen()">📍 ${t('اقترح مكان','Suggest a place')}</button></div>
+ <div class="row"><button onclick="Soc.nearScreen()">👀 ${t('ناس قريبة','People nearby')}</button><button class="o" onclick="Soc.blockedScreen()">🚫 ${t('المحجوبين','Blocked')}</button></div>
  <div class="row"><button onclick="Soc.feedScreen()">📰 ${t('الفيد','Feed')}</button><button class="o" onclick="Soc.feedScreen(Soc.user.uid)">${t('بوستاتي','My posts')}</button></div>
  <div class="box"><h3>📣 ${t('انشر إنجاز','Share an achievement')}</h3>${(typeof achs==='function'?achs().filter(x=>x.ok):[]).map((a,i)=>`<div class="row"><button class="o" onclick="Soc.postBadge(${i})">🏅 ${esc(a.n)}</button></div>`).join('')||`<p><small>${t('لسه معندكش إنجازات.','No achievements yet.')}</small></p>`}<p><small>${t('البوستات بتظهر لأصدقائك بس. الصور من ☰ ثم ذكرياتي.','Posts are visible to friends only. Photos: ☰ then Memories.')}</small></p></div>
  <div id="sreq"></div>
@@ -102,7 +103,7 @@ let FR=[];
 async function renderFriends(){const el=document.getElementById('sfr'),lb=document.getElementById('slb');if(!el)return;
  if(!FR.length){el.innerHTML=`<p>${t('لسه مفيش أصدقاء. دوّر على حد بالـ@يوزر.','No friends yet. Search by @handle.')}</p>`;lb.innerHTML=`<p>${t('ضيف أصدقاء الأول.','Add friends first.')}</p>`;return}
  const ps=await Promise.all(FR.map(i=>getProf(i).catch(()=>null))),ss=await Promise.all(FR.map(getStat));
- el.innerHTML=FR.map((i,k)=>`<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><div style="flex:1">${esc((ps[k]||{}).emoji||'🙂')} <b>${esc((ps[k]||{}).name||'?')}</b><br><small dir="ltr">@${esc((ps[k]||{}).handle||'')}</small></div><button class="o" style="width:auto;margin:0" onclick="Soc.feedScreen('${i}')">📰</button><button style="width:auto;margin:0" onclick="Soc.chat('${i}')">💬</button><button class="o" style="width:auto;margin:0" onclick="Soc.unfriend('${i}')">✖</button></div>`).join('');
+ el.innerHTML=FR.map((i,k)=>`<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><div style="flex:1">${esc((ps[k]||{}).emoji||'🙂')} <b>${esc((ps[k]||{}).name||'?')}</b><br><small dir="ltr">@${esc((ps[k]||{}).handle||'')}</small></div><button class="o" style="width:auto;margin:0" onclick="Soc.feedScreen('${i}')">📰</button><button class="o" style="width:auto;margin:0" onclick="Soc.blockUser('${i}')">🚫</button><button style="width:auto;margin:0" onclick="Soc.chat('${i}')">💬</button><button class="o" style="width:auto;margin:0" onclick="Soc.unfriend('${i}')">✖</button></div>`).join('');
  const rows=[{n:prof.name,e:prof.emoji,me:1,s:flag('hk_soc_stats_off')?null:stats()}].concat(FR.map((i,k)=>({n:(ps[k]||{}).name||'?',e:(ps[k]||{}).emoji||'🙂',s:ss[k]})));
  rows.sort((a,b)=>((b.s&&b.s.stories)||-1)-((a.s&&a.s.stories)||-1)||((b.s&&b.s.riddles)||0)-((a.s&&a.s.riddles)||0));
  lb.innerHTML=rows.map((r,k)=>`<p style="margin:6px 0;${r.me?'color:#e2b44c;font-weight:700':''}">${k+1}. ${esc(r.e)} ${esc(r.n)}${r.me?' ('+t('أنا','me')+')':''} · ${r.s?`${t('حكايات','stories')} ${r.s.stories} · ${t('ألغاز','riddles')} ${r.s.riddles} · 🏅${r.s.badges}`:`<small>${t('مخفي','hidden')}</small>`}</p>`).join('')}
@@ -130,7 +131,7 @@ async function send(uid){const i=document.getElementById('ct'),x=i.value.trim();
 let lastLoc=0,mapUnsubs=[],markers={};
 function startLoc(){/* positions are pushed from onPos */}
 async function stopLoc(quiet){if(!FB||!me)return;try{const {fs,db}=FB;await fs.deleteDoc(fs.doc(db,'loc',me.uid))}catch(e){}}
-async function onPos(lat,lon){if(!FB||!me||!prof||!flag('hk_soc_loc'))return;const now=Date.now();if(now-lastLoc<20000)return;lastLoc=now;try{const {fs,db}=FB;await fs.setDoc(fs.doc(db,'loc',me.uid),{lat:Math.round(lat*1e5)/1e5,lon:Math.round(lon*1e5)/1e5,ts:now})}catch(e){}}
+async function onPos(lat,lon){myPos={lat,lon};if(!FB||!me||!prof)return;if(flag('hk_soc_near')&&!FAKE)nearPush(lat,lon);if(!flag('hk_soc_loc'))return;const now=Date.now();if(now-lastLoc<20000)return;lastLoc=now;try{const {fs,db}=FB;await fs.setDoc(fs.doc(db,'loc',me.uid),{lat:Math.round(lat*1e5)/1e5,lon:Math.round(lon*1e5)/1e5,ts:now})}catch(e){}}
 async function togLoc(){if(flag('hk_soc_loc')){setFlag('hk_soc_loc',false);await stopLoc()}else{if(!confirm(t('أصدقاءك المقبولين بس هيشوفوا مكانك الحالي طول ما الخاصية شغالة. تقدر تخفي نفسك في أي وقت. تفتحها؟','Only your accepted friends will see your current position while this is on. You can hide at any time. Turn it on?')))return;setFlag('hk_soc_loc',true);lastLoc=0;if(typeof SPOS==='function'&&SPOS()&&!FAKE)onPos(SPOS().lat,SPOS().lon)}hub()}
 async function hideNow(){setFlag('hk_soc_loc',false);await stopLoc();hub()}
 function clearMarkers(){mapUnsubs.forEach(f=>{try{f()}catch(e){}});mapUnsubs=[];Object.values(markers).forEach(m=>map.removeLayer(m));markers={}}
@@ -187,9 +188,52 @@ async function delComment(u,id,c){const {fs,db}=FB;try{await fs.deleteDoc(fs.doc
 async function delPost(id){if(!confirm(t('تمسح البوست؟','Delete this post?')))return;const {fs,db}=FB;try{for(const sub of ['likes','comments']){const r=await fs.getDocs(fs.collection(db,'userPosts',me.uid,'items',id,sub));await Promise.all(r.docs.map(d=>fs.deleteDoc(d.ref)))}await fs.deleteDoc(fs.doc(db,'userPosts',me.uid,'items',id));const e=document.getElementById('p_'+me.uid+'_'+id);if(e)e.remove()}catch(e){alert(err(e))}}
 async function report(u,id){const why=prompt(t('سبب الإبلاغ؟ (اختياري)','Why are you reporting this? (optional)'),'');if(why===null)return;const {fs,db}=FB;try{await fs.addDoc(fs.collection(db,'reports'),{by:me.uid,postUid:u,postId:id,reason:String(why).slice(0,300),ts:fs.serverTimestamp()});alert(t('وصلنا البلاغ. شكرا.','Report sent. Thank you.'))}catch(e){alert(err(e))}}
 
+
+// ---------- block / report people ----------
+async function getBlocks(){const {fs,db}=FB;const r=await fs.getDocs(fs.collection(db,'blocks',me.uid,'list'));return r.docs.map(d=>d.id)}
+async function blockUser(uid){if(!confirm(t('تحجب الشخص ده؟ هيتشال من أصدقائك ومش هيقدر يبعتلك طلب أو رسالة ولا يشوفك قريب منه.','Block this person? They are removed from your friends and can no longer send you requests or messages, or see you nearby.')))return;
+ try{const {fs,db}=FB,b=fs.writeBatch(db);b.set(fs.doc(db,'blocks',me.uid,'list',uid),{ts:Date.now()});b.delete(fs.doc(db,'friends',me.uid,'list',uid));b.delete(fs.doc(db,'friends',uid,'list',me.uid));b.delete(fs.doc(db,'requests',me.uid,'from',uid));b.delete(fs.doc(db,'requests',uid,'from',me.uid));await b.commit();alert(t('اتحجب.','Blocked.'));if(view)view()}catch(e){alert(err(e))}}
+async function unblock(uid){try{const {fs,db}=FB;await fs.deleteDoc(fs.doc(db,'blocks',me.uid,'list',uid));blockedScreen()}catch(e){alert(err(e))}}
+async function reportUser(uid){const why=prompt(t('سبب الإبلاغ عن الشخص ده؟','Why are you reporting this person?'),'');if(why===null)return;const {fs,db}=FB;try{await fs.addDoc(fs.collection(db,'reports'),{by:me.uid,postUid:uid,postId:'profile',reason:String(why).slice(0,300),ts:fs.serverTimestamp()});alert(t('وصلنا البلاغ. شكرا.','Report sent. Thank you.'))}catch(e){alert(err(e))}}
+async function blockedScreen(){scr(`<h2>🚫 ${t('المحجوبين','Blocked people')}</h2><div id="bl" class="box"><p>…</p></div>${back('Soc.home()')}`,()=>{});
+ try{const ids=await getBlocks(),ps=await Promise.all(ids.map(i=>getProf(i).catch(()=>null)));const el=document.getElementById('bl');if(!el)return;
+  el.innerHTML=ids.length?ids.map((i,k)=>`<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><div style="flex:1">${esc((ps[k]||{}).emoji||'🙂')} <b>${esc((ps[k]||{}).name||'?')}</b><br><small dir="ltr">@${esc((ps[k]||{}).handle||'')}</small></div><button class="o" style="width:auto;margin:0" onclick="Soc.unblock('${i}')">${t('إلغاء الحجب','Unblock')}</button></div>`).join(''):`<p>${t('محدش محجوب.','Nobody is blocked.')}</p>`}catch(e){say(err(e))}}
+
+// ---------- people nearby (opt-in, approximate, only while the app is open) ----------
+let lastNear=0,nearMk={},nearT=null,myPos=null;
+const rnd2=x=>Math.round(x*100)/100;
+async function nearPush(lat,lon){if(!FB||!me||!prof||!flag('hk_soc_near'))return;const now=Date.now();if(now-lastNear<60000)return;lastNear=now;try{const {fs,db}=FB;await fs.setDoc(fs.doc(db,'nearby',me.uid),{lat:rnd2(lat),lon:rnd2(lon),ts:now})}catch(e){}}
+async function nearStop(){if(!FB||!me)return;lastNear=0;try{const {fs,db}=FB;await fs.deleteDoc(fs.doc(db,'nearby',me.uid))}catch(e){}}
+function nearClear(){Object.values(nearMk).forEach(m=>map.removeLayer(m));nearMk={}}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)nearStop()});window.addEventListener('pagehide',()=>{nearStop()});
+function myP(){const p=typeof SPOS==='function'&&SPOS();return p||myPos}
+async function loadNear(){const p=myP();if(!p)return{err:t('الموقع مش متاح. افتح الـGPS.','Location not available. Turn on GPS.')};myPos=p;
+ const {fs,db}=FB,la=rnd2(p.lat),lo=rnd2(p.lon);
+ const r=await fs.getDocs(fs.query(fs.collection(db,'nearby'),fs.where('lat','>=',la-0.06),fs.where('lat','<=',la+0.06),fs.limit(60)));
+ const blocked=new Set(await getBlocks()),out=[];
+ for(const d of r.docs){const x=d.data(),u=d.id;if(u===me.uid||blocked.has(u)||Date.now()-x.ts>10*60000||Math.abs(x.lon-lo)>0.08)continue;
+  try{const g=await fs.getDoc(fs.doc(db,'blocks',u,'list',me.uid));if(g.exists())continue}catch(e){}
+  const km=Math.hypot((x.lat-la)*111,(x.lon-lo)*111*Math.cos(la*Math.PI/180));out.push({u,x,km})}
+ out.sort((a,b)=>a.km-b.km);const ps=await Promise.all(out.map(o=>getProf(o.u).catch(()=>null)));out.forEach((o,i)=>o.p=ps[i]);return{list:out.filter(o=>o.p)}}
+function nearMarkers(list){nearClear();list.forEach(o=>{nearMk[o.u]=L.marker([o.x.lat,o.x.lon],{icon:L.divIcon({className:'',html:`<div class="nmk">${esc(o.p.emoji||'🙂')}<span>${esc(o.p.name||'')}</span></div>`,iconSize:[1,1]}),zIndexOffset:700}).addTo(map).on('click',()=>nearScreen())})}
+function nearKm(k){return k<2?t('أقل من ٢ كم','under 2 km'):t('حوالي ','about ')+Math.round(k)+t(' كم',' km')}
+async function nearScreen(){
+ const on=flag('hk_soc_near');
+ scr(`<h2>👀 ${t('ناس قريبة','People nearby')}</h2>
+ <div class="box"><p>${t('مقفولة بشكل افتراضي. لما تفتحها، أي مستخدم للتطبيق قريب منك يشوفك على الخريطة بمكان تقريبي (حوالي كم، مش العنوان) وإنت فاتح التطبيق بس. تختفي أول ما تقفل التطبيق أو الخاصية. لو عايز أصدقاءك بس، استخدم "مشاركة موقعي" في صفحة الأصدقاء.','Off by default. When on, other app users near you see you on the map at an approximate spot (about 1 km, never your address), only while the app is open. You disappear when you close the app or switch this off. For friends only, use "Share my location" on the Friends page.')}</p>
+ <button class="${on?'':'o'}" onclick="Soc.togNear()">${on?t('ظاهر للناس القريبة ✓ (اضغط للإخفاء)','Visible to people nearby ✓ (tap to hide)'):t('خليني ظاهر للناس القريبة','Make me visible nearby')}</button></div>
+ <div class="box" style="border:1px solid #e2b44c"><p>🛡 ${t('نصيحة أمان: أول لقاء يكون في مكان عام ومزدحم، وخد صاحب معاك، ومتشاركش عنوان بيتك. تقدر تحجب أو تبلّغ عن أي حد.','Safety: meet for the first time in a busy public place, bring a friend, and never share your home address. You can block or report anyone.')}</p></div>
+ <div id="nl" class="box"><p>…</p></div>${back('Soc.home()')}`,()=>nearScreen());
+ try{const r=await loadNear(),el=document.getElementById('nl');if(!el)return;
+  if(r.err){el.innerHTML=`<p>${esc(r.err)}</p>`;return}
+  nearMarkers(r.list);const fr=new Set(FR);
+  el.innerHTML=r.list.length?r.list.map(o=>`<div style="margin:10px 0;padding-bottom:10px;border-bottom:1px solid #1c3a6b"><div>${esc(o.p.emoji||'🙂')} <b>${esc(o.p.name)}</b> <small dir="ltr">@${esc(o.p.handle)}</small><br><small>${nearKm(o.km)}</small></div>
+   <div class="row">${fr.has(o.u)?`<button onclick="Soc.chat('${o.u}')">💬 ${t('شات','Chat')}</button>`:`<button onclick="Soc.addFriend('${o.u}',this)">${t('ابعت طلب تعارف','Send connection request')}</button>`}<button class="o" style="width:auto" onclick="Soc.blockUser('${o.u}')">🚫</button><button class="o" style="width:auto" onclick="Soc.reportUser('${o.u}')">⚑</button></div></div>`).join('')+`<p><small>${t('الشات بيتفتح بعد ما الطرف التاني يقبل الطلب.','Chat opens only after the other person accepts your request.')}</small></p>`:`<p>${t('مفيش حد ظاهر قريب منك دلوقتي.','Nobody is visible near you right now.')}</p>`}catch(e){say(err(e))}}
+async function togNear(){if(flag('hk_soc_near')){setFlag('hk_soc_near',false);await nearStop();nearClear()}else{if(!confirm(t('أي مستخدم قريب منك هيشوفك بمكان تقريبي (حوالي كم) طول ما التطبيق مفتوح. تقدر تقفلها في أي وقت. تفتحها؟','Other users near you will see you at an approximate spot (about 1 km) while the app is open. You can turn it off anytime. Turn it on?')))return;setFlag('hk_soc_near',true);lastNear=0;const p=myP();if(p&&!FAKE)nearPush(p.lat,p.lon)}nearScreen()}
+
 // ---------- delete account ----------
 async function delAcct(){if(!confirm(t('هتمسح حسابك وكل بياناتك (البروفايل، الأصدقاء، الترتيب، المكان). مفيش رجوع. تكمل؟','This deletes your account and all your data (profile, friends, leaderboard, location). It cannot be undone. Continue?')))return;
- try{const {fs,db,au,auth}=FB,uid=me.uid;await stopLoc();const b=fs.writeBatch(db);FR.forEach(f=>{b.delete(fs.doc(db,'friends',f,'list',uid));b.delete(fs.doc(db,'friends',uid,'list',f))});b.delete(fs.doc(db,'stats',uid));if(prof)b.delete(fs.doc(db,'handles',prof.handle));await b.commit();await fs.deleteDoc(fs.doc(db,'profiles',uid));await au.deleteUser(auth.currentUser);cache.prof={};alert(t('اتمسح حسابك','Account deleted'));openMenu()}catch(x){alert(err(x))}}
+ try{const {fs,db,au,auth}=FB,uid=me.uid;await stopLoc();await nearStop();try{const ps=await fs.getDocs(fs.collection(db,'userPosts',uid,'items'));for(const d of ps.docs){for(const sub of ['likes','comments']){const r=await fs.getDocs(fs.collection(db,'userPosts',uid,'items',d.id,sub));await Promise.all(r.docs.map(x=>fs.deleteDoc(x.ref)))}await fs.deleteDoc(d.ref)}const bl=await fs.getDocs(fs.collection(db,'blocks',uid,'list'));await Promise.all(bl.docs.map(x=>fs.deleteDoc(x.ref)))}catch(e){}const b=fs.writeBatch(db);FR.forEach(f=>{b.delete(fs.doc(db,'friends',f,'list',uid));b.delete(fs.doc(db,'friends',uid,'list',f))});b.delete(fs.doc(db,'stats',uid));if(prof)b.delete(fs.doc(db,'handles',prof.handle));await b.commit();await fs.deleteDoc(fs.doc(db,'profiles',uid));await au.deleteUser(auth.currentUser);cache.prof={};alert(t('اتمسح حسابك','Account deleted'));openMenu()}catch(x){alert(err(x))}}
 
-return{open,home,feedScreen,postMemory,postBadge,like,comments,addComment,delComment,delPost,report,authScreen,doAuth,reset,signOut,saveProf,editName,searchScreen,doSearch,addFriend,accept,decline,unfriend,chat,send,togLoc,hideNow,togMap,togStats,sugScreen,sugHere,sugSend,delAcct,sync,onPos,get user(){return me},get profile(){return prof},_fb:()=>FB}
+return{open,home,nearScreen,togNear,blockUser,unblock,reportUser,blockedScreen,feedScreen,postMemory,postBadge,like,comments,addComment,delComment,delPost,report,authScreen,doAuth,reset,signOut,saveProf,editName,searchScreen,doSearch,addFriend,accept,decline,unfriend,chat,send,togLoc,hideNow,togMap,togStats,sugScreen,sugHere,sugSend,delAcct,sync,onPos,get user(){return me},get profile(){return prof},_fb:()=>FB}
 })();
