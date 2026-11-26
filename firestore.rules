@@ -1,0 +1,107 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isMe(uid) { return signedIn() && request.auth.uid == uid; }
+    function db() { return /databases/$(database)/documents; }
+    function areFriends(a, b) { return exists(/databases/$(database)/documents/friends/$(a)/list/$(b)); }
+
+    // public profile: handle, display name, emoji. Searchable by any signed-in user.
+    match /profiles/{uid} {
+      allow read: if signedIn();
+      allow create, update: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['handle','name','emoji','ts'])
+        && request.resource.data.handle is string && request.resource.data.handle.matches('^[a-z0-9_]{3,20}$')
+        && request.resource.data.name is string && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 30;
+      allow delete: if isMe(uid);
+    }
+    // unique handle -> uid
+    match /handles/{handle} {
+      allow get: if signedIn();
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['uid']) && request.resource.data.uid == request.auth.uid
+        && handle.matches('^[a-z0-9_]{3,20}$');
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+    // progress counts, readable by the owner and accepted friends only
+    match /stats/{uid} {
+      allow read: if isMe(uid) || (signedIn() && areFriends(request.auth.uid, uid));
+      allow write: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['stories','riddles','badges','ts'])
+        && request.resource.data.stories is int && request.resource.data.riddles is int && request.resource.data.badges is int;
+    }
+    // live location, only while the owner shares. Friends read. Owner deletes to hide.
+    match /loc/{uid} {
+      allow read: if isMe(uid) || (signedIn() && areFriends(request.auth.uid, uid));
+      allow write: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['lat','lon','ts'])
+        && request.resource.data.lat is number && request.resource.data.lon is number;
+      allow delete: if isMe(uid);
+    }
+    // friend requests: requests/{to}/from/{from}
+    match /requests/{to}/from/{from} {
+      allow create: if isMe(from) && from != to && request.resource.data.keys().hasOnly(['ts']);
+      allow read, delete: if isMe(to) || isMe(from);
+    }
+    // friends/{uid}/list/{fid}: the accepter writes both sides after a pending request exists
+    match /friends/{uid}/list/{fid} {
+      allow read: if isMe(uid);
+      allow create: if (isMe(uid) && exists(/databases/$(database)/documents/requests/$(uid)/from/$(fid)))
+                    || (isMe(fid) && exists(/databases/$(database)/documents/requests/$(fid)/from/$(uid)));
+      allow delete: if isMe(uid) || isMe(fid);
+    }
+    // 1:1 chat. Chat id is the two uids sorted and joined with an underscore.
+    match /chats/{chatId}/messages/{mid} {
+      function ids() { return chatId.split('_'); }
+      function member() { return signedIn() && ids().size() == 2 && request.auth.uid in ids(); }
+      function other() { return ids()[0] == request.auth.uid ? ids()[1] : ids()[0]; }
+      allow read: if member() && areFriends(request.auth.uid, other());
+      allow create: if member() && areFriends(request.auth.uid, other())
+        && request.resource.data.keys().hasOnly(['from','text','ts'])
+        && request.resource.data.from == request.auth.uid
+        && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 1000
+        && request.resource.data.ts == request.time;
+    }
+    // posts: userPosts/{uid}/items/{id}. Friends-only. Photos are compressed JPEG data URLs (no Storage needed).
+    match /userPosts/{uid}/items/{id} {
+      allow read: if isMe(uid) || (signedIn() && areFriends(request.auth.uid, uid));
+      allow create: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['uid','kind','text','img','n','title','ts'])
+        && request.resource.data.uid == uid
+        && request.resource.data.kind in ['photo','badge']
+        && request.resource.data.text is string && request.resource.data.text.size() <= 500
+        && request.resource.data.img is string && request.resource.data.img.size() <= 260000
+        && request.resource.data.ts == request.time;
+      allow delete: if isMe(uid);
+      match /likes/{liker} {
+        allow read: if isMe(uid) || (signedIn() && areFriends(request.auth.uid, uid));
+        allow create: if isMe(liker) && (liker == uid || areFriends(liker, uid));
+        allow delete: if isMe(liker) || isMe(uid);
+      }
+      match /comments/{cid} {
+        allow read: if isMe(uid) || (signedIn() && areFriends(request.auth.uid, uid));
+        allow create: if signedIn() && (request.auth.uid == uid || areFriends(request.auth.uid, uid))
+          && request.resource.data.keys().hasOnly(['uid','text','ts'])
+          && request.resource.data.uid == request.auth.uid
+          && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 300
+          && request.resource.data.ts == request.time;
+        allow delete: if isMe(resource.data.uid) || isMe(uid);
+      }
+    }
+    // reports: write only, read in the Firebase console
+    match /reports/{rid} {
+      allow create: if signedIn() && request.resource.data.by == request.auth.uid
+        && request.resource.data.keys().hasOnly(['by','postUid','postId','reason','ts'])
+        && request.resource.data.ts == request.time;
+    }
+    // suggested places: the owner creates and reads their own. Reviewed by Ahmed in the console.
+    match /placeSuggestions/{id} {
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['uid','name','note','lat','lon','src','lic','ts'])
+        && request.resource.data.name is string && request.resource.data.name.size() >= 2 && request.resource.data.name.size() <= 80
+        && request.resource.data.note is string && request.resource.data.note.size() <= 1000
+        && request.resource.data.lat is number && request.resource.data.lon is number
+        && request.resource.data.ts == request.time;
+      allow read: if signedIn() && resource.data.uid == request.auth.uid;
+    }
+  }
+}
