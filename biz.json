@@ -2,24 +2,6 @@
  "_help": "Add one object per business. Fields: id (unique, no spaces), name, cat (cafe|food|shop|museum|other), lat, lon, radius (meters to collect/stamp, default 60), card (short card title), story (1-2 lines about the place), offer (first-visit discount, once per person, optional), code (coupon code shown to staff), until (YYYY-MM-DD, optional), terms (optional), loy (optional loyalty card: {\"n\":10,\"reward\":\"...\"} = stamps needed and the reward; optional \"gap\" = minimum hours between stamps, default none; the same n (and gap if used) must be saved in the shop PIN record in admin.html), storyR (meters around a story that show this shop card, default 500), demo (true = demo tag, works from anywhere with PIN 123456).",
  "list": [
   {
-   "id": "trial-shop",
-   "name": "محل التجربة (اختبار مؤقت)",
-   "cat": "cafe",
-   "lat": 31.2653,
-   "lon": 32.3019,
-   "radius": 30000,
-   "card": "كارت التجربة",
-   "story": "محل تجريبي لاختبار الكوبون وكارت الولاء. بيتشال بعد الاختبار.",
-   "offer": "خصم تجريبي ١٠٪",
-   "code": "TRIAL-10",
-   "until": "2026-12-05",
-   "terms": "اختبار فقط. أول زيارة بس.",
-   "loy": {
-    "n": 3,
-    "reward": "مشروب تجريبي"
-   }
-  },
-  {
    "id": "zakuza-64x0",
    "name": "Zakuza",
    "cat": "cafe",
@@ -36,60 +18,6 @@
     "reward": "مشروب هديه",
     "gap": 0
    }
-  },
-  {
-   "id": "demo-cafe-fanar",
-   "name": "كافيه الفنار (تجريبي)",
-   "cat": "cafe",
-   "lat": 31.2655,
-   "lon": 32.3036,
-   "radius": 80,
-   "card": "كارت الفنار",
-   "story": "قهوة على أصل الحكاية: المكان ده كان بيستقبل البحارة بعد ما يرسوا.",
-   "offer": "قهوة تركي هدية مع أي طلب",
-   "code": "HEKAYA-FANAR",
-   "until": "2027-12-31",
-   "terms": "أول زيارة بس. اعرض الشاشة للكاشير.",
-   "loy": {
-    "n": 5,
-    "reward": "قهوة هدية"
-   },
-   "demo": true
-  },
-  {
-   "id": "demo-sweets-port",
-   "name": "حلويات بورسعيد (تجريبي)",
-   "cat": "food",
-   "lat": 31.2641,
-   "lon": 32.3009,
-   "radius": 80,
-   "card": "كارت الحلو",
-   "story": "من أيام المدينة القديمة والبيت اللي بيتعمل فيه الحلو بإيد الأسطى.",
-   "offer": "خصم ١٠٪ على الطلب",
-   "code": "HEKAYA-10",
-   "until": "2027-12-31",
-   "terms": "أول زيارة بس. مش مع عروض تانية.",
-   "demo": true
-  },
-  {
-   "id": "demo-flamingo-tafreea",
-   "name": "كافيه فلامنجو التفريعة (تجريبي)",
-   "cat": "cafe",
-   "lat": 31.2203,
-   "lon": 32.3902,
-   "radius": 80,
-   "storyR": 600,
-   "card": "كارت فلامنجو",
-   "story": "على بحيرة الملاحة شرق التفريعة، مكان للقعدة وسط الطيور.",
-   "offer": "مشروب هدية مع أي طلب",
-   "code": "HEKAYA-FLAM",
-   "until": "2027-12-31",
-   "terms": "مثال تجريبي: أول زيارة بس.",
-   "loy": {
-    "n": 10,
-    "reward": "كرواسون مع القهوة"
-   },
-   "demo": true
   }
  ]
 }
