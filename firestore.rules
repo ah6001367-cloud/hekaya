@@ -29,9 +29,19 @@ service cloud.firestore {
     // progress counts, readable by the owner and accepted friends only
     match /stats/{uid} {
       allow read: if isMe(uid) || (signedIn() && areFriends(request.auth.uid, uid));
-      allow write: if isMe(uid)
-        && request.resource.data.keys().hasOnly(['stories','riddles','badges','ts'])
-        && request.resource.data.stories is int && request.resource.data.riddles is int && request.resource.data.badges is int;
+      allow delete: if isMe(uid);
+      // pts grows at a plausible rate only: a start allowance plus about 0.6 points per second since the last write.
+      allow create, update: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['stories','riddles','badges','ts','pts','rk','st','at'])
+        && request.resource.data.stories is int && request.resource.data.riddles is int && request.resource.data.badges is int
+        && (!('pts' in request.resource.data) || (
+             request.resource.data.pts is int && request.resource.data.pts >= 0 && request.resource.data.pts <= 100000
+             && request.resource.data.rk is int && request.resource.data.rk >= 0 && request.resource.data.rk <= 4
+             && request.resource.data.st is int && request.resource.data.st >= 0 && request.resource.data.st <= 400
+             && request.resource.data.at == request.time
+             && (!exists(/databases/$(database)/documents/stats/$(uid)) || !('at' in resource.data) || !('pts' in resource.data)
+                 ? request.resource.data.pts <= 6000
+                 : request.resource.data.pts <= resource.data.pts + 500 + (request.time.toMillis() - resource.data.at.toMillis()) / 1700)));
     }
     // live location, only while the owner shares. Friends read. Owner deletes to hide.
     match /loc/{uid} {

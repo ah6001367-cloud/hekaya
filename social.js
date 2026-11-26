@@ -136,9 +136,9 @@ async function saveProf(){const h=document.getElementById('sh').value.trim().toL
 async function editName(){const n=prompt(t('الاسم الجديد','New display name'),prof.name);if(!n||!n.trim())return;try{const {fs,db}=FB;await fs.setDoc(fs.doc(db,'profiles',me.uid),{handle:prof.handle,name:n.trim().slice(0,30),emoji:prof.emoji,ts:Date.now()});prof=await getProf(me.uid,true);hub()}catch(x){alert(err(x))}}
 
 // ---------- hub ----------
-function stats(){const A=(typeof achs==='function'?achs():[]);return{stories:unlocked.length,riddles:SOL.length,badges:A.filter(x=>x.ok).length,ts:Date.now()}}
+function stats(){const A=(typeof achs==='function'?achs():[]),P=typeof points==='function'?points():{total:0,ri:0,cur:0};return{stories:unlocked.length,riddles:SOL.length,badges:A.filter(x=>x.ok).length,pts:P.total,rk:P.ri,st:P.cur,ts:Date.now()}}
 let syncT=0;
-async function sync(){if(!FB||!me||!prof)return;if(flag('hk_soc_stats_off'))return;const now=Date.now();if(now-syncT<5000)return;syncT=now;try{const {fs,db}=FB;await fs.setDoc(fs.doc(db,'stats',me.uid),stats())}catch(e){}}
+async function sync(){if(!FB||!me||!prof)return;if(flag('hk_soc_stats_off'))return;const now=Date.now();if(now-syncT<5000)return;syncT=now;try{const {fs,db}=FB;const st=stats();try{await fs.setDoc(fs.doc(db,'stats',me.uid),Object.assign({at:fs.serverTimestamp()},st))}catch(e){await fs.setDoc(fs.doc(db,'stats',me.uid),{stories:st.stories,riddles:st.riddles,badges:st.badges,ts:st.ts})}}catch(e){}}
 function afterLogin(){sync();gwStart();if(flag('hk_soc_loc'))startLoc();if(flag('hk_soc_map'))startMap()}
 async function hub(){
  const st=flag('hk_soc_loc'),sm=flag('hk_soc_map'),so=!flag('hk_soc_stats_off');
@@ -173,8 +173,8 @@ async function renderFriends(){const el=document.getElementById('sfr'),lb=docume
  const ps=await Promise.all(FR.map(i=>getProf(i).catch(()=>null))),ss=await Promise.all(FR.map(getStat));
  el.innerHTML=FR.map((i,k)=>`<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><div style="flex:1;cursor:pointer" onclick="Soc.profileScreen('${i}')">${av((ps[k]||{}))} <b>${esc((ps[k]||{}).name||'?')}</b><br><small dir="ltr">@${esc((ps[k]||{}).handle||'')}</small></div><button class="o" style="width:auto;margin:0" onclick="Soc.feedScreen('${i}')">📰</button><button class="o" style="width:auto;margin:0" onclick="Soc.blockUser('${i}')">🚫</button><button style="width:auto;margin:0" onclick="Soc.chat('${i}')">💬</button><button class="o" style="width:auto;margin:0" onclick="Soc.unfriend('${i}')">✖</button></div>`).join('');
  const rows=[{n:prof.name,e:av(prof),me:1,s:flag('hk_soc_stats_off')?null:stats()}].concat(FR.map((i,k)=>({n:(ps[k]||{}).name||'?',e:av(ps[k]||{}),s:ss[k]})));
- rows.sort((a,b)=>((b.s&&b.s.stories)||-1)-((a.s&&a.s.stories)||-1)||((b.s&&b.s.riddles)||0)-((a.s&&a.s.riddles)||0));
- lb.innerHTML=rows.map((r,k)=>`<p style="margin:6px 0;${r.me?'color:#e2b44c;font-weight:700':''}">${k+1}. ${r.e} ${esc(r.n)}${r.me?' ('+t('أنا','me')+')':''} · ${r.s?`${t('حكايات','stories')} ${r.s.stories} · ${t('ألغاز','riddles')} ${r.s.riddles} · 🏅${r.s.badges}`:`<small>${t('مخفي','hidden')}</small>`}</p>`).join('')}
+ rows.sort((a,b)=>((b.s&&(b.s.pts!=null?b.s.pts:b.s.stories*100))||-1)-((a.s&&(a.s.pts!=null?a.s.pts:a.s.stories*100))||-1));
+ lb.innerHTML=rows.map((r,k)=>`<p style="margin:6px 0;${r.me?'color:#e2b44c;font-weight:700':''}">${k+1}. ${r.e} ${esc(r.n)}${r.me?' ('+t('أنا','me')+')':''} · ${r.s?`${r.s.pts!=null?`<b>${r.s.pts}</b> ${t('نقطة','pts')} · ${RKN(r.s.rk)} · `:''}${t('حكايات','stories')} ${r.s.stories} · ${t('ألغاز','riddles')} ${r.s.riddles}${r.s.st>=2?' · 🔥'+r.s.st:''}`:`<small>${t('مخفي','hidden')}</small>`}</p>`).join('')}
 async function togStats(){const off=!flag('hk_soc_stats_off');setFlag('hk_soc_stats_off',off);const {fs,db}=FB;try{if(off)await fs.deleteDoc(fs.doc(db,'stats',me.uid));else{syncT=0;await sync()}}catch(e){}hub()}
 
 // ---------- search / requests ----------
@@ -188,6 +188,7 @@ async function decline(uid){try{const {fs,db}=FB;await fs.deleteDoc(fs.doc(db,'r
 async function unfriend(uid){if(!confirm(t('تشيل الصديق ده؟','Remove this friend?')))return;try{const {fs,db}=FB,b=fs.writeBatch(db);b.delete(fs.doc(db,'friends',me.uid,'list',uid));b.delete(fs.doc(db,'friends',uid,'list',me.uid));await b.commit()}catch(x){alert(err(x))}}
 
 // ---------- chat ----------
+const RKN=i=>(typeof RANKS!=='undefined'&&RANKS[i||0])?RANKS[i||0][3]+' '+(EN?RANKS[i||0][2]:RANKS[i||0][1]):'';
 let tpT=0,CH=null,GW=[],GWW={},GWIDS=[],LM={},UN={},CP={},DV={},hbT=null;
 const RXS=['❤️','👍','😂','😮','😢','🙏'];
 const rdK=u=>'hk_rd_'+u,getRd=u=>+(S0(rdK(u))||0),setRd=(u,v)=>localStorage.setItem(rdK(u),String(v));
