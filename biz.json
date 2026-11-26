@@ -1,5 +1,5 @@
 {
- "_help": "Add one object per business. Fields: id (unique, no spaces), name, cat (cafe|food|shop|museum|other), lat, lon, radius (meters to collect/stamp, default 60), card (short card title), story (1-2 lines about the place), offer (first-visit discount, once per person, optional), code (coupon code shown to staff), until (YYYY-MM-DD, optional), terms (optional), loy (optional loyalty card: {\"n\":10,\"reward\":\"...\",\"gap\":20} = stamps needed, the reward, minimum hours between stamps; the same n and gap must be saved in the shop PIN record in admin.html), storyR (meters around a story that show this shop card, default 500), demo (true = demo tag, works from anywhere with PIN 123456).",
+ "_help": "Add one object per business. Fields: id (unique, no spaces), name, cat (cafe|food|shop|museum|other), lat, lon, radius (meters to collect/stamp, default 60), card (short card title), story (1-2 lines about the place), offer (first-visit discount, once per person, optional), code (coupon code shown to staff), until (YYYY-MM-DD, optional), terms (optional), loy (optional loyalty card: {\"n\":10,\"reward\":\"...\"} = stamps needed and the reward; optional \"gap\" = minimum hours between stamps, default none; the same n (and gap if used) must be saved in the shop PIN record in admin.html), storyR (meters around a story that show this shop card, default 500), demo (true = demo tag, works from anywhere with PIN 123456).",
  "list": [
   {
    "id": "demo-cafe-fanar",
@@ -16,8 +16,7 @@
    "terms": "أول زيارة بس. اعرض الشاشة للكاشير.",
    "loy": {
     "n": 5,
-    "reward": "قهوة هدية",
-    "gap": 20
+    "reward": "قهوة هدية"
    },
    "demo": true
   },
@@ -52,8 +51,7 @@
    "terms": "مثال تجريبي: أول زيارة بس.",
    "loy": {
     "n": 10,
-    "reward": "كرواسون مع القهوة",
-    "gap": 20
+    "reward": "كرواسون مع القهوة"
    },
    "demo": true
   }

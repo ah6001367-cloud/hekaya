@@ -10,7 +10,7 @@
 <label>خط العرض و الطول (من خرائط جوجل: اضغط مطولا على المكان وانسخ الرقمين)</label><input id="ll" placeholder="31.2655, 32.3036" dir="ltr">
 <label>نطاق الجمع بالمتر</label><input id="r" value="60" type="number"><label>حكاية قصيرة عن المكان</label><textarea id="s" rows="2"></textarea>
 <label>عرض أول زيارة (اختياري، مرة واحدة للشخص)</label><input id="o"><label>كود الكوبون</label><input id="k" dir="ltr"><label>ساري لحد (اختياري)</label><input id="u" type="date"><label>شروط (اختياري)</label><input id="m">
-<label>كارت الولاء: عدد الطوابع (سيبه فاضي لو مفيش كارت ولاء)</label><input id="ln" type="number" placeholder="10"><label>مكافأة الولاء</label><input id="lr" placeholder="مشروب هدية"><label>أقل فاصل بين طابعين (ساعات)</label><input id="lg" type="number" value="20">
+<label>كارت الولاء: عدد الطوابع (سيبه فاضي لو مفيش كارت ولاء)</label><input id="ln" type="number" placeholder="10"><label>مكافأة الولاء</label><input id="lr" placeholder="مشروب هدية"><label>فاصل أدنى بين طابعين بالساعات (اختياري، سيبه ٠ لو مش عايز فاصل)</label><input id="lg" type="number" value="0">
 <button id="go">جهّز المحل</button><div id="res"></div>
 </div>
 <script type="module">
@@ -35,12 +35,12 @@ async function load(){
  const real=list.filter(b=>!b.demo);let h='';
  if(!real.length)h='<div class="box"><small>مفيش محلات حقيقية لسه. أضف محل من تحت.</small></div>';
  for(const b of real){let st={},sec={};try{const d=await fs.getDoc(fs.doc(db,'bizStats',b.id));if(d.exists())st=d.data()}catch(e){}try{const d=await fs.getDoc(fs.doc(db,'bizSecrets',b.id));if(d.exists())sec=d.data()}catch(e){}
-  h+=`<div class="box"><b>${esc(b.name)}</b> <small>${esc(b.id)}</small><div class="row" style="margin-top:8px"><div><div class="n">${st.col||0}</div><small>اتجمع</small></div><div><div class="n">${st.red||0}</div><small>اتستخدم</small></div><div><div class="n">${st.stp||0}</div><small>طوابع</small></div><div><div class="n">${st.rwd||0}</div><small>مكافآت</small></div><div style="flex:1"></div><div>${sec.pin?'<div class="pin">'+esc(sec.pin)+'</div><small>الرقم السري · '+(sec.n||10)+' طابع · فاصل '+(sec.gap==null?20:sec.gap)+' ساعة</small>':'<small class="bad">مفيش رقم سري: الكارت مش شغال</small>'}</div></div><div class="row"><button class="s" data-id="${esc(b.id)}" data-n="${b.loy?+b.loy.n||10:10}" data-g="${b.loy&&b.loy.gap!=null?+b.loy.gap:20}">رقم سري جديد</button></div></div>`}
+  h+=`<div class="box"><b>${esc(b.name)}</b> <small>${esc(b.id)}</small><div class="row" style="margin-top:8px"><div><div class="n">${st.col||0}</div><small>اتجمع</small></div><div><div class="n">${st.red||0}</div><small>اتستخدم</small></div><div><div class="n">${st.stp||0}</div><small>طوابع</small></div><div><div class="n">${st.rwd||0}</div><small>مكافآت</small></div><div style="flex:1"></div><div>${sec.pin?'<div class="pin">'+esc(sec.pin)+'</div><small>الرقم السري · '+(sec.n||10)+' طابع · فاصل '+(sec.gap||0)+' ساعة</small>':'<small class="bad">مفيش رقم سري: الكارت مش شغال</small>'}</div></div><div class="row"><button class="s" data-id="${esc(b.id)}" data-n="${b.loy?+b.loy.n||10:10}" data-g="${b.loy?+b.loy.gap||0:0}">رقم سري جديد</button></div></div>`}
  $('shops').innerHTML=h;
  $('shops').querySelectorAll('button').forEach(x=>x.onclick=async()=>{const p=rpin();await fs.setDoc(fs.doc(db,'bizSecrets',x.dataset.id),{pin:p,n:+x.dataset.n,gap:+x.dataset.g});load()})}
 $('go').onclick=async()=>{const p=($('ll').value||'').split(/[ ,،]+/).map(Number);if(!$('n').value.trim()||!(p[0]&&p[1])){alert('اكتب اسم المحل والإحداثيات');return}
  const o={id:($('n').value||'biz').trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'-'+Date.now().toString(36).slice(-4),name:$('n').value.trim(),cat:$('t').value,lat:p[0],lon:p[1],radius:+$('r').value||60,card:$('c').value.trim()||$('n').value.trim(),story:$('s').value.trim(),code:$('k').value.trim()};if($('o').value.trim())o.offer=$('o').value.trim();
- if($('u').value)o.until=$('u').value;if($('m').value)o.terms=$('m').value.trim();const ln=+$('ln').value||0,lg=$('lg').value===''?20:+$('lg').value;if(ln>0)o.loy={n:ln,reward:$('lr').value.trim(),gap:lg};
+ if($('u').value)o.until=$('u').value;if($('m').value)o.terms=$('m').value.trim();const ln=+$('ln').value||0,lg=+$('lg').value||0;if(ln>0)o.loy={n:ln,reward:$('lr').value.trim(),gap:lg};
  const pin=rpin();try{await fs.setDoc(fs.doc(db,'bizSecrets',o.id),{pin,n:ln||10,gap:lg})}catch(e){alert('مقدرناش نحفظ الرقم السري: '+(e.code||e.message));return}
  $('res').innerHTML='<div class="box"><b class="ok">اتحفظ الرقم السري ✔</b><br><small>الرقم السري للكاشير (اديه للمحل):</small><div class="pin" style="font-size:28px">'+pin+'</div><small>ابعت الكود ده لينا واحنا ننشره:</small><pre>'+esc(JSON.stringify(o,null,1))+',</pre></div>';load()};
 </script></body></html>
