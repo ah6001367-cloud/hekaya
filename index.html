@@ -128,7 +128,7 @@ function nmz(s){s=s.replace(/[\u064B-\u065F\u0670\u0640]/g,'').replace(/[٠-٩]/
 function hsh(s){let h=0x811c9dc5;for(const ch of s){h^=ch.codePointAt(0);h=Math.imul(h,0x01000193)>>>0}return h>>>0}
 function solvedBtn(n){const r=RD[n];if(!r)return '<div class="cta">'+T('soon')+'</div>';const d=SOL.includes(n);return `<button style="width:100%;margin-top:22px;padding:14px;font-size:16px" onclick="openR(${n})">${d?T('seecard'):T('solve')}</button>`}
 
-function tbDraw(k){const e=document.getElementById('tb');if(!e)return;const L=[['map','🗺',EN?'Map':'الخريطة'],['feed','📰',EN?'Feed':'الفيد'],['chat','💬',EN?'Chat':'الشات'],['me','👤',EN?'Profile':'بروفايلي']];e.innerHTML=L.map(x=>`<button class="${x[0]==k?'on':''}" onclick="tbGo('${x[0]}')"><span>${x[1]}</span>${x[2]}</button>`).join('')}
+function tbDraw(k){window.__tbk=k;const e=document.getElementById('tb');if(!e)return;const L=[['map','🗺',EN?'Map':'الخريطة'],['feed','📰',EN?'Feed':'الفيد'],['chat','💬',EN?'Chat':'الشات'],['me','👤',EN?'Profile':'بروفايلي']];e.innerHTML=L.map(x=>`<button class="${x[0]==k?'on':''}" onclick="tbGo('${x[0]}')"><span>${x[1]}</span>${x[2]}${x[0]=='chat'&&window.__cb?`<b class="bdg">${window.__cb>9?'9+':window.__cb}</b>`:''}</button>`).join('')}
 function tbGo(k){if(k=='map'){['rq','col','cd','mn'].forEach(closeP);if(typeof Soc!=='undefined')Soc.closeStory();tbDraw('map');return}
  if(typeof Soc==='undefined'){alert(EN?'Needs internet':'محتاج إنترنت');return}['rq','col','cd'].forEach(closeP);tbDraw(k);Soc.tab(k)}
 tbDraw('map');

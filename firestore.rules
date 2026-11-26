@@ -58,12 +58,25 @@ service cloud.firestore {
       function ids() { return chatId.split('_'); }
       function member() { return signedIn() && ids().size() == 2 && request.auth.uid in ids(); }
       function other() { return ids()[0] == request.auth.uid ? ids()[1] : ids()[0]; }
+      function d() { return request.resource.data; }
       allow read: if member() && areFriends(request.auth.uid, other());
       allow create: if member() && areFriends(request.auth.uid, other()) && !blockedEither(request.auth.uid, other())
-        && request.resource.data.keys().hasOnly(['from','text','ts'])
-        && request.resource.data.from == request.auth.uid
-        && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 1000
-        && request.resource.data.ts == request.time;
+        && d().keys().hasOnly(['from','text','ts','img','au','ad','rep'])
+        && d().from == request.auth.uid
+        && d().text is string && d().text.size() <= 1000
+        && (d().text.size() > 0 || ('img' in d() && d().img.size() > 0) || ('au' in d() && d().au.size() > 0))
+        && (!('img' in d()) || (d().img is string && d().img.size() <= 160000))
+        && (!('au' in d()) || (d().au is string && d().au.size() <= 210000 && d().ad is int && d().ad <= 60))
+        && (!('rep' in d()) || (d().rep.keys().hasOnly(['id','t','f']) && d().rep.t is string && d().rep.t.size() <= 100))
+        && d().ts == request.time;
+      // sender: edit text or delete for everyone. Either member: reactions (rx) and delete-for-me (dl).
+      allow update: if member() && areFriends(request.auth.uid, other()) && (
+        (resource.data.from == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['text','ed','del','img','au'])
+          && d().text is string && d().text.size() <= 1000)
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rx','dl'])
+          && (!('rx' in d()) || d().rx.keys().hasOnly(ids()))
+          && (!('dl' in d()) || (d().dl is list && d().dl.size() <= 2 && d().dl.hasOnly(ids())))));
     }
     // chat read receipts and typing indicator (members who are friends)
     match /chats/{chatId}/reads/{u} {
@@ -71,6 +84,16 @@ service cloud.firestore {
       function co() { return chatId.split('_')[0] == request.auth.uid ? chatId.split('_')[1] : chatId.split('_')[0]; }
       allow read: if cm() && areFriends(request.auth.uid, co());
       allow create, update: if isMe(u) && cm() && areFriends(request.auth.uid, co()) && request.resource.data.keys().hasOnly(['ts']);
+    }
+    match /chats/{chatId}/deliv/{u} {
+      function cm() { return signedIn() && chatId.split('_').size() == 2 && request.auth.uid in chatId.split('_'); }
+      function co() { return chatId.split('_')[0] == request.auth.uid ? chatId.split('_')[1] : chatId.split('_')[0]; }
+      allow read: if cm() && areFriends(request.auth.uid, co());
+      allow create, update: if isMe(u) && cm() && areFriends(request.auth.uid, co()) && request.resource.data.keys().hasOnly(['ts']);
+    }
+    match /presence/{u} {
+      allow read: if isMe(u) || (signedIn() && areFriends(request.auth.uid, u));
+      allow create, update: if isMe(u) && request.resource.data.keys().hasOnly(['ts']) && request.resource.data.ts is int;
     }
     match /chats/{chatId}/typing/{u} {
       function cm() { return signedIn() && chatId.split('_').size() == 2 && request.auth.uid in chatId.split('_'); }
