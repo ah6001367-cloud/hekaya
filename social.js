@@ -22,7 +22,10 @@ const t=(a,e)=>EN?e:a;
 .sc-st{display:flex;gap:6px;margin:12px 0}.sc-st div{flex:1;text-align:center;background:#0b1a33;border-radius:14px;padding:8px 2px}.sc-st b{display:block;font-size:19px;color:#e2b44c}.sc-st small{font-size:11px;color:#9fb4d0}
 .sc-chips{display:flex;flex-wrap:wrap;gap:6px}.sc-chips span{background:#0b1a33;border:1px solid #2a4a80;border-radius:20px;padding:5px 10px;font-size:12px}
 .sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.sc-grid div{aspect-ratio:1;border-radius:10px;background:#0b1a33 center/cover;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;overflow:hidden}
-.sc-ring{width:92px;height:92px;border-radius:50%;padding:3px;background:conic-gradient(#f9ce34,#ee2a7b,#6228d7,#f9ce34);margin:-46px auto 6px;position:relative}.sc-av2{width:100%;height:100%;border-radius:50%;background:#0b1a33;border:3px solid #0e2142;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:44px}.sc-emo{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.sc-emo button{width:48px;flex:none;min-height:48px;font-size:24px;padding:0;background:#0b1a33}.sc-emo button.on{background:#e2b44c}
+.sc-ring{width:92px;height:92px;border-radius:50%;padding:3px;background:conic-gradient(#f9ce34,#ee2a7b,#6228d7,#f9ce34);margin:-46px auto 6px;position:relative}.sc-av2{width:100%;height:100%;border-radius:50%;background:#0b1a33;border:3px solid #0e2142;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:44px}.sc-a{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background-size:cover;background-position:center;color:#fff;font-weight:800;vertical-align:middle;margin-inline-end:6px;flex:none;overflow:hidden}.sc-av2 .sc-a{margin:0}.sc-up{flex:1;text-align:center;background:#e2b44c;color:#0b2a52;font-weight:700;border-radius:12px;padding:12px 14px;min-height:20px;cursor:pointer}.sc-sb{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:none}.sc-sbi{flex:none;text-align:center;width:68px;cursor:pointer}.sc-sbi small{display:block;font-size:11px;margin-top:4px;color:#cfd9ea;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sc-sr{width:68px;height:68px;border-radius:50%;padding:3px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;position:relative}.sc-sr.new{background:conic-gradient(#f9ce34,#ee2a7b,#6228d7,#f9ce34)}.sc-sr.old{background:#3b4f73}.sc-sr.add{background:#1c3a6b}.sc-sr .sc-a{border:3px solid #0b2a52;box-sizing:content-box;margin:0}.sc-sr i{position:absolute;right:-2px;bottom:-2px;background:#e2b44c;color:#0b2a52;border-radius:50%;width:20px;height:20px;font-style:normal;font-weight:800;text-align:center;line-height:20px}
+.sc-sv{position:fixed;inset:0;z-index:3000;background:#000;display:flex;flex-direction:column;animation:fi .2s}@keyframes fi{from{opacity:0;transform:scale(.98)}}.sc-sv img{flex:1;min-height:0;object-fit:contain;width:100%}.sc-sp{display:flex;gap:4px;padding:10px 10px 4px}.sc-sp i{flex:1;height:3px;border-radius:2px;background:#ffffff44;position:relative;overflow:hidden}.sc-sp i.d{background:#fff}.sc-sp i.a::after{content:'';position:absolute;inset:0;background:#fff;transform-origin:left;animation:sg 5s linear forwards}@keyframes sg{from{transform:scaleX(0)}to{transform:scaleX(1)}}.sc-sh{display:flex;align-items:center;gap:8px;padding:6px 12px;color:#fff}.sc-sh b{flex:1}.sc-sh button{width:auto;flex:none;background:transparent;color:#fff;min-height:36px;padding:4px 10px}.sc-sc{position:absolute;bottom:70px;left:0;right:0;text-align:center;color:#fff;padding:10px 16px;background:linear-gradient(transparent,#000a);font-size:16px}.sc-nv{position:absolute;inset:90px 0 70px;display:flex}.sc-nv div{flex:1}.sc-sf{display:flex;gap:8px;padding:10px 12px;position:relative;z-index:2}.sc-sf button{background:#ffffff22;color:#fff}
+.sk{background:linear-gradient(90deg,#13305e,#1c3a6b,#13305e);background-size:200% 100%;animation:skm 1.2s infinite}@keyframes skm{to{background-position:-200% 0}}
+.sc-emo{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.sc-emo button{width:48px;flex:none;min-height:48px;font-size:24px;padding:0;background:#0b1a33}.sc-emo button.on{background:#e2b44c}
 `;document.head.appendChild(c)})();
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let FB=null,me=null,prof=null,unsubs=[],view=null;
@@ -83,6 +86,22 @@ async function signOut(){await stopLoc(true);await nearStop();nearClear();await 
 
 // ---------- profile ----------
 
+
+const GRS=['linear-gradient(135deg,#1c5fa8,#2fb6a0)','linear-gradient(135deg,#e0527a,#f0a04b)','linear-gradient(135deg,#8e4ec6,#3a6fd8)','linear-gradient(135deg,#3a9d5d,#c9b43a)','linear-gradient(135deg,#d9632b,#a8323e)'];
+function av(p,sz){p=p||{};sz=sz||28;const nm=String(p.name||p.handle||'?').trim(),ini=esc(([...nm][0]||'?').toUpperCase());
+ if(typeof p.ph==='string'&&/^data:image\/jpeg;base64,/.test(p.ph))return `<span class="sc-a" style="width:${sz}px;height:${sz}px;background-image:url(${p.ph})"></span>`;
+ let h=0;for(const c of String(p.handle||nm))h=(h*31+c.charCodeAt(0))>>>0;
+ return `<span class="sc-a" style="width:${sz}px;height:${sz}px;background:${GRS[h%GRS.length]};font-size:${Math.round(sz*.48)}px">${ini}</span>`}
+let _ph='';
+function cropAvatar(file){return new Promise(ok=>{const im=new Image(),u=URL.createObjectURL(file);im.onload=()=>{let sz=192,q=.8,out='';const m=Math.min(im.width,im.height),sx=(im.width-m)/2,sy=(im.height-m)/2;
+  for(let i=0;i<6;i++){const c=document.createElement('canvas');c.width=c.height=sz;c.getContext('2d').drawImage(im,sx,sy,m,m,0,0,sz,sz);out=c.toDataURL('image/jpeg',q);if(out.length<=30000)break;if(q>.5)q-=.1;else sz-=24}
+  URL.revokeObjectURL(u);ok(out.length<=34000?out:'')};im.onerror=()=>ok('');im.src=u})}
+async function pickPhoto(inp){const f=inp.files&&inp.files[0];if(!f)return;const d=await cropAvatar(f);if(!d)return say(t('الصورة مش شغالة','Could not use this photo'));_ph=d;photoPrev()}
+function photoPrev(){const e=document.getElementById('sphp');if(e)e.innerHTML=av({ph:_ph,name:(document.getElementById('sn')||{}).value||'?',handle:(document.getElementById('sh')||{}).value||''},96);const r=document.getElementById('sphr');if(r)r.style.display=_ph?'inline-block':'none'}
+function photoRow(){return `<div style="text-align:center;margin:6px 0"><div id="sphp" style="display:inline-block;border-radius:50%;padding:3px;background:conic-gradient(#f9ce34,#ee2a7b,#6228d7,#f9ce34)"></div>
+ <div class="row" style="justify-content:center;margin-top:8px"><label class="sc-up">📷 ${t('اختار صورة','Choose photo')}<input type="file" accept="image/*" style="display:none" onchange="Soc.pickPhoto(this)"></label><button type="button" class="o" id="sphr" style="width:auto;flex:none;display:none" onclick="Soc.rmPhoto()">${t('شيل الصورة','Remove')}</button></div>
+ <p style="margin:4px 0 0"><small style="color:#9fb4d0">${t('من الكاميرا أو المعرض. بتتقص مربعة وبتتضغط تلقائي.','Camera or gallery. Auto-cropped square and compressed.')}</small></p></div><input id="sem" type="hidden" value="🙂">`}
+function rmPhoto(){_ph='';photoPrev()}
 const EMOJIS=['🙂','😎','🧭','⚓','🐚','🌊','🦩','🚢','🎩','🌙'];
 function pickEmo(x,btn){document.getElementById('sem').value=x;btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('on'));btn.classList.add('on')}
 function emoRow(cur){return `<div class="sc-emo">${EMOJIS.map(x=>`<button type="button" class="${x==cur?'on':''}" onclick="Soc.pickEmo('${x}',this)">${x}</button>`).join('')}</div><input id="sem" type="hidden" value="${cur}">`}
@@ -91,13 +110,13 @@ function setupScreen(){
  scr(`<div class="sc-hero"><div class="sc-logo">${t('👋','👋')}</div><div class="sc-h">${t('اعمل بروفايلك','Set up your profile')}</div><p class="sc-sub">${t('الاسم والـ@يوزر بيظهروا لأي حد يدوّر عليك. الإيميل والموبايل عمرهم ما بيظهروا.','Your name and @handle are visible to people who search for you. Your email and phone are never shown.')}</p></div>
  <div class="sc-card"><div class="sc-f"><label for="sh">${t('اليوزر','Handle')}</label><span class="sc-i">@</span><input id="sh" placeholder="${t('مثال: ahmed_ps','e.g. ahmed_ps')}" dir="ltr" maxlength="20" autocapitalize="none" oninput="Soc.hv()"></div><div class="sc-e" id="she"></div>
  <div class="sc-f"><label for="sn">${t('الاسم اللي يظهر','Display name')}</label><span class="sc-i">🙂</span><input id="sn" maxlength="30" placeholder="${t('اسمك','Your name')}"></div><div class="sc-e"></div>
- <div class="sc-f"><label>${t('الصورة الرمزية','Avatar')}</label></div>${emoRow('🙂')}
+ ${photoRow()}
  <div class="msg bad" id="smsg" style="display:none"></div><button class="sc-btn" id="ssb" onclick="Soc.saveProf()">${t('حفظ وابدأ','Save and start')}</button></div>
- <div style="text-align:center"><button class="sc-link" onclick="Soc.signOut()">${t('تسجيل خروج','Sign out')}</button></div>`,()=>home())}
+ <div style="text-align:center"><button class="sc-link" onclick="Soc.signOut()">${t('تسجيل خروج','Sign out')}</button></div>`,()=>home());_ph='';photoPrev()}
 async function saveProf(){const h=document.getElementById('sh').value.trim().toLowerCase().replace(/^@/,''),n=document.getElementById('sn').value.trim(),em=document.getElementById('sem').value;
  if(!/^[a-z0-9_]{3,20}$/.test(h))return say(t('اليوزر ٣ لـ ٢٠ حرف إنجليزي أو رقم أو _','Handle: 3-20 letters a-z, digits or _'));if(!n)return say(t('اكتب اسم','Enter a name'));
  busy('ssb',true,t('بنحفظ','Saving'));try{const {fs,db}=FB,uid=me.uid;
-  await fs.runTransaction(db,async tx=>{const hd=await tx.get(fs.doc(db,'handles',h));if(hd.exists()&&hd.data().uid!==uid)throw new Error(t('اليوزر ده واخده حد','That handle is taken'));tx.set(fs.doc(db,'handles',h),{uid});tx.set(fs.doc(db,'profiles',uid),{handle:h,name:n,emoji:em,ts:Date.now()})});
+  await fs.runTransaction(db,async tx=>{const hd=await tx.get(fs.doc(db,'handles',h));if(hd.exists()&&hd.data().uid!==uid)throw new Error(t('اليوزر ده واخده حد','That handle is taken'));tx.set(fs.doc(db,'handles',h),{uid});tx.set(fs.doc(db,'profiles',uid),Object.assign({handle:h,name:n,emoji:em,ts:Date.now()},_ph?{ph:_ph}:{}))});
   prof=await getProf(uid,true);afterLogin();hub()}catch(x){busy('ssb',false);say(err(x))}}
 async function editName(){const n=prompt(t('الاسم الجديد','New display name'),prof.name);if(!n||!n.trim())return;try{const {fs,db}=FB;await fs.setDoc(fs.doc(db,'profiles',me.uid),{handle:prof.handle,name:n.trim().slice(0,30),emoji:prof.emoji,ts:Date.now()});prof=await getProf(me.uid,true);hub()}catch(x){alert(err(x))}}
 
@@ -109,6 +128,7 @@ function afterLogin(){sync();if(flag('hk_soc_loc'))startLoc();if(flag('hk_soc_ma
 async function hub(){
  const st=flag('hk_soc_loc'),sm=flag('hk_soc_map'),so=!flag('hk_soc_stats_off');
  scr(`<h2>👥 ${t('الأصدقاء','Friends')}</h2>
+ <div id="sbar"></div>
  <div id="myhead">${head(prof,[[unlocked.length,t('حكايات','Stories')],[(typeof achs==='function'?achs().filter(x=>x.ok).length:0),t('بادجات','Badges')],[FR.length,t('أصدقاء','Friends')],['…',t('بوستات','Posts')]],`<div class="row"><button onclick="Soc.editScreen()">✏️ ${t('تعديل البروفايل','Edit profile')}</button><button class="o" onclick="Soc.signOut()">${t('خروج','Sign out')}</button></div><h3 style="margin:10px 0 6px">🏅 ${t('البادجات','Badges')}</h3>${badgeChips()}<h3 style="margin:14px 0 6px">📷 ${t('بوستاتي','My posts')}</h3><div id="mypg"><p>…</p></div>`)}</div>
  <div class="row"><button onclick="Soc.searchScreen()">🔎 ${t('دوّر على صديق','Find a friend')}</button><button onclick="Soc.sugScreen()">📍 ${t('اقترح مكان','Suggest a place')}</button></div>
  <div class="row"><button onclick="Soc.nearScreen()">👀 ${t('ناس قريبة','People nearby')}</button><button class="o" onclick="Soc.blockedScreen()">🚫 ${t('المحجوبين','Blocked')}</button></div>
@@ -130,23 +150,23 @@ async function hub(){
  unsubs.push(fs.onSnapshot(fs.collection(db,'requests',uid,'from'),async snap=>{const ids=snap.docs.map(d=>d.id);const el=document.getElementById('sreq');if(!el)return;
   if(!ids.length){el.innerHTML='';return}
   const ps=await Promise.all(ids.map(i=>getProf(i).catch(()=>null)));
-  el.innerHTML=`<div class="box" style="border:1px solid #e2b44c"><h3>${t('طلبات صداقة','Friend requests')}</h3>`+ids.map((i,k)=>`<p>${esc((ps[k]||{}).emoji||'🙂')} <b>${esc((ps[k]||{}).name||'?')}</b> <small dir="ltr">@${esc((ps[k]||{}).handle||'')}</small></p><div class="row"><button onclick="Soc.accept('${i}')">${t('قبول','Accept')}</button><button class="o" onclick="Soc.decline('${i}')">${t('رفض','Decline')}</button></div>`).join('')+`</div>`},e=>{}));
- unsubs.push(fs.onSnapshot(fs.collection(db,'friends',uid,'list'),async snap=>{FR=snap.docs.map(d=>d.id);await renderFriends();if(flag('hk_soc_map'))startMap()},e=>{}))}
+  el.innerHTML=`<div class="box" style="border:1px solid #e2b44c"><h3>${t('طلبات صداقة','Friend requests')}</h3>`+ids.map((i,k)=>`<p>${av((ps[k]||{}))} <b>${esc((ps[k]||{}).name||'?')}</b> <small dir="ltr">@${esc((ps[k]||{}).handle||'')}</small></p><div class="row"><button onclick="Soc.accept('${i}')">${t('قبول','Accept')}</button><button class="o" onclick="Soc.decline('${i}')">${t('رفض','Decline')}</button></div>`).join('')+`</div>`},e=>{}));
+ unsubs.push(fs.onSnapshot(fs.collection(db,'friends',uid,'list'),async snap=>{FR=snap.docs.map(d=>d.id);await renderFriends();if(document.getElementById('sbar'))storyBar('sbar');if(flag('hk_soc_map'))startMap()},e=>{}))}
 let FR=[];
 async function renderFriends(){const el=document.getElementById('sfr'),lb=document.getElementById('slb');if(!el)return;
  if(!FR.length){el.innerHTML=`<p>${t('لسه مفيش أصدقاء. دوّر على حد بالـ@يوزر.','No friends yet. Search by @handle.')}</p>`;lb.innerHTML=`<p>${t('ضيف أصدقاء الأول.','Add friends first.')}</p>`;return}
  const ps=await Promise.all(FR.map(i=>getProf(i).catch(()=>null))),ss=await Promise.all(FR.map(getStat));
- el.innerHTML=FR.map((i,k)=>`<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><div style="flex:1;cursor:pointer" onclick="Soc.profileScreen('${i}')">${esc((ps[k]||{}).emoji||'🙂')} <b>${esc((ps[k]||{}).name||'?')}</b><br><small dir="ltr">@${esc((ps[k]||{}).handle||'')}</small></div><button class="o" style="width:auto;margin:0" onclick="Soc.feedScreen('${i}')">📰</button><button class="o" style="width:auto;margin:0" onclick="Soc.blockUser('${i}')">🚫</button><button style="width:auto;margin:0" onclick="Soc.chat('${i}')">💬</button><button class="o" style="width:auto;margin:0" onclick="Soc.unfriend('${i}')">✖</button></div>`).join('');
- const rows=[{n:prof.name,e:prof.emoji,me:1,s:flag('hk_soc_stats_off')?null:stats()}].concat(FR.map((i,k)=>({n:(ps[k]||{}).name||'?',e:(ps[k]||{}).emoji||'🙂',s:ss[k]})));
+ el.innerHTML=FR.map((i,k)=>`<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><div style="flex:1;cursor:pointer" onclick="Soc.profileScreen('${i}')">${av((ps[k]||{}))} <b>${esc((ps[k]||{}).name||'?')}</b><br><small dir="ltr">@${esc((ps[k]||{}).handle||'')}</small></div><button class="o" style="width:auto;margin:0" onclick="Soc.feedScreen('${i}')">📰</button><button class="o" style="width:auto;margin:0" onclick="Soc.blockUser('${i}')">🚫</button><button style="width:auto;margin:0" onclick="Soc.chat('${i}')">💬</button><button class="o" style="width:auto;margin:0" onclick="Soc.unfriend('${i}')">✖</button></div>`).join('');
+ const rows=[{n:prof.name,e:av(prof),me:1,s:flag('hk_soc_stats_off')?null:stats()}].concat(FR.map((i,k)=>({n:(ps[k]||{}).name||'?',e:av(ps[k]||{}),s:ss[k]})));
  rows.sort((a,b)=>((b.s&&b.s.stories)||-1)-((a.s&&a.s.stories)||-1)||((b.s&&b.s.riddles)||0)-((a.s&&a.s.riddles)||0));
- lb.innerHTML=rows.map((r,k)=>`<p style="margin:6px 0;${r.me?'color:#e2b44c;font-weight:700':''}">${k+1}. ${esc(r.e)} ${esc(r.n)}${r.me?' ('+t('أنا','me')+')':''} · ${r.s?`${t('حكايات','stories')} ${r.s.stories} · ${t('ألغاز','riddles')} ${r.s.riddles} · 🏅${r.s.badges}`:`<small>${t('مخفي','hidden')}</small>`}</p>`).join('')}
+ lb.innerHTML=rows.map((r,k)=>`<p style="margin:6px 0;${r.me?'color:#e2b44c;font-weight:700':''}">${k+1}. ${r.e} ${esc(r.n)}${r.me?' ('+t('أنا','me')+')':''} · ${r.s?`${t('حكايات','stories')} ${r.s.stories} · ${t('ألغاز','riddles')} ${r.s.riddles} · 🏅${r.s.badges}`:`<small>${t('مخفي','hidden')}</small>`}</p>`).join('')}
 async function togStats(){const off=!flag('hk_soc_stats_off');setFlag('hk_soc_stats_off',off);const {fs,db}=FB;try{if(off)await fs.deleteDoc(fs.doc(db,'stats',me.uid));else{syncT=0;await sync()}}catch(e){}hub()}
 
 // ---------- search / requests ----------
 function searchScreen(){scr(`<h2>🔎 ${t('دوّر على صديق','Find a friend')}</h2><div class="box"><input id="sq" placeholder="@${t('يوزر الصديق','friend handle')}" dir="ltr" onkeydown="if(event.key=='Enter')Soc.doSearch()"><div class="row"><button onclick="Soc.doSearch()">${t('بحث','Search')}</button></div><div id="sres"></div>${bad('')}</div>${back('Soc.home()')}`,()=>{})}
 async function doSearch(){const q=document.getElementById('sq').value.trim().toLowerCase().replace(/^@/,'');if(q.length<2)return say(t('اكتب حرفين على الأقل','Type at least 2 characters'));
  try{const {fs,db}=FB;const r=await fs.getDocs(fs.query(fs.collection(db,'profiles'),fs.orderBy('handle'),fs.startAt(q),fs.endAt(q+'\uf8ff'),fs.limit(10)));
-  const L=r.docs.filter(d=>d.id!==me.uid);document.getElementById('sres').innerHTML=L.length?L.map(d=>{const p=d.data(),isF=FR.includes(d.id);cache.prof[d.id]=p;return `<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><div style="flex:1">${esc(p.emoji||'🙂')} <b>${esc(p.name)}</b><br><small dir="ltr">@${esc(p.handle)}</small></div>${isF?`<small>${t('صديق','Friend')}</small>`:`<button style="width:auto;margin:0" onclick="Soc.addFriend('${d.id}',this)">${t('أضف','Add')}</button>`}</div>`}).join(''):`<p>${t('مفيش نتيجة','No results')}</p>`;say('',1)}catch(x){say(err(x))}}
+  const L=r.docs.filter(d=>d.id!==me.uid);document.getElementById('sres').innerHTML=L.length?L.map(d=>{const p=d.data(),isF=FR.includes(d.id);cache.prof[d.id]=p;return `<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><div style="flex:1">${av(p)} <b>${esc(p.name)}</b><br><small dir="ltr">@${esc(p.handle)}</small></div>${isF?`<small>${t('صديق','Friend')}</small>`:`<button style="width:auto;margin:0" onclick="Soc.addFriend('${d.id}',this)">${t('أضف','Add')}</button>`}</div>`}).join(''):`<p>${t('مفيش نتيجة','No results')}</p>`;say('',1)}catch(x){say(err(x))}}
 async function addFriend(uid,btn){try{const {fs,db}=FB;await fs.setDoc(fs.doc(db,'requests',uid,'from',me.uid),{ts:Date.now()});btn.textContent=t('اتبعت ✓','Sent ✓');btn.disabled=true}catch(x){say(err(x))}}
 async function accept(uid){try{const {fs,db}=FB,b=fs.writeBatch(db);b.set(fs.doc(db,'friends',me.uid,'list',uid),{ts:Date.now()});b.set(fs.doc(db,'friends',uid,'list',me.uid),{ts:Date.now()});b.delete(fs.doc(db,'requests',me.uid,'from',uid));await b.commit()}catch(x){alert(err(x))}}
 async function decline(uid){try{const {fs,db}=FB;await fs.deleteDoc(fs.doc(db,'requests',me.uid,'from',uid))}catch(x){alert(err(x))}}
@@ -173,7 +193,7 @@ function startMap(){if(!FB||!me)return;clearMarkers();const {fs,db}=FB;
   mapUnsubs.push(fs.onSnapshot(fs.doc(db,'loc',uid),d=>{if(markers[uid]){map.removeLayer(markers[uid]);delete markers[uid]}
    if(!flag('hk_soc_map')||!d.exists())return;const x=d.data();if(Date.now()-x.ts>30*60000)return;
    const ago=Math.max(1,Math.round((Date.now()-x.ts)/60000));
-   markers[uid]=L.marker([x.lat,x.lon],{icon:L.divIcon({className:'',html:`<div class="fmk">${esc((p||{}).emoji||'🙂')}<span>${esc((p||{}).name||'')}</span></div>`,iconSize:[1,1]}),zIndexOffset:800}).addTo(map).bindTooltip(ago+' '+t('د','min'),{direction:'top'})},e=>{}))})}
+   markers[uid]=L.marker([x.lat,x.lon],{icon:L.divIcon({className:'',html:`<div class="fmk">${av((p||{}))}<span>${esc((p||{}).name||'')}</span></div>`,iconSize:[1,1]}),zIndexOffset:800}).addTo(map).bindTooltip(ago+' '+t('د','min'),{direction:'top'})},e=>{}))})}
 async function togMap(){const on=!flag('hk_soc_map');setFlag('hk_soc_map',on);if(on)startMap();else clearMarkers();hub()}
 
 // ---------- suggested places ----------
@@ -208,7 +228,7 @@ async function feedScreen(who){
   el.innerHTML=top.length?top.map(p=>postCard(p,ps[p.u])).join(''):`<div class="box"><p>${t('مفيش بوستات لسه. انشر صورة من ذكرياتك أو إنجاز.','No posts yet. Post a photo from your memories or an achievement.')}</p></div>`;
   top.forEach(p=>loadLikes(p))}catch(e){say(err(e))}}
 function postCard(p,pr){const d=p.d,mine=p.u===me.uid,tm=d.ts&&d.ts.toDate?d.ts.toDate().toLocaleString(EN?'en-GB':'ar-EG'):'';const k=p.u+'_'+p.id;
- return `<div class="box" id="p_${k}"><div>${esc((pr||{}).emoji||'🙂')} <b>${esc((pr||{}).name||'?')}</b> <small dir="ltr">@${esc((pr||{}).handle||'')}</small><br><small>${esc(tm)}</small></div>
+ return `<div class="box" id="p_${k}"><div>${av((pr||{}))} <b>${esc((pr||{}).name||'?')}</b> <small dir="ltr">@${esc((pr||{}).handle||'')}</small><br><small>${esc(tm)}</small></div>
  ${d.kind==='badge'?`<p style="font-size:18px">🏅 ${esc(d.text)}</p>`:`${d.title?`<p><small>📍 ${esc(d.title)}</small></p>`:''}${/^data:image\/jpeg;base64,/.test(d.img||'')?`<img alt="" src="${d.img}" style="width:100%;border-radius:10px">`:''}${d.text?`<p dir="auto">${esc(d.text)}</p>`:''}`}
  <div class="row"><button class="o" id="lk_${k}" onclick="Soc.like('${p.u}','${p.id}')">♡ …</button><button class="o" onclick="Soc.comments('${p.u}','${p.id}')">💬</button>${mine?`<button class="o" onclick="Soc.delPost('${p.id}')">🗑</button>`:`<button class="o" onclick="Soc.report('${p.u}','${p.id}')">⚑</button>`}</div><div id="cm_${k}"></div></div>`}
 async function loadLikes(p){const {fs,db}=FB,k=p.u+'_'+p.id;try{const r=await fs.getDocs(fs.collection(db,'userPosts',p.u,'items',p.id,'likes'));const mine=r.docs.some(d=>d.id===me.uid),b=document.getElementById('lk_'+k);if(b){b.textContent=(mine?'♥ ':'♡ ')+r.size;b.style.background=mine?'#e2b44c':'';b.style.color=mine?'#0b1a33':''}}catch(e){}}
@@ -226,7 +246,7 @@ async function report(u,id){const why=prompt(t('سبب الإبلاغ؟ (اخت�
 // ---------- profile ----------
 const COVERS=['linear-gradient(135deg,#1c5fa8,#0b2a52)','linear-gradient(135deg,#e2b44c,#b9522a)','linear-gradient(135deg,#2fb6a0,#16507a)','linear-gradient(135deg,#8e4ec6,#2a2d7a)','linear-gradient(135deg,#e0527a,#f0a04b)','linear-gradient(135deg,#3a9d5d,#0b3d2e)'];
 function head(p,sts,extra){const cv=COVERS[(p.cv|0)%COVERS.length];
- return `<div class="sc-card" style="padding-top:16px"><div class="sc-cov" style="background:${cv}"></div><div class="sc-ring"><div class="sc-av2">${esc(p.emoji||'🙂')}</div></div>
+ return `<div class="sc-card" style="padding-top:16px"><div class="sc-cov" style="background:${cv}"></div><div class="sc-ring"><div class="sc-av2">${av(p,80)}</div></div>
  <div style="text-align:center"><div class="sc-h" style="font-size:21px">${esc(p.name||'?')}</div><div dir="ltr" style="color:#9fb4d0">@${esc(p.handle||'')}</div>${p.bio?`<p dir="auto" style="margin:8px 6px;color:#f4e9c8;font-size:14px">${esc(p.bio)}</p>`:''}</div>
  <div class="sc-st">${sts.map(x=>`<div><b>${x[0]}</b><small>${x[1]}</small></div>`).join('')}</div>${extra||''}</div>`}
 async function postCount(uid){const {fs,db}=FB;try{const r=await fs.getCountFromServer(fs.collection(db,'userPosts',uid,'items'));return r.data().count}catch(e){try{return (await fs.getDocs(fs.collection(db,'userPosts',uid,'items'))).size}catch(x){return 0}}}
@@ -246,11 +266,43 @@ function editScreen(){const cv=prof.cv|0;
  scr(`<div class="sc-hero"><div class="sc-h">${t('تعديل البروفايل','Edit profile')}</div></div><div class="sc-card">
  <div class="sc-f"><label for="sn">${t('الاسم','Name')}</label><span class="sc-i">🙂</span><input id="sn" maxlength="30" value="${esc(prof.name)}"></div><div class="sc-e"></div>
  <div class="sc-f"><label for="sb">${t('نبذة عنك','Bio')}</label><textarea id="sb" rows="3" maxlength="160" style="padding:13px 14px" placeholder="${t('جملة عنك (اختياري)','A line about you (optional)')}">${esc(prof.bio||'')}</textarea></div>
- <div class="sc-f"><label>${t('الصورة الرمزية','Avatar')}</label></div>${emoRow(prof.emoji||'🙂')}
+ ${photoRow()}
  <div class="sc-f"><label>${t('لون الغلاف','Cover colour')}</label></div><div class="sc-emo">${COVERS.map((c,i)=>`<button type="button" class="${i==cv?'on':''}" style="background:${c};border:3px solid ${i==cv?'#e2b44c':'transparent'}" onclick="document.getElementById('scv').value=${i};this.parentNode.querySelectorAll('button').forEach(b=>b.style.borderColor='transparent');this.style.borderColor='#e2b44c'"></button>`).join('')}</div><input id="scv" type="hidden" value="${cv}">
- <div class="msg bad" id="smsg" style="display:none"></div><button class="sc-btn" id="seb" onclick="Soc.saveEdit()">${t('حفظ','Save')}</button></div>${back('Soc.home()')}`,()=>{})}
+ <div class="msg bad" id="smsg" style="display:none"></div><button class="sc-btn" id="seb" onclick="Soc.saveEdit()">${t('حفظ','Save')}</button></div>${back('Soc.home()')}`,()=>{});_ph=prof.ph||'';photoPrev()}
 async function saveEdit(){const n=document.getElementById('sn').value.trim(),b=document.getElementById('sb').value.trim().slice(0,160),em=document.getElementById('sem').value,cv=+document.getElementById('scv').value|0;if(!n)return say(t('اكتب اسم','Enter a name'));
- busy('seb',true,t('بنحفظ','Saving'));try{const {fs,db}=FB;await fs.setDoc(fs.doc(db,'profiles',me.uid),{handle:prof.handle,name:n.slice(0,30),emoji:em,bio:b,cv,ts:Date.now()});prof=await getProf(me.uid,true);hub()}catch(x){busy('seb',false);say(err(x))}}
+ busy('seb',true,t('بنحفظ','Saving'));try{const {fs,db}=FB;await fs.setDoc(fs.doc(db,'profiles',me.uid),Object.assign({handle:prof.handle,name:n.slice(0,30),emoji:em,bio:b,cv,ts:Date.now()},_ph?{ph:_ph}:{}));prof=await getProf(me.uid,true);hub()}catch(x){busy('seb',false);say(err(x))}}
+
+
+// ---------- 24h stories (friends-only, photos in Firestore, expire after 24 hours) ----------
+const DAY=864e5;let STO={},stoView=null;
+const seenK=()=>JSON.parse(S0('hk_seen')||'{}');
+async function loadStories(){const {fs,db}=FB,out={},ids=[me.uid].concat(FR),cut=Date.now()-DAY;
+ await Promise.all(ids.map(async u=>{try{const r=await fs.getDocs(fs.query(fs.collection(db,'stories',u,'items'),fs.orderBy('ts','desc'),fs.limit(10)));
+  const L=r.docs.map(d=>({id:d.id,u,d:d.data()})).filter(x=>x.d.ts&&x.d.ts.toMillis&&x.d.ts.toMillis()>cut).reverse();if(L.length)out[u]=L;
+  if(u===me.uid)r.docs.forEach(d=>{const x=d.data();if(x.ts&&x.ts.toMillis&&x.ts.toMillis()<=cut)fs.deleteDoc(d.ref).catch(()=>{})})}catch(e){}}));STO=out;return out}
+async function storyBar(elId){const el=document.getElementById(elId);if(!el)return;
+ el.innerHTML=`<div class="sc-sb"><div class="sc-sbi"><div class="sk" style="width:62px;height:62px;border-radius:50%"></div></div></div>`;
+ const st=await loadStories().catch(()=>({}));const e2=document.getElementById(elId);if(!e2)return;const seen=seenK();
+ const ids=[me.uid].concat(FR.filter(u=>st[u])),ps=await Promise.all(ids.map(u=>u===me.uid?prof:getProf(u).catch(()=>null)));
+ e2.innerHTML=`<div class="sc-sb">`+ids.map((u,i)=>{const L=st[u],mine=u===me.uid,last=L&&L[L.length-1],un=L&&!mine&&(!seen[u]||seen[u]<last.d.ts.toMillis());
+  return `<div class="sc-sbi" onclick="${L?`Soc.openStory('${u}')`:`Soc.addStory()`}"><div class="sc-sr ${L?(un?'new':'old'):'add'}">${av(ps[i]||{},56)}${mine&&!L?'<i>+</i>':''}</div><small>${mine?t('قصتي','Your story'):esc((ps[i]||{}).name||'')}</small></div>`}).join('')+`</div>`}
+async function addStory(){const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.id='stfile';inp.style.display='none';document.body.appendChild(inp);inp.onchange=async()=>{const f=inp.files&&inp.files[0];inp.remove();if(!f)return;
+  const cap=prompt(t('تعليق على القصة (اختياري). بتظهر لأصدقائك ٢٤ ساعة.','Story caption (optional). Your friends see it for 24 hours.'),'');if(cap===null)return;
+  const img=await compress(f);if(!img)return alert(t('الصورة مش شغالة','Could not read the photo'));
+  try{const {fs,db}=FB;await fs.addDoc(fs.collection(db,'stories',me.uid,'items'),{uid:me.uid,img,cap:(cap||'').trim().slice(0,120),ts:fs.serverTimestamp()});alert(t('اتنشرت قصتك لأصدقائك ٢٤ ساعة','Your story is live for your friends for 24 hours'));if(view)view()}catch(e){alert(err(e))}};inp.click()}
+function closeStory(){if(stoView){clearTimeout(stoView.t);stoView.el.remove();stoView=null}}
+async function openStory(u){const L=STO[u];if(!L||!L.length)return;closeStory();const el=document.createElement('div');el.className='sc-sv';document.body.appendChild(el);stoView={el,u,i:0,t:null};showStory()}
+async function showStory(){const v=stoView;if(!v)return;const L=STO[v.u];if(v.i>=L.length){closeStory();return}const x=L[v.i],p=v.u===me.uid?prof:await getProf(v.u).catch(()=>({})),mine=v.u===me.uid;
+ v.el.innerHTML=`<div class="sc-sp">${L.map((_,k)=>`<i class="${k<v.i?'d':k==v.i?'a':''}"></i>`).join('')}</div><div class="sc-sh">${av(p,34)}<b>${esc((p||{}).name||'')}</b><small>${esc(x.d.ts.toDate().toLocaleTimeString(EN?'en-GB':'ar-EG',{hour:'2-digit',minute:'2-digit'}))}</small><button onclick="Soc.closeStory()">✕</button></div>
+ <img src="${/^data:image\/jpeg;base64,/.test(x.d.img||'')?x.d.img:''}" alt=""><div class="sc-sc">${esc(x.d.cap||'')}</div><div class="sc-nv"><div onclick="Soc.stepStory(-1)"></div><div onclick="Soc.stepStory(1)"></div></div>
+ ${mine?`<div class="sc-sf"><button onclick="Soc.storyViews('${x.id}')">👁 ${t('المشاهدات','Viewers')}</button><button onclick="Soc.delStory('${x.id}')">🗑</button></div>`:''}`;
+ clearTimeout(v.t);v.t=setTimeout(()=>stepStory(1),5000);
+ const sn=seenK();sn[v.u]=x.d.ts.toMillis();localStorage.setItem('hk_seen',JSON.stringify(sn));
+ if(!mine){try{const {fs,db}=FB;fs.setDoc(fs.doc(db,'stories',v.u,'items',x.id,'views',me.uid),{ts:Date.now()}).catch(()=>{})}catch(e){}}}
+function stepStory(d){const v=stoView;if(!v)return;v.i+=d;if(v.i<0)v.i=0;showStory()}
+async function storyViews(id){const v=stoView;if(!v)return;clearTimeout(v.t);const {fs,db}=FB;try{const r=await fs.getDocs(fs.collection(db,'stories',me.uid,'items',id,'views')),ps=await Promise.all(r.docs.map(d=>getProf(d.id).catch(()=>null)));
+ alert(t('شافوها: ','Viewed by: ')+(ps.length?ps.map(p=>(p||{}).name||'?').join('، '):t('لسه محدش','nobody yet')))}catch(e){alert(err(e))}}
+async function delStory(id){if(!confirm(t('تمسح القصة؟','Delete this story?')))return;const {fs,db}=FB;try{await fs.deleteDoc(fs.doc(db,'stories',me.uid,'items',id));closeStory();if(view)view()}catch(e){alert(err(e))}}
 
 // ---------- block / report people ----------
 async function getBlocks(){const {fs,db}=FB;const r=await fs.getDocs(fs.collection(db,'blocks',me.uid,'list'));return r.docs.map(d=>d.id)}
@@ -260,7 +312,7 @@ async function unblock(uid){try{const {fs,db}=FB;await fs.deleteDoc(fs.doc(db,'b
 async function reportUser(uid){const why=prompt(t('سبب الإبلاغ عن الشخص ده؟','Why are you reporting this person?'),'');if(why===null)return;const {fs,db}=FB;try{await fs.addDoc(fs.collection(db,'reports'),{by:me.uid,postUid:uid,postId:'profile',reason:String(why).slice(0,300),ts:fs.serverTimestamp()});alert(t('وصلنا البلاغ. شكرا.','Report sent. Thank you.'))}catch(e){alert(err(e))}}
 async function blockedScreen(){scr(`<h2>🚫 ${t('المحجوبين','Blocked people')}</h2><div id="bl" class="box"><p>…</p></div>${back('Soc.home()')}`,()=>{});
  try{const ids=await getBlocks(),ps=await Promise.all(ids.map(i=>getProf(i).catch(()=>null)));const el=document.getElementById('bl');if(!el)return;
-  el.innerHTML=ids.length?ids.map((i,k)=>`<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><div style="flex:1">${esc((ps[k]||{}).emoji||'🙂')} <b>${esc((ps[k]||{}).name||'?')}</b><br><small dir="ltr">@${esc((ps[k]||{}).handle||'')}</small></div><button class="o" style="width:auto;margin:0" onclick="Soc.unblock('${i}')">${t('إلغاء الحجب','Unblock')}</button></div>`).join(''):`<p>${t('محدش محجوب.','Nobody is blocked.')}</p>`}catch(e){say(err(e))}}
+  el.innerHTML=ids.length?ids.map((i,k)=>`<div style="display:flex;align-items:center;gap:8px;margin:8px 0"><div style="flex:1">${av((ps[k]||{}))} <b>${esc((ps[k]||{}).name||'?')}</b><br><small dir="ltr">@${esc((ps[k]||{}).handle||'')}</small></div><button class="o" style="width:auto;margin:0" onclick="Soc.unblock('${i}')">${t('إلغاء الحجب','Unblock')}</button></div>`).join(''):`<p>${t('محدش محجوب.','Nobody is blocked.')}</p>`}catch(e){say(err(e))}}
 
 // ---------- people nearby (opt-in, approximate, only while the app is open) ----------
 let lastNear=0,nearMk={},nearT=null,myPos=null;
@@ -278,7 +330,7 @@ async function loadNear(){const p=myP();if(!p)return{err:t('الموقع مش م
   try{const g=await fs.getDoc(fs.doc(db,'blocks',u,'list',me.uid));if(g.exists())continue}catch(e){}
   const km=Math.hypot((x.lat-la)*111,(x.lon-lo)*111*Math.cos(la*Math.PI/180));out.push({u,x,km})}
  out.sort((a,b)=>a.km-b.km);const ps=await Promise.all(out.map(o=>getProf(o.u).catch(()=>null)));out.forEach((o,i)=>o.p=ps[i]);return{list:out.filter(o=>o.p)}}
-function nearMarkers(list){nearClear();list.forEach(o=>{nearMk[o.u]=L.marker([o.x.lat,o.x.lon],{icon:L.divIcon({className:'',html:`<div class="nmk">${esc(o.p.emoji||'🙂')}<span>${esc(o.p.name||'')}</span></div>`,iconSize:[1,1]}),zIndexOffset:700}).addTo(map).on('click',()=>nearScreen())})}
+function nearMarkers(list){nearClear();list.forEach(o=>{nearMk[o.u]=L.marker([o.x.lat,o.x.lon],{icon:L.divIcon({className:'',html:`<div class="nmk">${av(o.p)}<span>${esc(o.p.name||'')}</span></div>`,iconSize:[1,1]}),zIndexOffset:700}).addTo(map).on('click',()=>nearScreen())})}
 function nearKm(k){return k<2?t('أقل من ٢ كم','under 2 km'):t('حوالي ','about ')+Math.round(k)+t(' كم',' km')}
 async function nearScreen(){
  const on=flag('hk_soc_near');
@@ -290,7 +342,7 @@ async function nearScreen(){
  try{const r=await loadNear(),el=document.getElementById('nl');if(!el)return;
   if(r.err){el.innerHTML=`<p>${esc(r.err)}</p>`;return}
   nearMarkers(r.list);const fr=new Set(FR);
-  el.innerHTML=r.list.length?r.list.map(o=>`<div style="margin:10px 0;padding-bottom:10px;border-bottom:1px solid #1c3a6b"><div>${esc(o.p.emoji||'🙂')} <b>${esc(o.p.name)}</b> <small dir="ltr">@${esc(o.p.handle)}</small><br><small>${nearKm(o.km)}</small></div>
+  el.innerHTML=r.list.length?r.list.map(o=>`<div style="margin:10px 0;padding-bottom:10px;border-bottom:1px solid #1c3a6b"><div>${av(o.p)} <b>${esc(o.p.name)}</b> <small dir="ltr">@${esc(o.p.handle)}</small><br><small>${nearKm(o.km)}</small></div>
    <div class="row">${fr.has(o.u)?`<button onclick="Soc.chat('${o.u}')">💬 ${t('شات','Chat')}</button>`:`<button onclick="Soc.addFriend('${o.u}',this)">${t('ابعت طلب تعارف','Send connection request')}</button>`}<button class="o" style="width:auto" onclick="Soc.blockUser('${o.u}')">🚫</button><button class="o" style="width:auto" onclick="Soc.reportUser('${o.u}')">⚑</button></div></div>`).join('')+`<p><small>${t('الشات بيتفتح بعد ما الطرف التاني يقبل الطلب.','Chat opens only after the other person accepts your request.')}</small></p>`:`<p>${t('مفيش حد ظاهر قريب منك دلوقتي.','Nobody is visible near you right now.')}</p>`}catch(e){say(err(e))}}
 async function togNear(){if(flag('hk_soc_near')){setFlag('hk_soc_near',false);await nearStop();nearClear()}else{if(!confirm(t('أي مستخدم قريب منك هيشوفك بمكان تقريبي (حوالي كم) طول ما التطبيق مفتوح. تقدر تقفلها في أي وقت. تفتحها؟','Other users near you will see you at an approximate spot (about 1 km) while the app is open. You can turn it off anytime. Turn it on?')))return;setFlag('hk_soc_near',true);lastNear=0;const p=myP();if(p&&!FAKE)nearPush(p.lat,p.lon)}nearScreen()}
 
@@ -298,5 +350,5 @@ async function togNear(){if(flag('hk_soc_near')){setFlag('hk_soc_near',false);aw
 async function delAcct(){if(!confirm(t('هتمسح حسابك وكل بياناتك (البروفايل، الأصدقاء، الترتيب، المكان). مفيش رجوع. تكمل؟','This deletes your account and all your data (profile, friends, leaderboard, location). It cannot be undone. Continue?')))return;
  try{const {fs,db,au,auth}=FB,uid=me.uid;await stopLoc();await nearStop();try{const ps=await fs.getDocs(fs.collection(db,'userPosts',uid,'items'));for(const d of ps.docs){for(const sub of ['likes','comments']){const r=await fs.getDocs(fs.collection(db,'userPosts',uid,'items',d.id,sub));await Promise.all(r.docs.map(x=>fs.deleteDoc(x.ref)))}await fs.deleteDoc(d.ref)}const bl=await fs.getDocs(fs.collection(db,'blocks',uid,'list'));await Promise.all(bl.docs.map(x=>fs.deleteDoc(x.ref)))}catch(e){}const b=fs.writeBatch(db);FR.forEach(f=>{b.delete(fs.doc(db,'friends',f,'list',uid));b.delete(fs.doc(db,'friends',uid,'list',f))});b.delete(fs.doc(db,'stats',uid));if(prof)b.delete(fs.doc(db,'handles',prof.handle));await b.commit();await fs.deleteDoc(fs.doc(db,'profiles',uid));await au.deleteUser(auth.currentUser);cache.prof={};alert(t('اتمسح حسابك','Account deleted'));openMenu()}catch(x){alert(err(x))}}
 
-return{profileScreen,editScreen,saveEdit,pickEmo,hv,vf,open,home,nearScreen,togNear,blockUser,unblock,reportUser,blockedScreen,feedScreen,postMemory,postBadge,like,comments,addComment,delComment,delPost,report,authScreen,doAuth,reset,signOut,saveProf,editName,searchScreen,doSearch,addFriend,accept,decline,unfriend,chat,send,togLoc,hideNow,togMap,togStats,sugScreen,sugHere,sugSend,delAcct,sync,onPos,get user(){return me},get profile(){return prof},_fb:()=>FB}
+return{addStory,openStory,closeStory,stepStory,storyViews,delStory,pickPhoto,rmPhoto,profileScreen,editScreen,saveEdit,pickEmo,hv,vf,open,home,nearScreen,togNear,blockUser,unblock,reportUser,blockedScreen,feedScreen,postMemory,postBadge,like,comments,addComment,delComment,delPost,report,authScreen,doAuth,reset,signOut,saveProf,editName,searchScreen,doSearch,addFriend,accept,decline,unfriend,chat,send,togLoc,hideNow,togMap,togStats,sugScreen,sugHere,sugSend,delAcct,sync,onPos,get user(){return me},get profile(){return prof},_fb:()=>FB}
 })();

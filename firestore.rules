@@ -11,7 +11,8 @@ service cloud.firestore {
     match /profiles/{uid} {
       allow read: if signedIn();
       allow create, update: if isMe(uid)
-        && request.resource.data.keys().hasOnly(['handle','name','emoji','ts','bio','cv'])
+        && request.resource.data.keys().hasOnly(['handle','name','emoji','ts','bio','cv','ph'])
+        && (!('ph' in request.resource.data) || (request.resource.data.ph is string && request.resource.data.ph.size() <= 36000))
         && (!('bio' in request.resource.data) || (request.resource.data.bio is string && request.resource.data.bio.size() <= 160))
         && (!('cv' in request.resource.data) || (request.resource.data.cv is int && request.resource.data.cv >= 0 && request.resource.data.cv < 6))
         && request.resource.data.handle is string && request.resource.data.handle.matches('^[a-z0-9_]{3,20}$')
@@ -104,6 +105,22 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['lat','lon','ts'])
         && request.resource.data.lat is number && request.resource.data.lon is number;
       allow delete: if isMe(uid);
+    }
+    // 24h stories: photos in Firestore, friends-only. Clients hide stories older than 24 hours and owners delete expired ones.
+    match /stories/{uid}/items/{id} {
+      allow read: if isMe(uid) || (signedIn() && areFriends(request.auth.uid, uid));
+      allow create: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['uid','img','cap','ts'])
+        && request.resource.data.uid == uid
+        && request.resource.data.img is string && request.resource.data.img.size() <= 260000
+        && request.resource.data.cap is string && request.resource.data.cap.size() <= 120
+        && request.resource.data.ts == request.time;
+      allow delete: if isMe(uid);
+      match /views/{viewer} {
+        allow create: if isMe(viewer) && areFriends(viewer, uid) && request.resource.data.keys().hasOnly(['ts']);
+        allow read: if isMe(uid) || isMe(viewer);
+        allow delete: if isMe(uid);
+      }
     }
     // reports: write only, read in the Firebase console
     match /reports/{rid} {
