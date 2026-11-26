@@ -71,3 +71,24 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
 var w=window.showCard;if(typeof w=='function')window.showCard=function(n,f){if(f)play('chime');return w.apply(this,arguments)};
 new MutationObserver(lab).observe(document.body,{childList:true,subtree:true});
 })();
+/* Polish layer: palette (gold/cream/teal), hierarchy, motion, tap states. */
+(function(){var st=document.createElement('style');st.id='polish';st.textContent=`
+#tb{box-shadow:0 -8px 28px #0006;padding-left:max(6px,env(safe-area-inset-left));padding-right:max(6px,env(safe-area-inset-right))}
+#tb button{position:relative;letter-spacing:.2px}
+#tb button.on::after{content:'';position:absolute;bottom:2px;width:16px;height:3px;border-radius:3px;background:linear-gradient(90deg,#2fb6a0,#7fe0d4)}
+#hm .city,#hm .sd,#hm .pl{box-shadow:0 6px 18px #0004;transition:transform .15s ease,box-shadow .2s ease,border-color .2s}
+#hm .city:active,#hm .sd:active{transform:scale(.985)}
+#hm .city:not(.soon){border:1px solid #2fb6a055}
+#hm h3{letter-spacing:.2px;font-weight:800;color:#f2e3b3}
+#hm .hd b{font-weight:800;letter-spacing:.3px}
+.pb i,.sc-sr.new{filter:saturate(1.1)}
+.sc-card,.card,.box{box-shadow:0 8px 24px #0004}
+.sc-sbi small,#tb button{font-feature-settings:'kern'}
+.sc-sbi{transition:transform .15s}.sc-sbi:active{transform:scale(.94)}
+.sc-sr{transition:transform .2s}.sc-sr.new{box-shadow:0 0 0 2px #2fb6a033}
+button.o,button.sec{border-color:#2fb6a0aa;color:#7fe0d4}
+@keyframes hkfade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#hm.on>*,.sc-card,.sc-po{animation:hkfade .35s ease both}
+input,textarea{font-size:16px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+`;document.head.appendChild(st)})();
