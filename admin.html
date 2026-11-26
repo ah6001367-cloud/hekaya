@@ -40,6 +40,11 @@ async function load(){
  $('shops').innerHTML=h;
  $('shops').querySelectorAll('button').forEach(x=>x.onclick=async()=>{const p=rpin();await fs.setDoc(fs.doc(db,'bizSecrets',x.dataset.id),{pin:p,n:+x.dataset.n,gap:+x.dataset.g});load()})}
 
+const OA='23456789CFGHJMPQRVWX';
+function olcDec(c){c=c.replace('+','').toUpperCase().slice(0,10);let la=0,lo=0,res=20;for(let i=0;i<c.length;i+=2){const x=OA.indexOf(c[i]),y=OA.indexOf(c[i+1]);if(x<0||y<0)return null;la+=x*res;lo+=y*res;if(i+2<c.length)res/=20}return [la-90+res/2,lo-180+res/2]}
+function olcPlus(t,rla,rlo){const m=t.match(/(?:^|[\s,(])([23456789CFGHJMPQRVWX]{2,8}\+[23456789CFGHJMPQRVWX]{2,7})(?![A-Za-z0-9])/i);if(!m)return null;let c=m[1].toUpperCase();const s=c.indexOf('+');if(s%2||s>8)return null;
+ if(s<8){const pad=8-s;let lv=rla+90,gv=rlo+180,res=20,d='';for(let i=0;i<4;i++){const a=Math.floor(lv/res);lv-=a*res;const b=Math.floor(gv/res);gv-=b*res;d+=OA[a]+OA[b];res/=20}c=d.slice(0,pad)+c;const p=olcDec(c);if(!p)return null;const R=Math.pow(20,2-pad/2),h=R/2;let[la,lo]=p;if(rla+h<la)la-=R;else if(rla-h>la)la+=R;if(rlo+h<lo)lo-=R;else if(rlo-h>lo)lo+=R;return [la,lo]}
+ return olcDec(c)}
 function parseLL(t){t=(t||'').trim();if(!t)return null;let m;
  const ok=(la,lo)=>{la=+la;lo=+lo;return isFinite(la)&&isFinite(lo)&&Math.abs(la)<=90&&Math.abs(lo)<=180&&(la||lo)?[la,lo]:null};
  try{t=decodeURIComponent(t)}catch(e){}
@@ -47,6 +52,7 @@ function parseLL(t){t=(t||'').trim();if(!t)return null;let m;
  if(m=t.match(/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/))return ok(m[1],m[2]);
  if(m=t.match(/[?&](?:q|ll|query|destination|center|daddr)=\+?(-?\d+(?:\.\d+)?)[,\s+]+(-?\d+(?:\.\d+)?)/))return ok(m[1],m[2]);
  if(m=t.match(/^\s*\(?\s*(-?\d+(?:\.\d+)?)\s*[,،\s]\s*(-?\d+(?:\.\d+)?)\s*\)?\s*$/))return ok(m[1],m[2]);
+ {const pc=olcPlus(t,31.2653,32.3019);if(pc)return ok(pc[0],pc[1])}
  return null}
 const kmTo=(la,lo)=>{const R=6371,r=Math.PI/180,x=(31.2653-la)*r,y=(32.3019-lo)*r,q=Math.sin(x/2)**2+Math.cos(la*r)*Math.cos(31.2653*r)*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(q))};
 function llCheck(){const t=$('ll').value.trim(),h=$('llh');if(!t){return null}const p=parseLL(t);
