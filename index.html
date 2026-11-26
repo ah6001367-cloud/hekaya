@@ -153,7 +153,7 @@ function openCol(){const e=document.getElementById('col');e.innerHTML=`<h2>🃏 
 cnt();
 let CUR=null;
 const SHELL=['index.html','social.js','leaflet.js','leaflet.css','riddles.js','photos.js','stories1.json','stories2.json','en_stories.json','en_riddles.json','en_cards.json'];
-const OFFURLS=k=>{const a=k==='t'?SHELL.slice():[];for(let n=1;n<=32;n++){const p=String(n).padStart(2,'0');if(k==='t'){a.push('hero/'+p+'.svg');a.push('cardart/'+p+'.svg');if([1,2,4,5,7,14,16,21].includes(n))a.push('cardimg/'+p+'.webp');if([1,4,5].includes(n)){a.push('cardimg/bg'+p+'.webp');a.push('cardimg/ch'+p+'.webp')}if(typeof PH!=='undefined'&&PH[n])a.push('photos/'+p+'.jpg')}else a.push('audio/story'+p+'.mp3')}return a};
+const OFFURLS=k=>{const a=k==='t'?SHELL.slice():[];for(let n=1;n<=32;n++){const p=String(n).padStart(2,'0');if(k==='t'){a.push('hero/'+p+'.svg');a.push('cardart/'+p+'.svg');if([1,2,4,5,7,14,16,21].includes(n))a.push('cardimg/'+p+'.webp');if(Array.from({length:32},(_,i)=>i+1).includes(n)){a.push('cardimg/bg'+p+'.webp');a.push('cardimg/ch'+p+'.webp')}if(typeof PH!=='undefined'&&PH[n])a.push('photos/'+p+'.jpg')}else a.push('audio/story'+p+'.mp3')}return a};
 const NATIVE=!!(window.Capacitor&&Capacitor.isNativePlatform&&Capacitor.isNativePlatform());
 if(!NATIVE&&'serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 async function notifyHere(s){if(!NATIVE)return;try{const LN=Capacitor.Plugins.LocalNotifications;await LN.schedule({notifications:[{id:1000+s.n,title:EN?'Here in Hekaya':'هنا في حكاية',body:s.t,smallIcon:'ic_stat_icon_config_sample'}]})}catch(e){}}
@@ -456,7 +456,7 @@ function cardHTML(n,lk){const c=CARDS[n],k=RAR[c.rar]||1,s=S.find(x=>x.n==n)||{}
 .pc.ch.lk .bgi img{filter:blur(9px) saturate(.7) brightness(.6)}
 </style>
 <script>
-const CH=new Set([1,4,5]);
+const CH=new Set(Array.from({length:32},(_,i)=>i+1));
 function tiltInit(root){const set=(p,x,y)=>{p.style.setProperty('--ry',(x*16).toFixed(1)+'deg');p.style.setProperty('--rx',(-y*16).toFixed(1)+'deg');p.style.setProperty('--px',(-x*7).toFixed(1)+'cqw');p.style.setProperty('--py',(-y*4).toFixed(1)+'cqw');p.style.setProperty('--px2',(x*3).toFixed(1)+'cqw')};
  root.addEventListener('pointermove',e=>{const p=e.target.closest&&e.target.closest('.pc');if(!p)return;const r=p.getBoundingClientRect();set(p,(e.clientX-r.left)/r.width-.5,(e.clientY-r.top)/r.height-.5)});
  ['pointerup','pointerleave','pointercancel'].forEach(ev=>root.addEventListener(ev,e=>{const p=e.target.closest&&e.target.closest('.pc');if(p)set(p,0,0)},true))}
