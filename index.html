@@ -57,7 +57,7 @@ button,.btnl,.sc-card,.box{transition:transform .12s ease,filter .12s ease,backg
 #mn,#cd,#rq{animation:panelIn .28s cubic-bezier(.2,.8,.2,1)}@keyframes panelIn{from{opacity:0;transform:translateY(14px) scale(.985)}}.box{animation:boxIn .35s ease both}@keyframes boxIn{from{opacity:0;transform:translateY(8px)}}
 @keyframes mkPulse{0%{box-shadow:0 0 0 0 #e2b44c88}70%{box-shadow:0 0 0 14px #e2b44c00}100%{box-shadow:0 0 0 0 #e2b44c00}}.leaflet-marker-icon.pulse,.mk-near{animation:mkPulse 1.8s infinite}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
-</style><style id="litecss">.lite *,.lite *::before,.lite *::after{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}.lite .pc.r2::after,.lite .pc.r3::after,.lite .pc.r4::after,.lite .pc.r4::before,.lite .pc .fo,.lite .pc .sp{animation:none!important}.lite .pc.r4{animation:none!important}.lite .leaflet-marker-icon.pulse,.lite .mk-near{animation:none!important}.lite .bz-p,.lite [class*=bzp]{animation:none!important}</style><script>(function(){var u=navigator.userAgent||'';if(/Android/i.test(u)||/Capacitor/i.test(u)||(navigator.hardwareConcurrency||8)<=6||(navigator.deviceMemory||8)<=4)document.documentElement.classList.add('lite')})()</script>
+</style><style id="litecss">.lite *,.lite *::before,.lite *::after{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}.lite .pc.r2::after,.lite .pc.r3::after,.lite .pc.r4::after,.lite .pc.r4::before,.lite .pc .fo,.lite .pc .sp{animation:none!important}.lite .pc.r4{animation:none!important}.lite .leaflet-marker-icon.pulse,.lite .mk-near{animation:none!important}.lite #spg{animation:none!important}.lite #spfi,.lite #spgl{animation:none!important}.lite #spgl{opacity:.7}.lite #spcr{animation:spFade .2s forwards!important}.lite .bz-p,.lite [class*=bzp]{animation:none!important}</style><script>(function(){var u=navigator.userAgent||'';if(/Android/i.test(u)||/Capacitor/i.test(u)||(navigator.hardwareConcurrency||8)<=6||(navigator.deviceMemory||8)<=4)document.documentElement.classList.add('lite')})()</script>
 </head><body>
 <style id="hmcss">
 #sp{position:fixed;inset:0;z-index:100050;pointer-events:none;transition:opacity .45s,visibility .45s}
@@ -150,7 +150,7 @@ function togTest(){if(!DEV&&qq.get('test')!=='1')return;TEST=!TEST;if(!TEST)FAKE
 let S=[],unlocked=JSON.parse(localStorage.getItem('hk_u')||'[]'),me=null,sel=null,demo=false;
 const q=new URLSearchParams(location.search);
 const map=L.map('map',{zoomControl:false}).setView([31.2650,32.3050],14);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'}).addTo(map);
+const TL=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,keepBuffer:1,updateWhenIdle:true,attribution:'© OpenStreetMap contributors'});let tlOn=0;function addTiles(){if(tlOn)return;tlOn=1;TL.addTo(map)}setTimeout(addTiles,7000);if(['open','read','emu','nosplash'].some(k=>q.get(k)))addTiles();
 const ar=n=>EN?String(n):String(n).replace(/\d/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
 const dist=(a,b,c,d)=>{const r=Math.PI/180,x=(d-b)*r*Math.cos((a+c)/2*r),y=(c-a)*r;return Math.hypot(x,y)*6371000};
 let markers={},meMk=null;
@@ -172,7 +172,7 @@ function hsh(s){let h=0x811c9dc5;for(const ch of s){h^=ch.codePointAt(0);h=Math.
 function solvedBtn(n){const r=RD[n];if(!r)return '<div class="cta">'+T('soon')+'</div>';const d=SOL.includes(n);return `<button style="width:100%;margin-top:22px;padding:14px;font-size:16px" onclick="openR(${n})">${d?T('seecard'):T('solve')}</button>`}
 
 function tbDraw(k){window.__tbk=k;const e=document.getElementById('tb');if(!e)return;const L=[['home','🏠',EN?'Home':'الرئيسية'],['map','🗺',EN?'Map':'الخريطة'],['feed','📰',EN?'Feed':'الفيد'],['chat','💬',EN?'Chat':'الشات'],['me','👤',EN?'Profile':'بروفايلي']];e.innerHTML=L.map(x=>`<button class="${x[0]==k?'on':''}" onclick="tbGo('${x[0]}')"><span>${x[1]}</span>${x[2]}${x[0]=='chat'&&window.__cb?`<b class="bdg">${window.__cb>9?'9+':window.__cb}</b>`:''}</button>`).join('')}
-function tbGo(k){if(k=='home'){['rq','col','cd','mn'].forEach(closeP);if(typeof Soc!=='undefined')Soc.closeStory();hmShow();return}document.getElementById('hm')&&document.getElementById('hm').classList.remove('on');if(k=='map'){['rq','col','cd','mn'].forEach(closeP);if(typeof Soc!=='undefined')Soc.closeStory();tbDraw('map');return}
+function tbGo(k){if(k!='home')addTiles();if(k=='home'){['rq','col','cd','mn'].forEach(closeP);if(typeof Soc!=='undefined')Soc.closeStory();hmShow();return}document.getElementById('hm')&&document.getElementById('hm').classList.remove('on');if(k=='map'){['rq','col','cd','mn'].forEach(closeP);if(typeof Soc!=='undefined')Soc.closeStory();tbDraw('map');return}
  if(typeof Soc==='undefined'){alert(EN?'Needs internet':'محتاج إنترنت');return}['rq','col','cd'].forEach(closeP);tbDraw(k);Soc.tab(k)}
 tbDraw('map');
 new MutationObserver(()=>{const r=document.getElementById('reader'),e=document.getElementById('tb');if(r&&e)e.classList.toggle('hide',getComputedStyle(r).display!=='none')}).observe(document.getElementById('reader')||document.body,{attributes:true});
@@ -353,11 +353,11 @@ let hmTry=0;function hmDraw(){const e=document.getElementById('hm');if(!e)return
  <button style="animation-delay:.45s" onclick="tbGo('chat')"><span>💬</span>${EN?'Chats':'الشات'}</button></div>`;
  setTimeout(()=>e.querySelectorAll('.pb i').forEach(i=>i.style.width=i.dataset.w),60)}
 function hmShow(){hmDraw();document.getElementById('hm').classList.add('on');tbDraw('home')}
-function hmEnter(n){document.getElementById('hm').classList.remove('on');tbDraw('map');if(n){const s=S.find(x=>x.n==n);if(s){map.flyTo([s.lat,s.lon],16);show(s)}}}
+function hmEnter(n){addTiles();document.getElementById('hm').classList.remove('on');tbDraw('map');if(n){const s=S.find(x=>x.n==n);if(s){map.flyTo([s.lat,s.lon],16);show(s)}}}
 (function(){const q=new URLSearchParams(location.search),sp=document.getElementById('sp');document.getElementById('spt').textContent=EN?'Every place has a story':'كل مكان وراه حكاية';
  if(sessionStorage.getItem('hk_ns')){sessionStorage.removeItem('hk_ns');sp.remove();try{hmShow()}catch(e){}return}
  if(q.get('open')||q.get('read')||q.get('emu')||q.get('nosplash')){sp.remove();return}
- const go=()=>{sp.classList.add('go');try{hmShow()}catch(e){}setTimeout(()=>sp.classList.add('out'),2000);setTimeout(()=>sp.remove(),2500)};
+ const go=()=>{sp.classList.add('go');try{hmShow()}catch(e){}const LT=document.documentElement.classList.contains('lite');setTimeout(()=>sp.classList.add('out'),LT?800:2000);setTimeout(()=>sp.remove(),LT?1250:2500)};
  let gone=0;const go1=()=>{if(!gone){gone=1;go()}};if(document.readyState=='complete')go1();else{addEventListener('load',go1);setTimeout(go1,1500)}setTimeout(()=>{if(sp.parentNode&&!sp.classList.contains('out')){sp.classList.add('go');try{hmShow()}catch(e){}sp.classList.add('out')}},6000)})();
 </script>
 <style id="pccss">
