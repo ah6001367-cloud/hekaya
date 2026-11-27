@@ -354,7 +354,7 @@ let hmTry=0;function hmDraw(){const e=document.getElementById('hm');if(!e)return
  setTimeout(()=>e.querySelectorAll('.pb i').forEach(i=>i.style.width=i.dataset.w),60)}
 function hmShow(){hmDraw();document.getElementById('hm').classList.add('on');tbDraw('home')}
 function hmEnter(n){addTiles();document.getElementById('hm').classList.remove('on');tbDraw('map');if(n){const s=S.find(x=>x.n==n);if(s){map.flyTo([s.lat,s.lon],16);show(s)}}}
-(function(){const q=new URLSearchParams(location.search),sp=document.getElementById('sp');document.getElementById('spt').textContent=EN?'Every place has a story':'كل مكان وراه حكاية';
+(function(){const q=new URLSearchParams(location.search),sp=document.getElementById('sp');requestAnimationFrame(()=>requestAnimationFrame(()=>{try{window.Capacitor&&Capacitor.Plugins.SplashScreen&&Capacitor.Plugins.SplashScreen.hide({fadeOutDuration:150})}catch(e){}}));document.getElementById('spt').textContent=EN?'Every place has a story':'كل مكان وراه حكاية';
  if(sessionStorage.getItem('hk_ns')){sessionStorage.removeItem('hk_ns');sp.remove();try{hmShow()}catch(e){}return}
  if(q.get('open')||q.get('read')||q.get('emu')||q.get('nosplash')){sp.remove();return}
  const go=()=>{sp.classList.add('go');try{hmShow()}catch(e){}const LT=document.documentElement.classList.contains('lite');setTimeout(()=>sp.classList.add('out'),LT?800:2000);setTimeout(()=>sp.remove(),LT?1250:2500)};
