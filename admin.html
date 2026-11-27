@@ -1,8 +1,10 @@
 <!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>حكاية - إدارة كروت المحلات</title>
-<style>body{font-family:system-ui,sans-serif;background:#0b1a33;color:#fbefd0;margin:0;padding:18px;max-width:560px;margin-inline:auto}h1{color:#f7bf3a;font-size:20px;margin:0 0 4px}h2{color:#7fe0d4;font-size:16px;margin:22px 0 8px}label{display:block;margin:10px 0 4px;font-size:13px;color:#9fb4d0}input,select,textarea{width:100%;box-sizing:border-box;background:#0e2142;border:1px solid #2a4a80;border-radius:12px;color:#fbefd0;padding:10px;font:inherit}button{margin-top:10px;background:#e2b44c;color:#2b0f0c;border:0;border-radius:12px;padding:11px 14px;font-weight:800;font:inherit;cursor:pointer}button.s{background:#16345f;color:#7fe0d4;border:1px solid #2fb6a066}pre{background:#050d1c;border:1px solid #2fb6a055;border-radius:12px;padding:12px;white-space:pre-wrap;direction:ltr;text-align:left;font-size:12px}small{color:#9fb4d0}.box{background:#0e2142;border:1px solid #2a4a80;border-radius:16px;padding:12px;margin:10px 0}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.n{font-size:22px;font-weight:900;color:#f7bf3a}.pin{font-family:monospace;font-size:18px;letter-spacing:3px;color:#7fe0d4;direction:ltr}#st{padding:10px;border-radius:12px;background:#0e2142;border:1px solid #2a4a80;margin:10px 0}.ok{color:#7fe0d4}.bad{color:#ff8a7a}</style></head><body>
-<p><a href="index.html" style="color:#7fe0d4">‹ رجوع للتطبيق</a></p><h1>إدارة كروت المحلات</h1><small>إحصائيات كل محل، الرقم السري للكاشير، وإضافة محل جديد.</small>
+<style>body{font-family:system-ui,sans-serif;background:#0b1a33;color:#fbefd0;margin:0;padding:18px;max-width:560px;margin-inline:auto}h1{color:#f7bf3a;font-size:20px;margin:0 0 4px}h2{color:#7fe0d4;font-size:16px;margin:22px 0 8px}label{display:block;margin:10px 0 4px;font-size:13px;color:#9fb4d0}input,select,textarea{width:100%;box-sizing:border-box;background:#0e2142;border:1px solid #2a4a80;border-radius:12px;color:#fbefd0;padding:10px;font:inherit}button{margin-top:10px;background:#e2b44c;color:#2b0f0c;border:0;border-radius:12px;padding:11px 14px;font-weight:800;font:inherit;cursor:pointer}button.s{background:#16345f;color:#7fe0d4;border:1px solid #2fb6a066}pre{background:#050d1c;border:1px solid #2fb6a055;border-radius:12px;padding:12px;white-space:pre-wrap;direction:ltr;text-align:left;font-size:12px}small{color:#9fb4d0}.box{background:#0e2142;border:1px solid #2a4a80;border-radius:16px;padding:12px;margin:10px 0}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.n{font-size:22px;font-weight:900;color:#f7bf3a}.pin{font-family:monospace;font-size:18px;letter-spacing:3px;color:#7fe0d4;direction:ltr}#st{padding:10px;border-radius:12px;background:#0e2142;border:1px solid #2a4a80;margin:10px 0}.ok{color:#7fe0d4}.bad{color:#ff8a7a}.dg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.dc{background:#0e2142;border:1px solid #2a4a80;border-radius:14px;padding:10px}.dc b{display:block;font-size:24px;color:#f7bf3a}.dc small{font-size:12px}.dc.g b{color:#7fe0d4}.ch{background:#0e2142;border:1px solid #2a4a80;border-radius:14px;padding:10px;margin-top:8px}</style></head><body>
+<p><a href="index.html" style="color:#7fe0d4">‹ رجوع للتطبيق</a></p><h1>لوحة الإدارة</h1><small>أرقام التطبيق، إحصائيات كل محل، الرقم السري للكاشير، وإضافة محل جديد.</small>
 <div id="st">جاري التحميل…</div><div id="cl"></div>
 <div id="app" style="display:none">
+<h2>📊 لوحة التحكم</h2><div id="dash"><small>جاري حساب الأرقام…</small></div><button class="s" id="dref">تحديث الأرقام</button>
+<small id="dnote" style="display:block;margin-top:8px;line-height:1.7"></small>
 <h2>المحلات</h2><div id="shops"></div>
 <h2>إضافة محل جديد</h2>
 <label>اسم المحل</label><input id="n"><label>عنوان الكارت</label><input id="c" placeholder="كارت ...">
@@ -23,13 +25,41 @@ const app=a.initializeApp(CFG),auth=au.getAuth(app),db=fs.getFirestore(app);
 if(EMU){au.connectAuthEmulator(auth,'http://localhost:9199',{disableWarnings:true});fs.connectFirestoreEmulator(db,'localhost',8185)}
 const $=id=>document.getElementById(id),esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let list=[];try{list=(await (await fetch('biz.json',{cache:'no-cache'})).json()).list||[]}catch(e){}
+
+const dayStart=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x.getTime()},DAY=864e5,pad=n=>String(n).padStart(2,'0'),dk=t=>{const x=new Date(t);return x.getFullYear()+'-'+pad(x.getMonth()+1)+'-'+pad(x.getDate())};
+const cnt=async q=>{try{return(await fs.getCountFromServer(q)).data().count}catch(e){return null}};
+const col=n=>fs.collection(db,n),W=(c,f,o,v)=>fs.query(c,fs.where(f,o,v));
+const nf=v=>v==null?'—':Number(v).toLocaleString('en');
+function bars(arr,lab,color){const mx=Math.max(1,...arr),w=300/arr.length;let r='<svg viewBox="0 0 300 90" style="width:100%;direction:ltr">';arr.forEach((v,i)=>{const h=Math.round(v/mx*62);r+='<rect x="'+(i*w+1)+'" y="'+(70-h)+'" width="'+(w-2)+'" height="'+h+'" rx="2" fill="'+color+'"/><text x="'+(i*w+w/2)+'" y="'+(66-h)+'" font-size="7" fill="#fbefd0" text-anchor="middle">'+(v||'')+'</text>';if(i%2==0||arr.length<9)r+='<text x="'+(i*w+w/2)+'" y="82" font-size="6.5" fill="#9fb4d0" text-anchor="middle">'+lab[i]+'</text>'});return r+'</svg>'}
+async function dash(){
+ const T=Date.now(),t0=dayStart(T),box=$('dash');
+ const dl=[];for(let i=13;i>=0;i--)dl.push(t0-i*DAY);
+ const P=col('profiles'),PR=col('presence');
+ const [users,open,on5,d24,d7,newT,new7,hood,hoodT,likes,reps,msgs,hrep,sug]=await Promise.all([cnt(P),cnt(W(PR,'ts','>=',T-100000)),cnt(W(PR,'ts','>=',T-300000)),cnt(W(PR,'ts','>=',T-DAY)),cnt(W(PR,'ts','>=',T-7*DAY)),cnt(W(P,'ts','>=',t0)),cnt(W(P,'ts','>=',t0-6*DAY)),cnt(col('hood')),cnt(W(col('hood'),'ts','>=',new Date(t0))),cnt(fs.collectionGroup(db,'likes')),cnt(fs.collectionGroup(db,'r')),cnt(fs.collectionGroup(db,'messages')),cnt(col('hoodReports')),cnt(col('placeSuggestions'))]);
+ const daily=await Promise.all(dl.map(d=>cnt(fs.query(P,fs.where('ts','>=',d),fs.where('ts','<',d+DAY)))));
+ const posts=await Promise.all(dl.map(d=>cnt(fs.query(col('hood'),fs.where('ts','>=',new Date(d)),fs.where('ts','<',new Date(d+DAY))))));
+ let shops=list.filter(b=>!b.demo).length,col_=0,red=0,stp=0,rwd=0;
+ try{(await fs.getDocs(col('bizStats'))).forEach(d=>{const x=d.data();col_+=x.col||0;red+=x.red||0;stp+=x.stp||0;rwd+=x.rwd||0})}catch(e){}
+ let dls=null,dlA=null,dlC=null;try{const r=await(await fetch('https://api.github.com/repos/ah6001367-cloud/hekaya/releases/tags/apk-v1')).json();(r.assets||[]).forEach(a=>{if(a.name=='hekaya.apk')dlC=a.download_count;if(a.name=='hekaya-admin.apk')dlA=a.download_count});dls=(dlC||0)}catch(e){}
+ let snaps=[];try{await fs.setDoc(fs.doc(db,'adminSnaps',dk(T)),{users:users||0,d24:d24||0,w7:d7||0,pk:Math.max(open||0,0),ts:T},{merge:true});const q=await fs.getDocs(fs.query(col('adminSnaps'),fs.orderBy('ts','desc'),fs.limit(30)));snaps=q.docs.map(d=>Object.assign({id:d.id},d.data())).reverse()}catch(e){}
+ const prev=snaps.filter(x=>x.id<dk(T)).pop(),gr=prev&&prev.users?((users-prev.users)/prev.users*100):null;
+ const sg=gr==null?'يبدأ يتحسب من بكرة':(gr>=0?'+':'')+gr.toFixed(1)+'%';
+ const C=(n,l,c)=>'<div class="dc '+(c||'')+'"><b>'+n+'</b><small>'+l+'</small></div>';
+ const wk=d=>['ح','ن','ث','ر','خ','ج','س'][new Date(d).getDay()]+new Date(d).getDate();
+ let h='<div class="dg">'+C(nf(users),'إجمالي الحسابات')+C(nf(open),'فاتحين التطبيق دلوقتي','g')+C(nf(on5),'أونلاين (آخر ٥ دقايق)','g')+C(nf(d24),'نشطين آخر ٢٤ ساعة')+C(nf(d7),'نشطين آخر ٧ أيام')+C(sg,'نمو الحسابات عن إمبارح')+C(nf(newT),'حسابات جديدة/معدّلة النهارده')+C(nf(new7),'آخر ٧ أيام')+C(nf(shops),'محلات','g')+C(nf(col_)+' / '+nf(red),'كوبونات اتجمعت / اتصرفت','g')+C(nf(stp)+' / '+nf(rwd),'طوابع / مكافآت ولاء','g')+C(nf(hood)+' ('+nf(hoodT)+' النهارده)','بوستات حواليك')+C(nf(likes),'تفاعلات (لايك/ريأكشن)')+C(nf(reps),'ردود')+C(nf(msgs),'رسايل شات')+C(nf(hrep)+' / '+nf(sug),'بلاغات / اقتراحات أماكن')+C(nf(dls),'تحميلات APK (العام)')+C(nf(dlA),'تحميلات نسخة الأدمن')+'</div>';
+ h+='<div class="ch"><small>حسابات اتعملت أو اتعدّلت يوميًا (آخر ١٤ يوم، تقريبي)</small>'+bars(daily.map(v=>v||0),dl.map(wk),'#f7bf3a')+'</div>';
+ h+='<div class="ch"><small>بوستات حواليك يوميًا</small>'+bars(posts.map(v=>v||0),dl.map(wk),'#7fe0d4')+'</div>';
+ if(snaps.length>1){h+='<div class="ch"><small>إجمالي الحسابات (لقطة يومية)</small>'+bars(snaps.map(x=>x.users),snaps.map(x=>x.id.slice(8)),'#e0652a')+'</div><div class="ch"><small>نشطين خلال ٢٤ ساعة (لقطة يومية)</small>'+bars(snaps.map(x=>x.d24),snaps.map(x=>x.id.slice(8)),'#2fb6a0')+'</div>'}
+ box.innerHTML=h;
+ $('dnote').innerHTML='ملاحظات صريحة: (١) مفيش طريقة مجانية تعد التثبيتات الحقيقية، أقرب رقم هو <b>الحسابات</b> (اللي سجلت) و<b>تحميلات ملف الـAPK</b> من جيتهاب (بتتعد حتى لو محدش ثبّت). (٢) "فاتح التطبيق دلوقتي" من نبضة كل دقيقة والتطبيق ظاهر؛ اللي مقفل خصوصية "آخر ظهور" مش بيتحسب. (٣) تاريخ الحساب هو آخر تعديل للبروفايل، فالرسم القديم تقريبي؛ لقطات الإجمالي والنشطين بتتسجل يوميًا من أول فتحة للوحة، فافتحها كل يوم. (٤) كل التحديث قراءات تجميع خفيفة (حوالي ٤٠ قراءة).'}
+$('dref').onclick=()=>dash();
 const rpin=()=>String(Math.floor(100000+Math.random()*900000));
 async function isAdm(u){try{const d=await fs.getDoc(fs.doc(db,'admins','root'));return d.exists()&&d.data().uid===u.uid}catch(e){return false}}
 async function claimable(){try{const d=await fs.getDoc(fs.doc(db,'admins','root'));return !d.exists()}catch(e){return true}}
 au.onAuthStateChanged(auth,async u=>{
  $('cl').innerHTML='';$('app').style.display='none';
  if(!u){$('st').innerHTML='<span class="bad">لازم تسجل دخول في التطبيق الأول بنفس المتصفح.</span> <a href="index.html" style="color:#7fe0d4">افتح التطبيق</a> وبعدين ارجع هنا.';return}
- if(await isAdm(u)){$('st').innerHTML='<span class="ok">أنت أدمن ✔</span> <small>'+esc(u.email||u.uid)+'</small>';$('app').style.display='block';load();return}
+ if(await isAdm(u)){$('st').innerHTML='<span class="ok">أنت أدمن ✔</span> <small>'+esc(u.email||u.uid)+'</small>';$('app').style.display='block';load();dash();return}
  if(await claimable()){$('st').innerHTML='لسه مفيش أدمن للتطبيق. <small>('+esc(u.email||u.uid)+')</small>';$('cl').innerHTML='<button id="claim">خليني أنا الأدمن</button><br><small>اضغط مرة واحدة بحسابك إنت. بعدها محدش تاني يقدر ياخد المكان.</small>';$('claim').onclick=async()=>{try{await fs.setDoc(fs.doc(db,'admins','root'),{uid:u.uid});location.reload()}catch(e){alert('مقدرناش: '+(e.code||e.message))}};return}
  $('st').innerHTML='<span class="bad">الحساب ده مش الأدمن.</span> سجل دخول بحساب الأدمن في التطبيق.'});
 async function load(){
